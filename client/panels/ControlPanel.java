@@ -10,14 +10,33 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import client.*;
+
 /**
  *
  * @author  ken
  */
 public class ControlPanel extends javax.swing.JPanel {
     
+    private GUIControl guiControl;
+    private ClientConnectionControl conControl;
+    private String hostname;
+    
     /** Creates new form ChatPanel */
-    public ControlPanel() {
+    public ControlPanel(GUIControl gui, ClientConnectionControl ccc, String host) {
+        guiControl = gui;
+        conControl = ccc;
+        hostname = host;
+        
+        if(conControl == null) {
+            System.out.println("conControl is null! (ControlPanel constructor)");
+        }   
+        
+        if(hostname.length() > 0) {
+        } else {
+            hostname = "localhost";
+        }
+        
         initComponents();
     }
     
@@ -72,6 +91,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         tfGobServer.setBackground(new java.awt.Color(204, 204, 255));
         tfGobServer.setEditable(false);
+        tfGobServer.setText("localhost");
         tfGobServer.setToolTipText("Host to connect to");
         tfGobServer.setBorder(null);
         pConnection.add(tfGobServer);
@@ -190,30 +210,32 @@ public class ControlPanel extends javax.swing.JPanel {
      * Code to spawn a new connect thread, and connect to the server.
      */
     private void serverConnect() {
-        /* Obtain username and hostname from GUI */
-
+        
+        /* Spawn a connection thread and connect */
+        conControl.serverConnect(tfUserName.getText(), tfGobServer.getText());
+      
     }
     
     /**
      * Code to interrupt the connection thread.
      */
     private void serverDisconnect() {
+        conControl.serverDisconnect();
     }
     
     /**
      * The method first executed after the object has been initiated.
      */
     public void init() {
-        /* Obtain the "host" parameter from the web page hosting the
-         * applet */
+        /* Obtain the hostname and set it in the GUI */
         
-        //if(getParameter("host").length() > 0) {
-        //    /* Set the host parameter as the host to connect to */
-        //    tfGobServer.setText(getParameter("host"));
-        //} else {
-        //    /* Else just default to localhost */
-        //    tfGobServer.setText("localhost");
-        //}
+        if(hostname.length() > 0) {
+            /* Set the host parameter as the host to connect to */
+            tfGobServer.setText(hostname);
+        } else {
+            /* Else just default to localhost */
+            tfGobServer.setText("localhost");
+        }
         
         
         /* Focus on the username textfield */

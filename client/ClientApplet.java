@@ -21,14 +21,13 @@ import client.*;
  */
 public class ClientApplet extends javax.swing.JApplet {
     
-    private MsgAreaControl maControl;
-    private UserListControl ulControl;
+    //private MsgAreaControl maControl;
+    //private UserListControl ulControl;
     private ConnectionInfo conInfo;
-    private ClientConnectionControl conControl;
-    private GUIControl guiControl;
-    private ControlPanel pControl;
-    private StatusPanel pStatus;
-    private GroupChatPanel pLobby;
+    public ClientConnectionControl conControl;
+    public GUIControl guiControl;
+    
+    private String Hostname;
     
     /** 
      * Creates new ClientApp applet. The primary part of the Gob client.
@@ -46,29 +45,28 @@ public class ClientApplet extends javax.swing.JApplet {
             System.out.println("Inability to set look and feel: " + e);
         } 
 
-        setBackground(new java.awt.Color(204,204,255));
-        
         /* Build all Forte generated components */
         initComponents();
         
-        /* Add a control and status panel */
-        
-        pControl = new ControlPanel();
-        pStatus = new StatusPanel();
-        pLobby = new GroupChatPanel();
-        
-        tbMain.addTab("Control", null, pControl, "For connecting and changing username");
-        tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
-                
-        /* Setup both controls for the ChatArea and UserList */
-        maControl = new MsgAreaControl(pLobby.taMsgHistory);
-        ulControl = new UserListControl(pLobby.lUsers);
-        
         /* Initialise the connection info object */
-        conInfo = new ConnectionInfo();
+        //conInfo = new ConnectionInfo();
+        
+        /* Create a new concontrol object */
+        //conControl = new ClientConnectionControl(conInfo, guiControl);
+        
+        /* Obtain the "host" parameter from the web page hosting the
+         * applet */
+        //if(getParameter("host").length() > 0) {
+            /* Set the host parameter as the host to connect to */
+        
+        //    Hostname = getParameter("host");
+        //} else {
+          /* Else just default to localhost */
+        //    Hostname = "localhost";
+        //}
         
         /* Initialise guicontrol for the conncetion thread to use */
-        guiControl = new GUIControl(ulControl, maControl, pControl.bConnect, pControl.bDisconnect, pControl.lConnectionStatus, pStatus.taErrorOutput, tbMain, pControl.tfUserName, pLobby.tfSendPrep, pLobby);
+        //guiControl = new GUIControl(tbMain, conControl, Hostname);        
                             
     }
     
@@ -109,50 +107,49 @@ public class ClientApplet extends javax.swing.JApplet {
      * Send the message typed into the PrepArea.
      */
     private void sendPreppedMessage() {
+        /*
         if(pLobby.tfSendPrep.getText().length() != 0) {
             conControl.sendMessage(pLobby.tfSendPrep.getText());
             pLobby.tfSendPrep.setText("");
         }
-    }
-    
-    /**
-     * Code to spawn a new connect thread, and connect to the server.
-     */
-    private void serverConnect() {
-        /* Obtain username and hostname from GUI */
-        conInfo.setUsername(pControl.tfUserName.getText());
-        conInfo.setServer(pControl.tfGobServer.getText());
-        
-        /* Create a new thread object */
-        conControl = new ClientConnectionControl(conInfo, guiControl);
-        
-        /* Start thread */
-        conControl.start();
-    }
-    
-    /**
-     * Code to interrupt the connection thread.
-     */
-    private void serverDisconnect() {
-        conControl.setInterrupt();
+         */
     }
     
     /**
      * The method first executed after the object has been initiated.
      */
     public void init() {
+        
+        /* Initialise the connection info object */
+        conInfo = new ConnectionInfo();
+        
+        guiControl = new GUIControl(tbMain, this.getParameter("host"));
+        
+        /* Create a new concontrol object */
+        conControl = new ClientConnectionControl(this, conInfo);
+        
+        guiControl.displayGUI(conControl);
+        
+        System.out.println("End of stuff!");
+        
         /* Obtain the "host" parameter from the web page hosting the
          * applet */
-        if(getParameter("host").length() > 0) {
+        //if(this.getParameter("host").length() > 0) {
             /* Set the host parameter as the host to connect to */
-            pControl.tfGobServer.setText(getParameter("host"));
-        } else {
+        
+        //    pControl.tfGobServer.setText(getParameter("host"));
+            //Hostname = this.getParameter("host");
+        //} else {
             /* Else just default to localhost */
-            pControl.tfGobServer.setText("localhost");
-        }
+        //    pControl.tfGobServer.setText("localhost");
+        //    Hostname = "localhost";
+        //}
+        
+        /* Initialise guicontrol for the conncetion thread to use */
+        
         
         /* Focus on the username textfield */
-        pControl.tfUserName.requestFocusInWindow();
+        //pControl.tfUserName.requestFocusInWindow();
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables

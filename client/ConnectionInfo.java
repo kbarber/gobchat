@@ -13,6 +13,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 
 /**
+ * Current client connection information is stored here
  *
  * @author  Ken Barber
  */

@@ -94,6 +94,7 @@
               <Color blue="ff" green="cc" red="cc" type="rgb"/>
             </Property>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="text" type="java.lang.String" value="localhost"/>
             <Property name="toolTipText" type="java.lang.String" value="Host to connect to"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>

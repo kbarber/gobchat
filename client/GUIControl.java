@@ -19,6 +19,7 @@ import client.*;
  */
 public class GUIControl {
     
+    private String hostname;
     private UserListControl ulControl;
     private MsgAreaControl maControl;
     private JButton bConnect;
@@ -28,7 +29,10 @@ public class GUIControl {
     private JTabbedPane tbMain;
     private JTextField tfUserName;
     private JTextField tfSendPrep;
-    private JPanel pLobby;
+    private ControlPanel pControl;
+    private StatusPanel pStatus;
+    private GroupChatPanel pLobby;
+    private ClientConnectionControl conControl;
     
     private int connectionStatus;
     
@@ -41,17 +45,28 @@ public class GUIControl {
     public static int DISCONNECTED = 4;
     
     /** Creates a new instance of GUIControl */
-    public GUIControl(UserListControl ul, MsgAreaControl ma, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep, JPanel lobby) {
-        ulControl = ul;
-        maControl = ma;
-        bConnect = con;
-        bDisconnect = dis;
-        lConnectionStatus = constat;
-        taErrorOutput = erroroutput;
-        tbMain = tabbedpane;
-        tfUserName = username;
-        tfSendPrep = sendprep;
-        pLobby = lobby;
+    public GUIControl(javax.swing.JTabbedPane tbm, String hn) {
+        tbMain = tbm;
+        hostname = hn;
+        
+    }
+    
+    public void displayGUI(ClientConnectionControl cc) {
+        conControl = cc;
+        
+        /* Add a control and status panel */
+        
+        pControl = new ControlPanel(this, conControl, hostname);
+        pStatus = new StatusPanel();
+        pLobby = new GroupChatPanel();
+        
+        tbMain.addTab("Control", null, pControl, "For connecting and changing username");
+        tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
+                
+        /* Setup both controls for the ChatArea and UserList */
+        maControl = new MsgAreaControl(pLobby.taMsgHistory);
+        ulControl = new UserListControl(pLobby.lUsers);
+        
     }
     
     public void setConnected(int status) {
@@ -64,17 +79,17 @@ public class GUIControl {
         
         switch(status) {
             case 1: // Connecting
-                bConnect.setEnabled(false);
-                bDisconnect.setEnabled(true);                
-                lConnectionStatus.setText("Connecting ...");
+                pControl.bConnect.setEnabled(false);
+                pControl.bDisconnect.setEnabled(true);                
+                pControl.lConnectionStatus.setText("Connecting ...");
                 
                 /* And disable changing the username field */
-                tfUserName.setEditable(false);
+                pControl.tfUserName.setEditable(false);
                 break;
             case 2: // Connected
-                bConnect.setEnabled(false);
-                bDisconnect.setEnabled(true);     
-                lConnectionStatus.setText("Connected");
+                pControl.bConnect.setEnabled(false);
+                pControl.bDisconnect.setEnabled(true);     
+                pControl.lConnectionStatus.setText("Connected");
                 
                 /* Add the lobby tab to the tabbed pain */
                 tbMain.addTab("Lobby", pLobby);
@@ -83,25 +98,25 @@ public class GUIControl {
                 tbMain.setSelectedIndex(2);
                 
                 /* And focus on the sendprep area */
-                tfSendPrep.requestFocusInWindow();
+                pLobby.tfSendPrep.requestFocusInWindow();
                 break;
             case 3: // Disconnecting   
-                bConnect.setEnabled(true);
-                bDisconnect.setEnabled(false);
-                lConnectionStatus.setText("Disconnecting ...");
+                pControl.bConnect.setEnabled(true);
+                pControl.bDisconnect.setEnabled(false);
+                pControl.lConnectionStatus.setText("Disconnecting ...");
                 break;
             case 4: // Disconnected
-                bConnect.setEnabled(true);
-                bDisconnect.setEnabled(false);
+                pControl.bConnect.setEnabled(true);
+                pControl.bDisconnect.setEnabled(false);
                 
                 /* Set a reason for disconnection */
-                lConnectionStatus.setText("Disconnected: " + reason);
+                pControl.lConnectionStatus.setText("Disconnected: " + reason);
                 
                 /* And enable the username field */
-                tfUserName.setEditable(true);
+                pControl.tfUserName.setEditable(true);
                 
                 /* And now request focus if this tab is open */
-                tfUserName.requestFocusInWindow();
+                pControl.tfUserName.requestFocusInWindow();
                 
                 /* Now remove the lobby */
                 tbMain.removeTabAt(2);
@@ -114,7 +129,7 @@ public class GUIControl {
     }
     
     public void printError(String output) {
-        taErrorOutput.append(new Date().toString() + ": " + output + "\n");
+        pStatus.taErrorOutput.append(new Date().toString() + ": " + output + "\n");
     }
     
     public void statusMessage(String output) {
