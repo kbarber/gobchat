@@ -9,6 +9,10 @@ package client;
 import javax.swing.*;
 import java.util.*;
 
+import client.components.*;
+import client.panels.*;
+import client.*;
+
 /**
  *
  * @author  Ken Barber
@@ -16,7 +20,7 @@ import java.util.*;
 public class GUIControl {
     
     private UserListControl ulControl;
-    private ChatAreaControl caControl;
+    private MsgAreaControl maControl;
     private JButton bConnect;
     private JButton bDisconnect;
     private JLabel lConnectionStatus;
@@ -37,9 +41,9 @@ public class GUIControl {
     public static int DISCONNECTED = 4;
     
     /** Creates a new instance of GUIControl */
-    public GUIControl(UserListControl ul, ChatAreaControl ca, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep, JPanel lobby) {
+    public GUIControl(UserListControl ul, MsgAreaControl ma, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep, JPanel lobby) {
         ulControl = ul;
-        caControl = ca;
+        maControl = ma;
         bConnect = con;
         bDisconnect = dis;
         lConnectionStatus = constat;
@@ -76,7 +80,7 @@ public class GUIControl {
                 tbMain.addTab("Lobby", pLobby);
                 
                 /* Now open the lobby tab */
-                tbMain.setSelectedIndex(1);
+                tbMain.setSelectedIndex(2);
                 
                 /* And focus on the sendprep area */
                 tfSendPrep.requestFocusInWindow();
@@ -100,7 +104,7 @@ public class GUIControl {
                 tfUserName.requestFocusInWindow();
                 
                 /* Now remove the lobby */
-                tbMain.removeTabAt(1);
+                tbMain.removeTabAt(2);
                 break;
         }
     }
@@ -114,15 +118,15 @@ public class GUIControl {
     }
     
     public void statusMessage(String output) {
-        caControl.statusMessage(output);
+        maControl.statusMessage(output);
     }
     
     public void userMessage(String un, String output) {
-        caControl.userMessage(un, output);
+        maControl.userMessage(un, output);
     }
     
     public void clearTextArea() {
-        caControl.clearTextArea();
+        maControl.clearTextArea();
     }
     
     public void addUser(String un) {
