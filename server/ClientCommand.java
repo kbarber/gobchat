@@ -139,7 +139,7 @@ public class ClientCommand {
             /* Obtain an array which contains a list of the current
              * users in the room */
             
-            if(!userData.isRoomRegistered(se)) {
+            if(userData.isRoomRegistered(se) != true) {
                 returnError("Room name not registered: " + se + ".", sc);
                 return;
             }
