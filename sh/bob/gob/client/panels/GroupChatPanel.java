@@ -80,6 +80,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         add(bSendText);
         bSendText.setBounds(465, 300, 40, 23);
 
+        tfSendPrep.setBackground(new java.awt.Color(204, 255, 204));
         tfSendPrep.setToolTipText("Type your message here");
         tfSendPrep.setFocusCycleRoot(true);
         tfSendPrep.setAutoscrolls(false);
