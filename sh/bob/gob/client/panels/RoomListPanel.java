@@ -76,6 +76,12 @@ public class RoomListPanel extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
         setBorder(new javax.swing.border.TitledBorder(null, "ROOM LIST", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
+
         spRooms.setBackground(new java.awt.Color(204, 204, 255));
         spRooms.setBorder(new javax.swing.border.EtchedBorder());
         lRooms.setBackground(new java.awt.Color(255, 255, 252));
@@ -152,6 +158,10 @@ public class RoomListPanel extends javax.swing.JPanel {
         add(jPanel1, java.awt.BorderLayout.SOUTH);
 
     }//GEN-END:initComponents
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+        tfRoom.requestFocus();
+    }//GEN-LAST:event_formFocusGained
 
     private void tfRoomKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfRoomKeyPressed
         // Add your handling code here:

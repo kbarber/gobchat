@@ -80,6 +80,12 @@ public class PrivChatPanel extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
         setBorder(new javax.swing.border.TitledBorder("PRIVATE CHAT"));
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
+
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
         spMsgHistory.setBorder(new javax.swing.border.EtchedBorder());
         taMsgHistory.setBackground(new java.awt.Color(255, 255, 252));
@@ -149,6 +155,10 @@ public class PrivChatPanel extends javax.swing.JPanel {
         add(jPanel4, java.awt.BorderLayout.SOUTH);
 
     }//GEN-END:initComponents
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+        tfSendPrep.requestFocus();
+    }//GEN-LAST:event_formFocusGained
 
     private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
         // Add your handling code here:

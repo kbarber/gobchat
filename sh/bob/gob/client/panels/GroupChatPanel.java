@@ -94,6 +94,12 @@ public class GroupChatPanel extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
         setBorder(new javax.swing.border.TitledBorder("ROOM"));
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
+
         spMsgUsers.setBackground(new java.awt.Color(204, 204, 255));
         spMsgUsers.setBorder(new javax.swing.border.EtchedBorder());
         spMsgUsers.setDividerLocation(400);
@@ -195,6 +201,10 @@ public class GroupChatPanel extends javax.swing.JPanel {
         add(jPanel4, java.awt.BorderLayout.SOUTH);
 
     }//GEN-END:initComponents
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+        tfSendPrep.requestFocus();
+    }//GEN-LAST:event_formFocusGained
 
     private void lPrivMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lPrivMouseClicked
         /* take the selected balue from the user list */

@@ -18,6 +18,8 @@ Features
 * Added a thick client for testing - still a little buggy
 * Keepalive support now provided with regular pings and timeouts (see sf 
 #831429)
+* Room list helpers, including auto focusing on primary text fields (see sf 
+#831685)
 
 Bug Fixes
 
