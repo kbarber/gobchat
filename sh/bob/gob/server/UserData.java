@@ -481,7 +481,7 @@ public class UserData {
             if(lastrx < lessthan) {
                 /* A candidate for disconnection */
                 candidateset.add(socketlist[i]);
-                Logger.getLogger("sh.bob.gob.server").finest("User: " + getName((SocketChannel)socketlist[i]) + " is a candidate because " + lastrx + " is less than " + lessthan + " (btw the current time is " + new java.util.Date().getTime() + ").");
+                Logger.getLogger("sh.bob.gob.server").finest("User: " + getName((SocketChannel)socketlist[i]) + " is a candidate because " + lastrx + " is older than " + lessthan + " (btw the current time is " + new java.util.Date().getTime() + ").");
             } else {
                 /* Is okay, move on */
             }
