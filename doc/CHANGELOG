@@ -26,6 +26,8 @@ Bug Fixes
 
 - Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
 - Server Crash: ClassCastException. No handling of invalid XML objects (see sf #889512)
+- When you try to fire up the server without specifying a configuration file,
+it will return a usage message instead of an exception (see sf #907367)
 
 ============
 Version: 0.3
