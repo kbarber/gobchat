@@ -261,41 +261,17 @@ public class ServerConnectionThread implements Runnable {
                             
                             /* All server commands have the GOB prefix ... */
                             if(command[0].equals("GOB")) {
+                                /* Just send any received messages to the textarea for now */
+                                guiControl.statusMessage(serverMsg[loop]);
                                 if(command[1].equals("signup")) {
                                     /* Add this new user to the userlist */
-                                    guiControl.addUser(command[2]);
+                                    //guiControl.addUser(command[2]);
                                     
                                     /* Print a status message */
                                     guiControl.statusMessage("New user \"" + command[2] + "\"");
-                                } else if(command[1].equals("quit")) {
-                                    /* Split the quit command, get the user and the reason */
-                                    String params[] = command[2].split(",", 3);
-                                    
-                                    /* Print a status message */
-                                    guiControl.statusMessage("User \"" + params[0] + "\" has disconnected because \"" + params[1] + "\"");
-                                    
-                                    /* Remove the user from the list */
-//                                    guiControl.deleteUser(params[0]);
-                                } else if(command[1].equals("list")) {
-                                    /* Split the list of users */
-                                    String users[] = command[2].split(",");
-                                    
-                                    /* Clear the list */
-                                    guiControl.clearList();
-                                    
-                                    /* Now rebuild the list of users */
-                                    for(int ind = 0; ind < users.length; ind++) {
-                                        guiControl.addUser(users[ind]);
-                                    }
                                 } else if(command[1].equals("greeting")) {
                                     /* Send any greetings as a status message */
                                     guiControl.statusMessage(command[2]);
-                                } else if(command[1].equals("send")) {
-                                    /* Split the send command, get the user and the message */
-                                    String param[] = command[2].split(",", 2);
-                                    
-                                    /* Display the user message in the GUI */
-                                    guiControl.userMessage(param[0], param[1]);
                                 } else if(command[1].equals("fail")) {
                                     /* Send the error */
                                     guiControl.statusMessage("Server: " + command[2]);
@@ -317,11 +293,49 @@ public class ServerConnectionThread implements Runnable {
                                     } else {
                                         /* If the user is someone else, they have joined the room, update
                                          * the rooms user list */
+                                        guiControl.getGroupTabControl().addUser(params[0], params[1]);
+                                        guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + params[1] + "\" has joined the room.");
                                     }
+                                } else if(command[1].equals("userlist")) {
+                                    /* split the parameters - room:users */
+                                    String params[] = command[2].split(":");
                                     
+                                    /* Split the users */
+                                    String users[] = params[1].split(",");
+                                    
+                                    /* Reset the user list for the group */
+                                    guiControl.getGroupTabControl().resetUserList(params[0], users);
+                                    
+                                } else if(command[1].equals("quit")) {
+                                    /* split the parameters - room:params */
+                                    String params[] = command[2].split(":");
+                                    
+                                    /* Get the details */
+                                    String details[] = params[1].split(",");
+                                    
+                                    /* Remove the user from the group */
+                                    guiControl.getGroupTabControl().deleteUser(params[0], details[0]);
+                                    guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + details[0] + "\" has quit because \"" + details[1] + "\".");
+                                } else if(command[1].equals("roomsend")) {
+                                    /* Split the params room:user:message */
+                                    String params[] = command[2].split(":", 3);
+                                    
+                                    guiControl.getGroupTabControl().writeUserMessage(params[0], params[1], params[2]);
+                                } else if(command[1].equals("part")) {
+                                    /* Split the params room:user */
+                                    String params[] = command[2].split(":", 2);
+                                    
+                                    /* If the user is me, remove the group */
+                                    if(connectionInfo.getUsername().equals(params[1])) {
+                                        guiControl.getGroupTabControl().removeGroup(params[0]);
+                                    } else {
+                                        /* If the user isn't me, remove the user */
+                                        guiControl.getGroupTabControl().deleteUser(params[0], params[1]);
+                                        guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + params[1] + "\" has left the room.");
+                                    }
                                 } else {
                                     /* Just send any received messages to the textarea for now */
-                                    guiControl.statusMessage(serverMsg[loop]);
+//                                    guiControl.statusMessage(serverMsg[loop]);
                                 }
                             }
                         }
