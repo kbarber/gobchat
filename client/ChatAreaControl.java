@@ -23,11 +23,26 @@ public class ChatAreaControl {
     }
     
     protected synchronized void userMessage(String user, String msg) {
-        chatArea.append("<" + user + "> " + msg + "\n");
+        if(chatArea.getText().length() != 0) {
+            chatArea.append("\n");
+        }
+        
+        chatArea.append("<" + user + "> " + msg);
+        
+        chatArea.setCaretPosition(chatArea.getText().length());
     }
     
     protected synchronized void statusMessage(String msg) {
-        chatArea.append("- " + msg + "\n");
+        if(chatArea.getText().length() != 0) {
+            chatArea.append("\n");
+        }
+        
+        chatArea.append("- " + msg);
+        
+        chatArea.setCaretPosition(chatArea.getText().length());
     }
     
+    protected synchronized void clearTextArea() {
+        chatArea.setText(null);
+    }
 }
