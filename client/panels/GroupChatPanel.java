@@ -6,11 +6,12 @@
 
 package client.panels;
 
+import client.controllers.*;
+import client.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
-import client.*;
 
 /**
  *
