@@ -140,7 +140,8 @@ public class ClientCommand {
              * users in the room */
             
             if(userData.isRoomRegistered(se) != true) {
-                returnError("Room name not registered " + se + ".", sc);
+                returnError("Room name not registered [" + se + "]", sc);
+                Main.consoleOutput("Userlist attempt on a non-registered room [" + se + "]");
                 return;
             }
             
