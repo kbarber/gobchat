@@ -264,7 +264,12 @@ public class MessageBox {
                 obj = xmlDecoder.readObject();
             } catch (NoSuchElementException ex) {
                 Logger.getLogger("sh.bob.gob.shared").log(Level.WARNING, "No such element", ex);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                /* If the XML JavaBean contains no objects */
+                Logger.getLogger("sh.bob.gob.shared").log(Level.WARNING, 
+                    "The protocol stream contains no more objects, was the XML packet malformed?", ex);
             }
+            
             Logger.getLogger("sh.bob.gob.shared").finest("Close the XMLDecoder");
             xmlDecoder.close();
             
