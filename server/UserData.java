@@ -6,8 +6,8 @@
 
 package server;
 
-import java.util.*;
-import java.nio.channels.*;
+import java.nio.channels.SocketChannel;
+import java.util.Hashtable;
 
 /**
  * This class keeps the information regarding users currently logged in
