@@ -18,12 +18,12 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
- * This thread is responsible for connecting to the server, and dealing 
- * with any commands received.
+ * This class is responsible for controlling the connection
+ * thread, and being an interface for all the GUI panels.
  *
  * @author  Ken Barber
  */
-public class ClientConnectionControl extends Thread {
+public class ClientConnectionControl {
     
     /* Pointers to GUIControl and Connection info */
     private ConnectionInfo conInfo;
@@ -66,17 +66,9 @@ public class ClientConnectionControl extends Thread {
      */
     public void serverConnect(String username, String gobserver) {
         
-        if(isAlive()) {
-            System.out.println("The thread is alive, this probably won't work");
-        }
-        
-        System.out.println("Attempt to spawn connection thread");
-        
         /* Set connection info */
         conInfo.setUsername(username);
         conInfo.setServer(gobserver);
-        
-        System.out.println("Now fire up the thread");
         
         /* Start thread */
         try {
@@ -87,7 +79,6 @@ public class ClientConnectionControl extends Thread {
         } catch (Exception e) {
             System.out.println("Failure to start thread: " + e);
         }
-        
     }
     
     /**
