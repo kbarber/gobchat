@@ -1,0 +1,26 @@
+#!/bin/bash
+
+JAVACMD=$JAVA_HOME/bin/java
+SERVJAR=/home/ken/dev/gob-working/gobchat/daemon/server.jar
+LOGDIR=/tmp
+
+if [ ! -f $JAVACMD ] ; then
+    echo "I cannot find java!"
+    exit 1
+fi
+
+if [ ! -f $SERVJAR ] ; then
+    echo "I cannot find server.jar: $SERVJAR"
+    exit 1
+fi
+
+if [ ! -d $LOGDIR ] ; then
+    echo "I cannot find the logging directory: $LOGDIR"
+    exit 1
+fi
+
+LOGFILE=$LOGDIR/gob.log
+
+touch $LOGFILE
+
+( $JAVACMD -jar $SERVJAR > $LOGFILE 2>&1 ) &
