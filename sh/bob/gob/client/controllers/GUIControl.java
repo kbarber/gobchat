@@ -31,6 +31,7 @@ import sh.bob.gob.client.panels.*;
 
 import javax.swing.*;
 import java.util.*;
+import java.awt.*;
 
 /**
  * This class builds the GUI and provides an interface for control.
@@ -44,7 +45,6 @@ public class GUIControl {
     private MsgAreaControl saControl;
     private JTabbedPane tbMain;
     private ControlPanel pControl;
-    private StatusPanel pStatus;
     private GroupChatPanel pLobby;
     private RoomListPanel pRoomList;
     private ClientConnectionControl clientConnectionControl;
@@ -81,14 +81,14 @@ public class GUIControl {
         
         /* Add a control and status panel */
         pControl = new ControlPanel(this, clientConnectionControl, hostname);
-        pStatus = new StatusPanel();
         pRoomList = new RoomListPanel(this, clientConnectionControl);
         
         tbMain.addTab("Control", null, pControl, "For connecting and changing username");
-        tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
+        //tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
                 
         /* Setup both controls for the ChatArea and UserList */
-        saControl = new MsgAreaControl(pStatus.taErrorOutput);
+//        saControl = new MsgAreaControl(pStatus.taErrorOutput);
+        saControl = new MsgAreaControl(pControl.taSystemLog);
         roomListControl = new ListControl(pRoomList.lRooms);
         
         /* Create a new GroupTabControl for creation of groups */
@@ -120,58 +120,39 @@ public class GUIControl {
         
         switch(status) {
             case 1: // Connecting
-                pControl.bConnect.setEnabled(false);
-                pControl.bDisconnect.setEnabled(true);                
-                pControl.lConnectionStatus.setText("Connecting ...");
+                /* Do nothing */
                 
-                /* And disable changing the username field */
-                pControl.tfUserName.setEditable(false);
                 break;
             case 2: // Connected
-                pControl.bConnect.setEnabled(false);
-                pControl.bDisconnect.setEnabled(true);     
-                pControl.lConnectionStatus.setText("Connected");
                 
-                /* Allow renaming of user */
-                pControl.bRename.setEnabled(true);
-                pControl.tfNewUserName.setEditable(true);
+                /* Flip control window */
+                ((CardLayout)pControl.getLayout()).show((Container)pControl, "Rename");
                 
                 /* Add the lobby tab to the tabbed pain */
                 tbMain.addTab("Room List", null, pRoomList, "A list of all open rooms");
                 
                 /* Now open the lobby tab */
-                tbMain.setSelectedIndex(2);
+                tbMain.setSelectedIndex(1);
                 
                 /* Focus on the RoomName TextField */
                 pRoomList.tfRoom.requestFocus();
                 
                 break;
             case 3: // Disconnecting   
-                pControl.bConnect.setEnabled(true);
-                pControl.bDisconnect.setEnabled(false);
-                pControl.lConnectionStatus.setText("Disconnecting ...");
                 break;
             case 4: // Disconnected
-                pControl.bConnect.setEnabled(true);
-                pControl.bDisconnect.setEnabled(false);
-                
-                /* Disallow renaming of user */
-                pControl.bRename.setEnabled(false);
-                pControl.tfNewUserName.setEditable(false);
-                
-                /* Set a reason for disconnection */
-                pControl.lConnectionStatus.setText("Disconnected: " + reason);
-                
-                /* And enable the username field */
-                pControl.tfUserName.setEditable(true);
-                
-                /* And now request focus if this tab is open */
-                pControl.tfUserName.requestFocusInWindow();
                 
                 /* Now remove the lobby */
-                if (tbMain.getTabCount() > 2) {
-                    tbMain.removeTabAt(2);
+                if (tbMain.getTabCount() > 1) {
+                    tbMain.removeTabAt(1);
                 }
+                
+                /* Flip control window */
+                ((CardLayout)pControl.getLayout()).show((Container)pControl, "Logon");
+                
+               /* And now request focus if this tab is open */
+                pControl.tfUserName.requestFocusInWindow();
+                
                 break;
         }
     }
