@@ -243,6 +243,9 @@ public class ConnectionControl {
                                 } else if(command[0].equals("roomsend")) { /* The command is send */
                                     /* Send the user message */
                                     clientCommand.clientRoomsend(command[1], sc);
+                                } else if(command[0].equals("usersend")) { /* The command is usersend */
+                                    /* Send the user message */
+                                    clientCommand.clientUsersend(command[1], sc);
                                 } else if(command[0].equals("join")) { /* The command is join */
                                     /* Join the desired room */
                                     clientCommand.clientJoin(command[1], sc);
