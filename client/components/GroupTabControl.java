@@ -62,7 +62,14 @@ public class GroupTabControl {
             
             /* Add the group to the JTabbedPane */
             tbMain.addTab(name, gcp);
+            
+            /* Now focus on the tab */
+            tbMain.setSelectedComponent(gcp);
         }
+    }
+
+    public void addUser(String room, String name) {
+        ((GroupChatPanel)grouptabs.get(room)).addUser(name);
     }
     
     /**
@@ -104,8 +111,51 @@ public class GroupTabControl {
      * Check weither the group exists already.
      *
      * @param name The name of the group to check
+     * @return A boolean, true if the group exists, false if not
      */
     public boolean isGroup(String name) {
         return grouptabs.containsKey(name);
+    }
+    
+    /**
+     * Resets the user list for a group.
+     *
+     * @param room Name of room
+     * @param users Array of users
+     */
+    public void resetUserList(String room, String users[]) {
+        ((GroupChatPanel)grouptabs.get(room)).resetUserList(users);
+    }
+
+    /**
+     * Deletes the user from a room.
+     *
+     * @param room Name of room
+     * @param name Name of user
+     */
+    public void deleteUser(String room, String name) {
+        ((GroupChatPanel)grouptabs.get(room)).deleteUser(name);
+        
+    }
+    
+    /**
+     * Write a user message to the room panel
+     *
+     * @param room Name of room
+     * @param name Name of the user
+     * @param message Message to be sent
+     */
+    public void writeUserMessage(String room, String name, String message) {
+        ((GroupChatPanel)grouptabs.get(room)).writeUserMessage(name,message);
+    }
+    
+    /**
+     * Write a status message to the room panel.
+     *
+     * @param room Name of room
+     * @param message Message to be sent
+     */
+    public void writeStatusMessage(String room, String message) {
+        ((GroupChatPanel)grouptabs.get(room)).writeStatusMessage(message);
     }
 }
