@@ -8,7 +8,7 @@ SERVJAR=/usr/share/java/gob/server.jar
 LOGDIR=/var/log/gob
 
 if [ ! -f $JAVACMD ] ; then
-    echo "I cannot find java!"
+    echo "I cannot find java! Is JAVA_HOME set? Try setting it in the SysV script."
     exit 1
 fi
 
