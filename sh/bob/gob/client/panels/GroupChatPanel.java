@@ -202,6 +202,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         try {
             rs.setMessage(tfSendPrep.getText());
         } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid message: " + ex);
             return;
         }
         ccControl.sendData(rs);
