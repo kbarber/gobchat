@@ -1,10 +1,10 @@
 Summary: A simple java based client/server chat program
 Name: gobchat
-Version: 0.1
+Version: 0.2
 Release: 1
 License: GNU
 Group: Application/Internet
-Source: gobchat-0.1.tar.gz
+Source: gobchat-0.2.tar.gz
 URL: http://sourceforge.net/projects/gob
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
