@@ -136,6 +136,14 @@ public class ClientConnectionControl extends Thread {
             
         } catch (Exception e) {
             guiControl.printError("Problem connecting: " + e);
+            
+            /* Put a message in the text area, stating we have disconnected */
+            guiControl.statusMessage("Disconnected");
+        
+            /* Update the control tab, we are disconnected */
+            guiControl.setConnected(guiControl.DISCONNECTED);
+            
+            return;
         }
         
         /* Now signup */
@@ -143,6 +151,14 @@ public class ClientConnectionControl extends Thread {
             channel.write(encoder.encode(CharBuffer.wrap("signup:" + conInfo.getUsername() + "\n")));
         } catch (Exception e) {
             guiControl.printError("Problem with signup: " + e);
+            
+            /* Put a message in the text area, stating we have disconnected */
+            guiControl.statusMessage("Disconnected");
+        
+            /* Update the control tab, we are disconnected */
+            guiControl.setConnected(guiControl.DISCONNECTED);
+            
+            return;
         }
         
         /* Now register this channel with a selector */
@@ -151,6 +167,14 @@ public class ClientConnectionControl extends Thread {
             channel.register(selector, SelectionKey.OP_READ);
         } catch (Exception e) {
             guiControl.printError("Problem with registering selector: " + e);
+            
+            /* Put a message in the text area, stating we have disconnected */
+            guiControl.statusMessage("Disconnected");
+        
+            /* Update the control tab, we are disconnected */
+            guiControl.setConnected(guiControl.DISCONNECTED);
+            
+            return;
         }
 
         /* Inform the user we are connected */

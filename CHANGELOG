@@ -17,6 +17,7 @@ Features
 
 Bugs
 
-* KB - 686534
+* KB - Fixed handling of failed connections, signups and selector registration. 
+Now you don't need to hit disconnect yourself (see sf #686534).
 
 ============
