@@ -82,6 +82,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
         taMsgHistory.setBackground(new java.awt.Color(255, 255, 252));
         taMsgHistory.setEditable(false);
+        taMsgHistory.setFont(new java.awt.Font("SansSerif", 0, 12));
         taMsgHistory.setLineWrap(true);
         taMsgHistory.setWrapStyleWord(true);
         taMsgHistory.setBorder(null);
@@ -93,6 +94,9 @@ public class PrivChatPanel extends javax.swing.JPanel {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
+        bClose.setFont(new java.awt.Font("SansSerif", 1, 12));
+        bClose.setText("Part");
+        bClose.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
         bClose.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 bCloseMouseClicked(evt);
@@ -109,6 +113,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        tfSendPrep.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfSendPrep.setToolTipText("Type your message here");
         tfSendPrep.setFocusCycleRoot(true);
         tfSendPrep.setAutoscrolls(false);
@@ -120,7 +125,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
 
         jPanel1.add(tfSendPrep, java.awt.BorderLayout.CENTER);
 
-        bSendText.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bSendText.setFont(new java.awt.Font("SansSerif", 1, 12));
         bSendText.setText("SEND");
         bSendText.setToolTipText("Click here to send");
         bSendText.setActionCommand("jButton1");

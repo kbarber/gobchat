@@ -78,6 +78,7 @@ public class RoomListPanel extends javax.swing.JPanel {
         spRooms.setBackground(new java.awt.Color(204, 204, 255));
         spRooms.setBorder(null);
         lRooms.setBackground(new java.awt.Color(255, 255, 252));
+        lRooms.setFont(new java.awt.Font("SansSerif", 1, 12));
         lRooms.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lRooms.setToolTipText("List of rooms");
         lRooms.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -92,13 +93,13 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        lRoom.setFont(new java.awt.Font("SansSerif", 1, 14));
+        lRoom.setFont(new java.awt.Font("SansSerif", 1, 12));
         lRoom.setText("ROOM:");
         jPanel1.add(lRoom, java.awt.BorderLayout.WEST);
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
-        tfRoom.setFont(new java.awt.Font("Dialog", 0, 14));
+        tfRoom.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfRoom.setToolTipText("Selected room name");
         tfRoom.setFocusCycleRoot(true);
         tfRoom.setMinimumSize(new java.awt.Dimension(100, 20));
@@ -117,7 +118,7 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         jPanel1.add(jPanel3, java.awt.BorderLayout.CENTER);
 
-        bJoinRoom.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bJoinRoom.setFont(new java.awt.Font("SansSerif", 1, 12));
         bJoinRoom.setText("JOIN/CREATE");
         bJoinRoom.setToolTipText("Click here to join the chosen room, or create a new room with the name specified");
         bJoinRoom.setActionCommand("jButton1");
@@ -130,7 +131,7 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         jPanel2.add(bJoinRoom);
 
-        bRefreshList.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bRefreshList.setFont(new java.awt.Font("SansSerif", 1, 12));
         bRefreshList.setText("REFRESH");
         bRefreshList.setToolTipText("Click here to refresh the room list");
         bRefreshList.setActionCommand("jButton1");

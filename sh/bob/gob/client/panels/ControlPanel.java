@@ -114,7 +114,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.CardLayout());
 
-        pLogon.setLayout(new java.awt.GridBagLayout());
+        pLogon.setLayout(null);
 
         bConnect.setFont(new java.awt.Font("SansSerif", 1, 14));
         bConnect.setText("CONNECT");
@@ -130,22 +130,19 @@ public class ControlPanel extends javax.swing.JPanel {
             }
         });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.ipadx = 18;
-        gridBagConstraints.ipady = 7;
-        gridBagConstraints.insets = new java.awt.Insets(59, 210, 64, 8);
-        pLogon.add(bConnect, gridBagConstraints);
+        pLogon.add(bConnect);
+        bConnect.setBounds(210, 230, 90, 30);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         tfGobServer.setEditable(false);
+        tfGobServer.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfGobServer.setText("localhost");
         jPanel3.add(tfGobServer, java.awt.BorderLayout.SOUTH);
 
+        tfUserName.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfUserName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfUserNameKeyPressed(evt);
@@ -162,9 +159,11 @@ public class ControlPanel extends javax.swing.JPanel {
 
         jPanel18.setLayout(new java.awt.BorderLayout());
 
+        lUserName.setFont(new java.awt.Font("SansSerif", 1, 12));
         lUserName.setText("USERNAME");
         jPanel18.add(lUserName, java.awt.BorderLayout.NORTH);
 
+        lHost.setFont(new java.awt.Font("SansSerif", 1, 12));
         lHost.setText("HOST");
         jPanel18.add(lHost, java.awt.BorderLayout.SOUTH);
 
@@ -172,25 +171,16 @@ public class ControlPanel extends javax.swing.JPanel {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.WEST);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.ipadx = 120;
-        gridBagConstraints.ipady = 11;
-        gridBagConstraints.insets = new java.awt.Insets(40, 130, 0, 127);
-        pLogon.add(jPanel1, gridBagConstraints);
+        pLogon.add(jPanel1);
+        jPanel1.setBounds(150, 120, 198, 51);
 
-        lGob.setFont(new java.awt.Font("Century Gothic", 1, 48));
+        lGob.setFont(new java.awt.Font("SansSerif", 1, 48));
         lGob.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lGob.setText("GOB");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(20, 200, 0, 0);
-        pLogon.add(lGob, gridBagConstraints);
+        pLogon.add(lGob);
+        lGob.setBounds(200, 20, 109, 62);
 
-        add(pLogon, "Logon");
+        add(pLogon, "card3");
 
         pRename.setLayout(new java.awt.BorderLayout());
 
@@ -199,7 +189,7 @@ public class ControlPanel extends javax.swing.JPanel {
         jPanel6.setBorder(new javax.swing.border.TitledBorder("RENAME"));
         jPanel9.setLayout(new java.awt.BorderLayout());
 
-        bRename.setFont(new java.awt.Font("Dialog", 1, 14));
+        bRename.setFont(new java.awt.Font("SansSerif", 1, 12));
         bRename.setText("RENAME");
         bRename.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
         bRename.addActionListener(new java.awt.event.ActionListener() {
@@ -221,7 +211,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         jPanel11.setLayout(new java.awt.BorderLayout());
 
-        tfNewUserName.setFont(new java.awt.Font("Dialog", 0, 14));
+        tfNewUserName.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfNewUserName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfNewUserNameKeyPressed(evt);
@@ -238,7 +228,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         jPanel15.add(jPanel16, java.awt.BorderLayout.EAST);
 
-        lNewUserName.setFont(new java.awt.Font("Dialog", 1, 14));
+        lNewUserName.setFont(new java.awt.Font("SansSerif", 1, 12));
         lNewUserName.setText("NEW USERNAME");
         jPanel15.add(lNewUserName, java.awt.BorderLayout.CENTER);
 
@@ -260,6 +250,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         jPanel8.setBorder(new javax.swing.border.TitledBorder("SYSTEM LOG"));
         taSystemLog.setEditable(false);
+        taSystemLog.setFont(new java.awt.Font("SansSerif", 0, 12));
         taSystemLog.setLineWrap(true);
         spSystemLog.setViewportView(taSystemLog);
 
@@ -269,6 +260,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         bDisconnect.setFont(new java.awt.Font("SansSerif", 1, 14));
         bDisconnect.setText("LOGOFF");
+        bDisconnect.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
         bDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bDisconnectActionPerformed(evt);

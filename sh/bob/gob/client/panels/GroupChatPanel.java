@@ -80,9 +80,10 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spUsers = new javax.swing.JScrollPane();
         lUsers = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
-        lPriv = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         bClose = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         tfSendPrep = new javax.swing.JTextField();
@@ -102,6 +103,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
         taMsgHistory.setBackground(new java.awt.Color(250, 250, 255));
         taMsgHistory.setEditable(false);
+        taMsgHistory.setFont(new java.awt.Font("SansSerif", 0, 12));
         taMsgHistory.setLineWrap(true);
         taMsgHistory.setWrapStyleWord(true);
         taMsgHistory.setBorder(null);
@@ -114,6 +116,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spUsers.setBackground(new java.awt.Color(204, 204, 255));
         spUsers.setMaximumSize(new java.awt.Dimension(40, 32767));
         lUsers.setBackground(new java.awt.Color(250, 250, 250));
+        lUsers.setFont(new java.awt.Font("SansSerif", 1, 12));
         lUsers.setToolTipText("List of users");
         spUsers.setViewportView(lUsers);
 
@@ -123,16 +126,9 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        lPriv.setText("Priv");
-        lPriv.setToolTipText("Click here for a private chat");
-        lPriv.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lPrivMouseClicked(evt);
-            }
-        });
-
-        jPanel2.add(lPriv, java.awt.BorderLayout.EAST);
-
+        bClose.setFont(new java.awt.Font("SansSerif", 1, 12));
+        bClose.setText("Part");
+        bClose.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
         bClose.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 bCloseMouseClicked(evt);
@@ -143,12 +139,26 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.WEST);
 
+        jButton1.setFont(new java.awt.Font("SansSerif", 1, 12));
+        jButton1.setText("Private");
+        jButton1.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lPrivMouseClicked(evt);
+            }
+        });
+
+        jPanel7.add(jButton1);
+
+        jPanel2.add(jPanel7, java.awt.BorderLayout.EAST);
+
         add(jPanel2, java.awt.BorderLayout.NORTH);
 
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        tfSendPrep.setFont(new java.awt.Font("SansSerif", 0, 12));
         tfSendPrep.setToolTipText("Type your message here");
         tfSendPrep.setFocusCycleRoot(true);
         tfSendPrep.setAutoscrolls(false);
@@ -160,7 +170,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
         jPanel1.add(tfSendPrep, java.awt.BorderLayout.CENTER);
 
-        bSendText.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bSendText.setFont(new java.awt.Font("SansSerif", 1, 12));
         bSendText.setText("SEND");
         bSendText.setToolTipText("Click here to send");
         bSendText.setActionCommand("jButton1");
@@ -285,13 +295,14 @@ public class GroupChatPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClose;
     public javax.swing.JButton bSendText;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JLabel lPriv;
+    private javax.swing.JPanel jPanel7;
     public javax.swing.JList lUsers;
     private javax.swing.JScrollPane spMsgHistory;
     private javax.swing.JSplitPane spMsgUsers;
