@@ -39,7 +39,12 @@ public class ExitHandler extends Thread {
     }
     
     public void run() {
-        Logger.getLogger("sh.bob.gob.server").info("Exiting Gob Online Chat");
+        try {
+            Logger.getLogger("sh.bob.gob.server").info("Exiting Gob Online Chat");
+        } catch (ExceptionInInitializerError ex) {
+            /* This event is because the logger has not been setup correctly yet */
+            System.out.println("Exiting Gob Online Chat");
+        }
     }
     
 }

@@ -55,6 +55,12 @@ public final class Main {
     public Main(String configfile) {
         /* First read the configuration file */
         ServerConfiguration sc = ServerConfigurationDAO.read(configfile);
+        
+        /* Check if sc is null */
+        if(sc == null) {
+            System.out.println("Configuration file is invalid.");
+            System.exit(1);
+        }
 
         /* Set up logging */
         prepareLogging(sc.getLogging());
@@ -121,6 +127,13 @@ public final class Main {
         /* Trace method calls or instructions - debugging */
 //        Runtime.getRuntime().traceMethodCalls(true);
 //        Runtime.getRuntime().traceInstructions(true);
+        
+        /* Check weither the argument given is valid */
+        if(args.length == 0) {
+                System.out.println("No configuration file specified.");
+                System.out.println("Usage: java -jar server.jar <configuration file>");
+                System.exit(1);
+        }
         
         /* Register exit handler, deals with terminated process */
         ExitHandler exithandler = new ExitHandler();
