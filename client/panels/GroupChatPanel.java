@@ -10,14 +10,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import client.*;
+
 /**
  *
  * @author  ken
  */
 public class GroupChatPanel extends javax.swing.JPanel {
+
+    private GUIControl guiControl;
+    private ClientConnectionControl ccControl;    
     
     /** Creates new form ChatPanel */
-    public GroupChatPanel() {
+    public GroupChatPanel(GUIControl gui, ClientConnectionControl ccc) {
+        guiControl = gui;
+        ccControl = ccc;
+        
         initComponents();
     }
     
@@ -93,12 +101,22 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
         // Add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            sendMessage();
+        }
+        
     }//GEN-LAST:event_tfSendPrepKeyPressed
 
     private void bSendTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bSendTextMouseClicked
         // Add your handling code here:
+        sendMessage();
+                
     }//GEN-LAST:event_bSendTextMouseClicked
     
+    private void sendMessage() {
+        ccControl.sendMessage(tfSendPrep.getText());
+        tfSendPrep.setText("");
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton bSendText;

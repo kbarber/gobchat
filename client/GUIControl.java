@@ -58,7 +58,7 @@ public class GUIControl {
         
         pControl = new ControlPanel(this, conControl, hostname);
         pStatus = new StatusPanel();
-        pLobby = new GroupChatPanel();
+        pLobby = new GroupChatPanel(this, conControl);
         
         tbMain.addTab("Control", null, pControl, "For connecting and changing username");
         tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
