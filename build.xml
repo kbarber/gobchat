@@ -13,9 +13,12 @@
     <target name="jar" depends="init,compile">
         <jar jarfile="daemon/server.jar" compress="true" basedir="." manifest="manifests/server.mf">
             <include name="sh/bob/gob/server/*.class"/>
+            <include name="sh/bob/gob/shared/**/*.class"/>
         </jar>
-        <jar jarfile="website/client.jar" compress="true" 
-            basedir="." manifest="manifests/client.mf" includes="sh/bob/gob/client/**/*.class"/>
+        <jar jarfile="website/client.jar" compress="true" basedir="." manifest="manifests/client.mf">
+            <include name="sh/bob/gob/client/**/*.class"/>
+            <include name="sh/bob/gob/shared/**/*.class"/>
+        </jar>
     </target>
 
     <target name="all" depends="init,jar,javadoc" description="Build everything.">
@@ -28,7 +31,7 @@
 
     <target name="javadoc" depends="init" description="Javadoc for my API.">
         <mkdir dir="apidoc"/>
-        <javadoc packagenames="sh.bob.gob.server.*,sh.bob.gob.client.*" destdir="apidoc">
+        <javadoc packagenames="sh.bob.gob.server.*,sh.bob.gob.client.*,sh.bob.gob.shared.*" destdir="apidoc">
             <sourcepath>
                 <pathelement location="."/>
             </sourcepath>
