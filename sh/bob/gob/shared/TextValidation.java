@@ -24,10 +24,6 @@ import java.util.regex.Pattern;
  */
 public class TextValidation {
     
-    /** Creates a new instance of TextValidation */
-    public TextValidation() {
-    }
-
     /**
      * Returns true if the user name is valid.
      *
@@ -91,7 +87,7 @@ public class TextValidation {
     /**
      * Returns true if the search string is valid.
      *
-     * @param message Search text to test
+     * @param search Search text to test
      * @return A boolean, true if the search string is valid
      */
     public static void isSearch(java.lang.String search) throws TextInvalidException {

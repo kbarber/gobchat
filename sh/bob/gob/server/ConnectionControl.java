@@ -6,6 +6,8 @@
 
 package sh.bob.gob.server;
 
+import sh.bob.gob.shared.configuration.*;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -27,9 +29,9 @@ import java.util.regex.Pattern;
 public class ConnectionControl {
     
     /**
-     * The port for the server to listen on - this will eventually be set at runtime instead of static. 
+     * The configuration of the server
      */
-    private int serverPort;
+    private ServerConfiguration serverConfiguration;
     
     /** 
      * These are the pointers used for the server networking 
@@ -46,16 +48,18 @@ public class ConnectionControl {
     /** 
      * Creates a new instance of ConnectionControl.
      *
-     * @param serverport The local port to start listening on
+     * @param sconf A ServerConfiguration Bean that specifies the loaded system configuration
      */
-    public ConnectionControl(int serverport) {
+    public ConnectionControl(ServerConfiguration sconf) {
         
         /* 
          * The following code prepares all the necessary objects for 
          * network programming
          */
         
-        serverPort = serverport;
+        serverConfiguration = sconf;
+        
+        int serverPort = sconf.getTCPPort();
         
         /* Prepare a ServerSocketChannel, and register it with a selector */
         listenServerSC = readyServerSocketChannel();
@@ -326,7 +330,7 @@ public class ConnectionControl {
             ssc.configureBlocking(false);
             
             /* Now bind this ServerSocketChannel to the correct TCP port */
-            ssc.socket().bind(new InetSocketAddress(serverPort));        
+            ssc.socket().bind(new InetSocketAddress(serverConfiguration.getTCPPort()));        
         } catch(IOException e) {
             /* Alert a problem on the terminal and close the program */
             Main.programExit("Unable to ready ServerSocketChannel: " + e);

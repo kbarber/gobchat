@@ -108,24 +108,26 @@ public class ClientCommand {
         if(userData.isSocketRegistered(sc) == false) {
             /*The user never logged in, just log to console */
             Main.consoleOutput("An unknown user from: " + sc.socket().getInetAddress().toString() + " quit: " + pa);            
-        }
+            
+        } else {
         
-        /* Get the username using the given SocketChannel */
-        String userName = userData.getName(sc);
+            /* Get the username using the given SocketChannel */
+            String userName = userData.getName(sc);
 
-        //Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+            //Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
             
-        /* Let every room know that the user has quit */
-        messageUserRooms("quit", userName, userName + "," + pa);
+            /* Let every room know that the user has quit */
+            messageUserRooms("quit", userName, userName + "," + pa);
            
-        /* We need to part every room */
-        partAllRooms(userName);
+            /* We need to part every room */
+            partAllRooms(userName);
             
-        /* Remove the users entry from the UserData object */
-        userData.deleteName(sc);
+            /* Remove the users entry from the UserData object */
+            userData.deleteName(sc);
             
-        /* Notify on the terminal that the user has quit */
-        Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+            /* Notify on the terminal that the user has quit */
+            Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+        }
             
         try {
             /* Close the channel */

@@ -6,6 +6,8 @@
 
 package sh.bob.gob.server;
 
+import sh.bob.gob.shared.configuration.*;
+
 import java.util.Date;
 
 /**
@@ -27,13 +29,15 @@ public final class Main {
      * Creates a new instance of Main. This creates a new instance of ConnectionControl
      * which contains the main body of code.
      */
-    public Main(int serverport) {
+    public Main(String configfile) {
         /* Inform of startup on console */
         consoleOutput("Connection control: Starting");
         
+        ServerConfiguration sc = ServerConfigurationDAO.read(configfile);
+        
         /* Create a new ConnectionControl */
         try {
-            cc = new ConnectionControl(serverport);
+            cc = new ConnectionControl(sc);
         } catch (Exception ex) {
             /* Catch all exceptions */
             consoleOutput("Connection control: Exception: " + ex);
@@ -84,7 +88,7 @@ public final class Main {
         Runtime.getRuntime().addShutdownHook(exithandler);
                 
         /* Start a new object */
-        new Main(Integer.decode(args[0]).intValue());
+        new Main(args[0]);
     }
     
 }
