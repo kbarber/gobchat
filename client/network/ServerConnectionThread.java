@@ -106,7 +106,7 @@ public class ServerConnectionThread implements Runnable {
         /* The selector for reception of server messages */
         Selector selector = null;
 
-        guiControl.statusMessage("About to create InetAddress");
+        //guiControl.statusMessage("About to create InetAddress");
         
         /* Create an InetAddress */
         InetAddress inetAddress;
@@ -122,7 +122,7 @@ public class ServerConnectionThread implements Runnable {
         }            
             
         
-        guiControl.statusMessage("Created InetSocketAddress");
+        //guiControl.statusMessage("Created InetSocketAddress");
         
         /* Set the IP and port to connect to */
         InetSocketAddress sockAddress = new InetSocketAddress(inetAddress, 6666);
