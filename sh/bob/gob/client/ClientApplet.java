@@ -12,6 +12,7 @@ import sh.bob.gob.client.network.ConnectionInfo;
 import javax.swing.JApplet;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import java.util.logging.*;
 
 
 /**
@@ -51,7 +52,7 @@ public class ClientApplet extends JApplet {
         } catch (Exception e) { /* There are that many exceptions that may occur, I have defaulted */
             System.out.println("Inability to set look and feel: " + e);
         } 
-
+        
         /* Build all NetBeans generated components */
         initComponents();
         
