@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
+ * This is the object responsible for accepting user connections and accepting all user commands.
  *
  * @author  Ken Barber
  */

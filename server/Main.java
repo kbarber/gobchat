@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
+ * Primary class for the Gob server
  *
  * @author  Ken Barber
  */

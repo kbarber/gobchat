@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
+ * This object deals with all client commands.
  *
  * @author  Ken Barber
  */
