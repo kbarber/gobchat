@@ -15,6 +15,7 @@ Gob is a simple Java based client/server chat program.
 %setup
 
 %build
+ant
 
 %install
 
