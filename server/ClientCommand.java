@@ -196,11 +196,17 @@ public class ClientCommand {
             /* Reason doesn't match correct criteria, just clear it */
             returnError("The message you have sent has invalid characters or is too long.", sc);
         } else {
-            /* Send the message to both the sender and originator */
-            message("usersend", userData.getName(sc) + ":" + Commands[0] +
-                ":" + Commands[1], userData.getSocket(Commands[0]));
-            message("usersend", userData.getName(sc) + ":" + Commands[0] +
-                ":" + Commands[1], sc);
+            /* Make sure the user exists */
+            if(userData.isNameRegistered(Commands[0])) {
+                /* Send the message to both the sender and originator */
+                message("usersend", userData.getName(sc) + ":" + Commands[0] +
+                    ":" + Commands[1], userData.getSocket(Commands[0]));
+                message("usersend", userData.getName(sc) + ":" + Commands[0] +
+                    ":" + Commands[1], sc);
+            } else {
+                returnError("The user isn't logged on", sc);
+            };
+            
         }
     }
     

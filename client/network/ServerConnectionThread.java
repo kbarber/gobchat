@@ -280,7 +280,7 @@ public class ServerConnectionThread implements Runnable {
                             /* All server commands have the GOB prefix ... */
                             if(command[0].equals("GOB")) {
                                 /* Just send any received messages to the textarea for now */
-                                guiControl.statusMessage(serverMsg[loop]);
+                                //guiControl.statusMessage(serverMsg[loop]);
                                 if(command[1].equals("signup")) {
                                     /* Add this new user to the userlist */
                                     //guiControl.addUser(command[2]);

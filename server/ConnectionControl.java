@@ -214,7 +214,7 @@ public class ConnectionControl {
                         String lineInputString[] = inputString.split("\n");
 
                         for(int i = 0; i < lineInputString.length; i++) {
-                            Main.consoleOutput("Line index [" + lineInputString[i] + "]");
+                            //Main.consoleOutput("Line index [" + lineInputString[i] + "]");
                             
                             String line = lineInputString[i];
                         
