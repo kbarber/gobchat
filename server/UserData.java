@@ -8,6 +8,7 @@ package server;
 
 import java.nio.channels.SocketChannel;
 import java.util.Hashtable;
+import java.util.Set;
 
 /**
  * This class keeps the information regarding users currently logged in
@@ -164,6 +165,11 @@ public class UserData {
      * @param room Name of the room to delete
      */
     public void deleteRoom(String room) {
+        /* Check if the room exists first */
+        if(isRoomRegistered(room) != true) {
+            return;
+        }
+        
         /* Now remove the references to the room for each user */
         Object[] Names = (Object[])listNames(room);
         for(int i = 0; i < Names.length; i++) {
@@ -197,6 +203,21 @@ public class UserData {
     }
     
     /**
+     * See if a user is a member of a room.
+     *
+     * @param user User to check
+     * @param room Room to check
+     */
+    public boolean isMemberOf(String room, String user) {
+        /* Check if the room exists first */
+        if(isRoomRegistered(room) != true) {
+            return false;
+        }
+        
+        return ((Hashtable)hashRoomNames.get(room)).containsKey(user);
+    }
+    
+    /**
      * Return an array of every username registered.
      */
     public Object[] listNames() {        
@@ -209,6 +230,11 @@ public class UserData {
      * @param room Room to list users
      */
     public Object[] listNames(String room) {
+        /* Check if the room exists first */
+        if(isRoomRegistered(room) != true) {
+            return null;
+        }
+        
         return ((Hashtable)hashRoomNames.get(room)).keySet().toArray();
     }
     
@@ -222,10 +248,17 @@ public class UserData {
     /**
      * Return an array of every SocketChannel in a room.
      *
+     * @return Returns an Array of Sockets or null if the room doesn't exist
      * @param room Room to list from
      */
     public Object[] listSockets(String room) {
-        Object[] Names = ((Hashtable)hashRoomNames.get(room)).keySet().toArray();
+        /* Check if the room exists first */
+        if(isRoomRegistered(room) != true) {
+            return null;
+        }
+        
+        Set RoomSet = ((Hashtable)hashRoomNames.get(room)).keySet();
+        Object[] Names = RoomSet.toArray();
         Object[] Sockets = new Object[Names.length];
         
         for(int i = 0; i < Names.length; i++) {
@@ -237,6 +270,8 @@ public class UserData {
     
     /**
      * Return an array of every room registered
+     *
+     * @return An Array of rooms
      */
     public Object[] listRooms() {
         return (hashRoomNames.keySet()).toArray();
@@ -246,8 +281,15 @@ public class UserData {
      * Return an array of rooms that a particular user has joined
      *
      * @param name Username of interest
+     * @return An Array of rooms or null if the user doesn't exist
      */
     public Object[] listRooms(String name) {
-        return ((Hashtable)hashNameRooms.get(name)).keySet().toArray();
+        /* Check if the user exists first */
+        if(isNameRegistered(name) != true) {
+            return null;
+        }
+        
+        Set KeySet = ((Hashtable)hashNameRooms.get(name)).keySet();
+        return KeySet.toArray();
     }
 }
