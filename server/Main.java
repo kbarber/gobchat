@@ -26,6 +26,9 @@ public final class Main {
      * which contains the main body of code.
      */
     public Main() {
+        /* Inform of startup of console */
+        consoleOutput("Starting Gob Online Chat");
+        
         /* Create a new ConnectionControl */
         cc = new ConnectionControl();
  
