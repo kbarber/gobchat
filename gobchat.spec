@@ -7,7 +7,7 @@ Group: Application/Internet
 Source: gobchat-0.2.tar.gz
 URL: http://sourceforge.net/projects/gob
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-ExclusiveArch: noarch
+BuildArch: noarch
 
 %description
 Gob is a simple Java based client/server chat program.
