@@ -9,16 +9,36 @@ Author: Ken Barber (ken@bob.sh)
 
 This is the Beta release of Gob.
 
-Gob is a chat program that provides a Java chat server and chat client in the form of a Java Applet.
+Gob is a chat program that provides a Java chat server and chat client in the 
+form of a Java Applet.
 
 2. Licensing
 
-Gob is subject to the GNU license, which is available somewhere on the net. If
-your not familiar with this concept, please try the following site:
+Copyright (C) 2003,2004 Ken Barber
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program (see LICENSE); if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+You can also obtain the full license from:
 
 http://www.gnu.org/
+
+On a personal note, it is immoral to copy this software and claim it as your 
+own. The developers of this software have worked hard to produce this program, 
+to give to the public for free use - please do not abuse this trust we have 
+given you.
 
 3. Installation
 
 For installation instructions, see the INSTALL document.
-
