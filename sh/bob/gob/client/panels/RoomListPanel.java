@@ -62,12 +62,18 @@ public class RoomListPanel extends javax.swing.JPanel {
     private void initComponents() {//GEN-BEGIN:initComponents
         spRooms = new javax.swing.JScrollPane();
         lRooms = new javax.swing.JList();
+        jPanel1 = new javax.swing.JPanel();
+        lRoom = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
         tfRoom = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         bJoinRoom = new javax.swing.JButton();
         bRefreshList = new javax.swing.JButton();
-        lRoom = new javax.swing.JLabel();
 
-        setLayout(null);
+        setLayout(new java.awt.BorderLayout());
 
         spRooms.setBackground(new java.awt.Color(204, 204, 255));
         spRooms.setBorder(null);
@@ -82,11 +88,20 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         spRooms.setViewportView(lRooms);
 
-        add(spRooms);
-        spRooms.setBounds(0, 0, 504, 298);
+        add(spRooms, java.awt.BorderLayout.CENTER);
 
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        lRoom.setFont(new java.awt.Font("SansSerif", 1, 14));
+        lRoom.setText("ROOM:");
+        jPanel1.add(lRoom, java.awt.BorderLayout.WEST);
+
+        jPanel3.setLayout(new java.awt.BorderLayout());
+
+        tfRoom.setFont(new java.awt.Font("Dialog", 0, 14));
         tfRoom.setToolTipText("Selected room name");
         tfRoom.setFocusCycleRoot(true);
+        tfRoom.setMinimumSize(new java.awt.Dimension(100, 20));
         tfRoom.setAutoscrolls(false);
         tfRoom.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -94,11 +109,16 @@ public class RoomListPanel extends javax.swing.JPanel {
             }
         });
 
-        add(tfRoom);
-        tfRoom.setBounds(46, 300, 312, 24);
+        jPanel3.add(tfRoom, java.awt.BorderLayout.CENTER);
 
-        bJoinRoom.setFont(new java.awt.Font("Dialog", 0, 12));
-        bJoinRoom.setText("Join/Create");
+        jPanel3.add(jPanel4, java.awt.BorderLayout.NORTH);
+
+        jPanel3.add(jPanel5, java.awt.BorderLayout.SOUTH);
+
+        jPanel1.add(jPanel3, java.awt.BorderLayout.CENTER);
+
+        bJoinRoom.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bJoinRoom.setText("JOIN/CREATE");
         bJoinRoom.setToolTipText("Click here to join the chosen room, or create a new room with the name specified");
         bJoinRoom.setActionCommand("jButton1");
         bJoinRoom.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -108,11 +128,10 @@ public class RoomListPanel extends javax.swing.JPanel {
             }
         });
 
-        add(bJoinRoom);
-        bJoinRoom.setBounds(360, 300, 72, 23);
+        jPanel2.add(bJoinRoom);
 
-        bRefreshList.setFont(new java.awt.Font("Dialog", 0, 12));
-        bRefreshList.setText("Refresh list");
+        bRefreshList.setFont(new java.awt.Font("SansSerif", 1, 14));
+        bRefreshList.setText("REFRESH");
         bRefreshList.setToolTipText("Click here to refresh the room list");
         bRefreshList.setActionCommand("jButton1");
         bRefreshList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -122,12 +141,13 @@ public class RoomListPanel extends javax.swing.JPanel {
             }
         });
 
-        add(bRefreshList);
-        bRefreshList.setBounds(434, 300, 70, 23);
+        jPanel2.add(bRefreshList);
 
-        lRoom.setText("Room:");
-        add(lRoom);
-        lRoom.setBounds(3, 302, 42, 20);
+        jPanel6.add(jPanel2);
+
+        jPanel1.add(jPanel6, java.awt.BorderLayout.EAST);
+
+        add(jPanel1, java.awt.BorderLayout.SOUTH);
 
     }//GEN-END:initComponents
 
@@ -199,6 +219,12 @@ public class RoomListPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton bJoinRoom;
     public javax.swing.JButton bRefreshList;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel lRoom;
     public javax.swing.JList lRooms;
     private javax.swing.JScrollPane spRooms;
