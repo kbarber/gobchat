@@ -46,6 +46,7 @@
         </javadoc>
     </target>
     
+    <!-- this target relies on the program "NullSoft Installer System" -->
     <target name="windowspackage" depends="init,all" description="Build a Windows Installer for the built application.">
         <delete file="dist/Install Gob.exe"/>
         <exec dir="dist/" executable="C:\Program Files\NSIS\makensis.exe">
