@@ -19,9 +19,10 @@ fi
 start() {
     echo -n "Starting gob: "
     if [ ! -f $PIDFILE ] ; then
-        su -c $RUNSERVER $RUSER
+        su - -c "export JAVA_HOME=$JAVA_HOME; $RUNSERVER" $RUSER
         touch $PIDFILE
-        ps axw | grep server.jar | grep -v grep | awk '{print $1}' > $PIDFILE
+        sleep 2
+        ps axw | grep server.jar | grep -v grep | awk '{print $1}' | head -n 1 > $PIDFILE
         echo "OK"
     else
         echo "A pid file $PIDFILE already exists, is the program already running?"
