@@ -25,8 +25,8 @@ mkdir -p $RPM_BUILD_ROOT/var/www/html/gob
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 mkdir -p $RPM_BUILD_ROOT/usr/sbin
 mkdir -p $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
-mkdir -p $RPM_BUILD_ROOT/var/run/gobd
-mkdir -p $RPM_BUILD_ROOT/var/log/gobd
+mkdir -p $RPM_BUILD_ROOT/var/run/gob
+mkdir -p $RPM_BUILD_ROOT/var/log/gob
 
 install -m644 daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
 install -m755 daemon/gobd $RPM_BUILD_ROOT/usr/sbin
@@ -41,17 +41,24 @@ cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 rm -rf $RPM_BUILD_ROOT
 
 %pre
+/usr/sbin/useradd -c "Gob Online Chat User" -M -d / -r -s /bin/bash 
 
 %post
+chown gob:gob /var/run/gob
+chown gob:gob /var/log/gob
 
 %preun
+rm /var/run/gob/*
+rm /var/log/gob/*
 
 %postun
+/usr/sbin/userdel gob
+/usr/sbin/groupdel gob
 
 %files
 %defattr(-,root,root)
-%dir /var/run/gobd
-%dir /var/log/gobd
+%dir /var/run/gob
+%dir /var/log/gob
 /usr/share/java/gob
 /var/www/html/gob
 /usr/share/doc/%{name}-%{version}
