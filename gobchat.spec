@@ -42,18 +42,15 @@ cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
-/usr/sbin/useradd -c "Gob Online Chat User" -M -d / -r -s /bin/bash gob
+%{!?nocap:%pre}
+%{!?nocap:/usr/sbin/groupadd -r gob 2> /dev/null || :}
+%{!?nocap:/usr/sbin/useradd -c "Gob Online Chat User" -g gob -M -d / -r -s /bin/bash gob 2> /dev/null || :}
 
 %post
-chown gob /var/run/gob
-chgrp gob /var/run/gob
-chown gob /var/log/gob
-chgrp gob /var/log/gob
-
-%preun
-
-%postun
+/bin/chown gob /var/run/gob
+/bin/chgrp gob /var/run/gob
+/bin/chown gob /var/log/gob
+/bin/chgrp gob /var/log/gob
 
 %files
 %defattr(-,root,root)
@@ -65,7 +62,3 @@ chgrp gob /var/log/gob
 /etc/rc.d/init.d/gobd
 /usr/sbin/gobd
 /etc/logrotate.d/gob
-
-%changelog
-
-
