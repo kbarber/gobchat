@@ -101,7 +101,7 @@ public class ClientCommand {
             String userName = userData.getName(sc);
 
             //Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
-        
+            
             /* Let every room know that the user has quit */
             messageUserRooms("quit", userName, userName + "," + pa);
             
@@ -166,7 +166,14 @@ public class ClientCommand {
      * Deal with requests for a user message to be sent.
      */
     public void clientRoomsend(String se, SocketChannel sc) {
-        String[] Commands = (Pattern.compile(":")).split(se);
+        String[] Commands = se.split(":", 2);
+                
+        /* Check if the room is actually registered */
+        if(userData.isRoomRegistered(Commands[0]) != true) {
+            returnError("That room isn't registered", sc);
+            return;
+        }
+        
         /* Make sure the message to send is using good characters */
         if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", Commands[1]) == false) {
             /* Reason doesn't match correct criteria, just clear it */
@@ -198,7 +205,7 @@ public class ClientCommand {
      */
     public void clientJoin(String se, SocketChannel sc) {
         /* Make sure the message to send is using good characters */
-        if(Pattern.matches("[a-zA-Z0-9]{0,32}", se) == false) {
+        if(Pattern.matches("[a-zA-Z0-9]{1,32}", se) == false) {
             /* Reason doesn't match correct criteria, just clear it */
             returnError("The room you are requesting has invalid characters or is too long.", sc);
         } else {
@@ -210,6 +217,12 @@ public class ClientCommand {
                 
                 Main.consoleOutput("New room created: " + se);
             };
+            
+            /* Is the user already a member ? */
+            if(userData.isMemberOf(se, userData.getName(sc)) == true) {
+                returnError("Already a member of room \"" + se + "\".", sc);
+                return;
+            }
             
             /* If user isn't already a member, join it */
             Main.consoleOutput("The user: " + userData.getName(sc) + " is trying to join the room: " + se);
@@ -231,6 +244,12 @@ public class ClientCommand {
             returnError("The room you are attempting to part has invalid characters or is too long.", sc);
         } else {
             /* Part a room */
+            
+            /* Does the room exist? */
+            if(userData.isRoomRegistered(se) != true) {
+                returnError("That room isn't registered: " + se, sc);
+                return;
+            }
             
             /* Send a message to everyone in the room */
             messageRoom("part", se, userData.getName(sc));
@@ -287,12 +306,16 @@ public class ClientCommand {
      * format.
      */
     private void message(String type, String msg, SocketChannel sc) {
+        Main.consoleOutput("ClientMessage Type: " + type + " Msg: " + msg);
         try {
             /* Write the message to the SocketChannel */
             sc.write(encoder.encode(CharBuffer.wrap("GOB:" + type + ":" + msg + "\n")));
         } catch (IOException e) {    /* Is the SocketChannel closed? */
-            /* Force a client quit */
-            clientQuit("Error messaging users socket.", sc);
+            /* Log it */
+            Main.consoleOutput("Error messaging users socket, type: " + type + " msg: " + msg);
+            /* Commented out due to an infinite loop, because clientQuit calls this routine */
+//            clientQuit("Error messaging users socket.", sc);
+            
         } 
     }
 
@@ -306,7 +329,6 @@ public class ClientCommand {
         /* Cycle through each SocketChannel, and message each on in turn */
         for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
             message(type + ":" + room, msg, (SocketChannel)socketchannels[loop]);
-            Main.consoleOutput("Type: " + type + " Room: " + room + " Msg: " + msg);
         }
     }
     
@@ -314,13 +336,18 @@ public class ClientCommand {
      * This method will message each room a user belongs to.
      */
     private void messageUserRooms(String type, String username, String msg) {
+        /* Check if username exists */
+        if(userData.isNameRegistered(username) != true) {
+            Main.consoleOutput("Attempt to message all userrooms for a username that doesn't exist");
+            return;
+        }
+        
         /* Obtain a list of all rooms for username */
         Object[] rooms = userData.listRooms(username);
         
         /* Cycle through each room, and message each on in turn */
         for(int loop = 0; loop <= (rooms.length -1); loop++) {
             messageRoom(type, (String)rooms[loop], msg);
-            //Main.consoleOutput("MessageUserRoom - Type: " + type + " Room: " + room + " Msg: " + msg);
         }
     }
 
