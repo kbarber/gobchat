@@ -6,7 +6,7 @@
 #
 # chkconfig: - 99 01
 
-JAVA_HOME=/usr/java/j2sdk1.4.1_01/
+JAVA_HOME=/usr/java/j2sdk1.4.2_02/
 RUNSERVER=/usr/sbin/gobd
 PIDFILE=/var/run/gob/gob.pid
 RUSER=gob
