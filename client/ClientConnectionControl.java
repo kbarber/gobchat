@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
+ * This thread is responsible for connecting to the server, and dealing 
+ * with any commands received.
  *
  * @author  Ken Barber
  */
@@ -154,7 +156,8 @@ public class ClientConnectionControl extends Thread {
         /* Inform the user we are connected */
         guiControl.setConnected(guiControl.CONNECTED);
             
-        /* Todo: Need to have a better means of interrupting, or at least clean up this one */
+        /* Todo: Need to have a better means of interrupting, or at least 
+         * clean up this one */
         
         /* 
          * This loop is responsible for receiving the server messages

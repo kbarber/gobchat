@@ -1,40 +1,117 @@
-Instructions for installation
+---------------
+Gob Online Chat - Installation Instructions
+---------------
 
-If you can obtain an RPM, install that.
+Version: 0.2 beta
+Author: Ken Barber (ken@bob.sh)
 
-rpm -Uvh gobchat-0.1-1.rpm
 
-If your unfortunate enough to be running windows, sorry - this will work, by
-I haven't built any nice wrapper scripts.
+1. System Requirements
 
-On the server you wish to install this program:
+The following platforms have been tested by the author.
 
-1. Download and install Java JRE 1.4.1 or greater. It is available from:
+Intel IA32:
 
-http://java.sun.com/
+RedHat Linux 7.3, 8.0
+Windows 2000, XP
 
-2. The server application can be ran like this:
+Sparc2u:
 
-$JAVA_HOME/bin/java -jar server.jar
+Solaris 8, 9
+
+For all platforms, you will need the following packages:
+
+* Sun Java JRE 1.4.2 or greater (available from java.sun.com)
+
+
+2. Installation
+
+2.1 Linux
+
+Step 1:
+
+Download and install Java JRE 1.4.1 or greater. It is available from:
+
+    http://java.sun.com/
+
+Follow the instructions provided.
+
+Step 2:
+
+Download the Gob RPM from http://sourceforge.net/projects/gob/.
+
+Once you have obtained the Gob RPM, you can install it:
+
+    rpm -Uvh gobchat-0.1-1.rpm
+
+Step 3:
+
+Modify the HTML file index.html, and specify your server hostname.
+
+Step 4: 
+
+Start the application using the system V script:
+
+    /etc/init.d/gob start
+
+Step 5:
+
+Setup your OS to start Gob when the system starts. Its best to use a provided 
+utility for this, on RedHat the utility:
+
+    /usr/sbin/ntsysv
+
+Can be used.
+
+Step 6:
+
+Access the website using the proper hostname. The client should work, and
+you should be able to connect to the server.
+
+
+2.2 Unix (and like flavours)
+
+Step 1:
+
+Download and install Java JRE 1.4.1 or greater. It is available from:
+
+    http://java.sun.com/
+
+Follow the instructions provided.
+
+Step 2:
+
+Download the Gob tarball from http://sourceforge.net/projects/gob/.
+
+Install the tarball into a safe place.
+
+Step 3:
+
+Place the contents of the 'website' directory somewhere in the servers
+web server content area.
+
+You will need to configure the web server to point to this directory.
+
+Step 4:
+
+Modify the HTML file index.html, and specify your server name.
+
+Step 5:
+
+The server application can be run like this:
+
+    $JAVA_HOME/bin/java -jar server.jar
 
 By default, the server dislays error messages on the console. This should 
 probably be piped to a text for or some such.
 
-3. Place the contents of the 'website' directory somewhere in the servers
-web server content area.
+I suggest creating an init script for this.
 
-4. Modify the HTML file index.html, and specify your server name.
+Step 6:
 
-5. Access the website using the proper hostname. The client should work, and
+Access the website using the proper hostname. The client should work, and
 you should be able to connect to the server.
 
+2.3 Windows
 
-TROUBLESHOOTING
-
-* Remember that you must install the server and client on the same system. As
-these are not signed Applets, there is no support for connecting to alternate
-servers other than the one which served the Applet.
-
-* The client and server must use Java JRE 1.4.1 or greater. Ensure these versions
-are correct on all systems concerned.
-
+Sorry, no instructions yet. Email me if you need some help.
