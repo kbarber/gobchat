@@ -8,17 +8,19 @@ Date:
 
 Features
 
-* KB - Java Applet is now started in its own HTML window (see sf #688359)
-* KB - The lobby is now removed while disconnected (see sf #686540)
-* KB - 686542
-* KB - 688367
-* KB - 688363
-* KB - Gob now loads "panels" for each tab, allowing a more modular configuration.
-* KB - Documentation Updated
+* Java Applet is now started in its own HTML window (see sf #688359)
+* The lobby is now removed while disconnected (see sf #686540)
+* 686542
+* 688367
+* 688363
+* Gob now loads "panels" for each tab, allowing a more modular configuration.
+* There is a seperate Runnable class for the thread. 
+* Documentation Updated.
 
 Bugs
 
-* KB - Fixed handling of failed connections, signups and selector registration. 
+* Fixed handling of failed connections, signups and selector registration. 
 Now you don't need to hit disconnect yourself (see sf #686534).
+* Will now handle the characters []\ in a message.
 
 ============
