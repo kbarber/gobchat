@@ -193,7 +193,7 @@ public class ControlPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bConnectMouseClicked
 
     private void bDisconnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bDisconnectMouseClicked
-        serverDisconnect();
+        serverDisconnect("Hit disconnect button");
     }//GEN-LAST:event_bDisconnectMouseClicked
 
     private void tfUserNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUserNameKeyPressed
@@ -214,9 +214,11 @@ public class ControlPanel extends javax.swing.JPanel {
     
     /**
      * Code to interrupt the connection thread.
+     *
+     * @param message Disconnection message to pass to server
      */
-    private void serverDisconnect() {
-        conControl.serverDisconnect();
+    private void serverDisconnect(String message) {
+        conControl.serverDisconnect(message);
     }
     
     /**

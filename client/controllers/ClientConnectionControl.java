@@ -86,8 +86,11 @@ public class ClientConnectionControl {
     
     /**
      * Code to interrupt the connection thread.
+     *
+     * @param message Disconnection message to pass to server
      */
-    public void serverDisconnect() {
+    public void serverDisconnect(String message) {
+        scThread.sendCommand("quit:" + message);
         scThread.setInterrupt();
         threadInstance.interrupt();
     }

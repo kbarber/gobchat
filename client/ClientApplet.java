@@ -5,15 +5,13 @@
 
 package client;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import client.controllers.ClientConnectionControl;
+import client.controllers.GUIControl;
+import client.network.ConnectionInfo;
+import javax.swing.JApplet;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
-import client.controllers.*;
-import client.components.*;
-import client.panels.*;
-import client.network.*;
-import client.*;
 
 /**
  * This is the main JApplet class. From this all other classes are initiated.
@@ -21,7 +19,7 @@ import client.*;
  *
  * @author  Ken Barber
  */
-public class ClientApplet extends javax.swing.JApplet {
+public class ClientApplet extends JApplet {
     
     private ConnectionInfo conInfo;
     private ClientConnectionControl conControl;
@@ -83,6 +81,13 @@ public class ClientApplet extends javax.swing.JApplet {
         conControl = new ClientConnectionControl(guiControl, conInfo);
         
         guiControl.displayGUI(conControl);
+    }
+    
+    /**
+     * If the applet is closed, disconnect from the server.
+     */
+    public void destroy() {
+        conControl.serverDisconnect("Applet closed");
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
