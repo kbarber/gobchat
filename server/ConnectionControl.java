@@ -79,8 +79,13 @@ public class ConnectionControl {
                 /* Wait until network activity is detected on any attached sockets */
                 selectResponse = listenSelector.select(500);
             } catch(IOException e) {
-                /* Log problems to the terminal */
-                Main.programExit("Problem with select: " + e);
+                if(e.getMessage().equals("Interrupted system call")) {
+                    /* This is usually a Ctrl-C */
+                    Main.programExit("Program Interrupted");
+                } else {
+                    /* Log problems to the terminal */
+                    Main.programExit("Problem with select: " + e);
+                }
             }
             
             /* If the selectResponse is greater than 0, than the selector has detected
