@@ -1,5 +1,6 @@
-/var/log/gob/output.log {
+/var/log/gob/gobchat.log {
     missingok
+    create 644 gob gob
     postrotate
         /etc/init.d/gobd restart || true    endscript
 }
