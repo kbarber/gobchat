@@ -61,8 +61,8 @@ public final class Main {
     protected static void programExit(String message) {
         consoleOutput("Clean Program Exit: " + message);
         
-        /* Exit with a non zero */
-        System.exit(1);
+        /* Exit with a zero */
+        System.exit(0);
     }
     
     /**
@@ -73,7 +73,16 @@ public final class Main {
     public static void main(String[] args) {
         /* Inform of startup on console */
         consoleOutput("Starting Gob Online Chat on port " + args[0]);
+
+        /* Trace method calls or instructions - debugging */
+//        Runtime.getRuntime().traceMethodCalls(true);
+//        Runtime.getRuntime().traceInstructions(true);
         
+        /* Register exit handler, deals with terminated process */
+        ExitHandler exithandler = new ExitHandler();
+        Runtime.getRuntime().addShutdownHook(exithandler);
+                
+        /* Start a new object */
         new Main(Integer.decode(args[0]).intValue());
     }
     
