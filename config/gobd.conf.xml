@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.2" class="java.beans.XMLDecoder"> 
+ <object class="sh.bob.gob.shared.configuration.ServerConfiguration"> 
+  <void property="TCPPort"> 
+   <short>6666</short> 
+  </void> 
+  <void property="version"> 
+   <string>0.3</string> 
+  </void> 
+ </object> 
+</java> 
