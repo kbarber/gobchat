@@ -28,6 +28,13 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/doc/%{name}-${version}
 mkdir -p $RPM_BUILD_ROOT/var/run/gobd
 mkdir -p $RPM_BUILD_ROOT/var/log/gobd
 
+cp $RPM_SOURCE_ROOT/daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
+cp $RPM_SOURCE_ROOT/daemon/gobd $RPM_BUILD_ROOT/usr/sbin
+cp $RPM_SOURCE_ROOT/daemon/linux-sysv.sh $RPM_BUILD_ROOT/etc/rc.d/init.d/gobd
+cp $RPM_SOURCE_ROOT/website/* $RPM_BUILD_ROOT/var/www/html/gob
+cp $RPM_SOURCE_ROOT/INSTALL $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
+cp $RPM_SOURCE_ROOT/README $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
+cp -r $RPM_SOURCE_ROOT/apidoc $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
 
 %clean
 
