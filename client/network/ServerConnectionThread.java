@@ -58,11 +58,11 @@ public class ServerConnectionThread implements Runnable {
     }
     
     /**
-     * Send a message to the server.
+     * Send a command to the server.
      *
-     * @param message Message to send
+     * @param command Command to send
      */
-    public void sendMessage(String message) {
+    public void sendCommand(String command) {
         // This is the character encoding parts required
         Charset charset = Charset.forName("ISO-8859-1");
         CharsetDecoder decoder = charset.newDecoder();
@@ -73,9 +73,10 @@ public class ServerConnectionThread implements Runnable {
         CharBuffer readCharBuffer = CharBuffer.allocate(1024);
         
         try {
-            channel.write(encoder.encode(CharBuffer.wrap("send:" + message + "\n")));
+            channel.write(encoder.encode(CharBuffer.wrap(command + "\n")));
+            //guiControl.printError("sent command: " + command);
         } catch(Exception e) {
-            guiControl.printError("Problem with sending message: " + e);
+            guiControl.printError("Problem with sending command: " + e);
         }
     }
     
@@ -298,6 +299,26 @@ public class ServerConnectionThread implements Runnable {
                                 } else if(command[1].equals("fail")) {
                                     /* Send the error */
                                     guiControl.statusMessage("Server: " + command[2]);
+                                } else if(command[1].equals("roomlist")) {
+                                    /* Load the list control with the list of rooms */
+                                    
+                                    /* Split the list, and put it in an array (or compat. format) */
+                                    String rooms[] = command[2].split(",");
+                                    
+                                    /* Load the array into the list control in the Room List tab */
+                                    guiControl.setRoomList(rooms);
+                                } else if(command[1].equals("join")) {
+                                    /* split the parameters - room:user */
+                                    String params[] = command[2].split(":");
+                                    
+                                    if(params[1].equals(connectionInfo.getUsername())) {
+                                        /* If the user is us, we have joined a room, create a new group panel */
+                                        
+                                    } else {
+                                        /* If the user is someone else, they have joined the room, update
+                                         * the rooms user list */
+                                    }
+                                    
                                 } else {
                                     /* Just send any received messages to the textarea for now */
                                     guiControl.statusMessage(serverMsg[loop]);
@@ -329,7 +350,7 @@ public class ServerConnectionThread implements Runnable {
         }
         
         /* Put a message in the text area, stating we have disconnected */
-        guiControl.statusMessage("Disconnected");
+        guiControl.statusMessage("Disconnected\n");
         
         /* Update the control tab, we are disconnected */
         guiControl.setConnected(guiControl.DISCONNECTED, "User disconnected");
