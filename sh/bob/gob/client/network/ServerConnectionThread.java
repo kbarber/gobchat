@@ -267,11 +267,20 @@ public class ServerConnectionThread implements Runnable {
                             String objectShortName = objectName.replaceAll("sh.bob.gob.shared.communication.","");
                        
                             if(objectShortName.equals("SignOn")) {
-                                /* Add this new user to the userlist */
-                                //guiControl.addUser(command[2]);
+                                /* This should only occur if the signon has failed */
+                                SignOn signOnDB = (SignOn)dataBean;
+                                
+                                if(signOnDB.getError() != null) {
+                                    /* There was a signon error ... bail out 
+                                     * No need to signoff, we aren't signed in */
+                                    guiControl.statusMessage(signOnDB.getError());
                                     
-                                /* Print a status message */
-                                guiControl.statusMessage("New user \"" + ((SignOn)dataBean).getUserName() + "\"");
+                                    setInterrupt();
+                                    break;
+                                } else {
+                                    /* Print a status message */
+                                    guiControl.statusMessage("New user \"" + ((SignOn)dataBean).getUserName() + "\"");
+                                }
                             } else if(objectShortName.equals("ServerMessage")) {
                                 /* Send any greetings as a status message */
                                 guiControl.statusMessage(((ServerMessage)dataBean).getMessage());
