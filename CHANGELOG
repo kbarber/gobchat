@@ -9,7 +9,7 @@ Date:
 Features
 
 * A progress bar is now presented while the applet is loading
-* Re-arrange Package Name under sh.bob.gob  (see sf #830410)
+* Re-arranged Package Name under sh.bob.gob  (see sf #830410)
 * Common Regex Libs 830411
 * Server Configuration File 830828
 * Debugging and Logging Runtime Configuration 830832
