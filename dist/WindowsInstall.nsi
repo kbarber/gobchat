@@ -32,38 +32,17 @@ UninstPage instfiles
 ;--------------------------------
 
 ; The stuff to install
-Section "Gob Online Chat (required)"
-
+Section "Gob Online Chat Core"
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "..\config\gobd.conf.xml"
-  File "..\daemon\GobServerWin.exe"
-  File "..\daemon\server.jar"
   File "..\doc\LICENSE"
   File "..\doc\LICENSE.JavaService.txt"
   File "..\doc\README"
   File "..\doc\CHANGELOG"
 
-  Call GetWebRoot
-  Pop $R0
-
-  CreateDirectory $R0\gob
-  SetOutPath $R0\gob
-  File "..\website\index.html"
-  File "..\website\gobapplet.html"
-  File "..\website\client.jar"
-
-  CreateDirectory $INSTDIR\log
-
-  ;File /r "..\daemon"
-  ;File /r "..\config"
-  ;File /r "..\doc"
-  ;File /r "..\log"
-  ;File /r "..\website"
-  
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\GobOnlineChat "Install_Dir" "$INSTDIR"
   
@@ -80,6 +59,36 @@ Section "Gob Online Chat (required)"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GobOnlineChat" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
 
+  CreateDirectory "$SMPROGRAMS\Gob Online Chat"
+  CreateShortCut "$SMPROGRAMS\Gob Online Chat\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+
+SectionEnd
+
+Section "Client"
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  
+  File "..\client\app.jar"
+
+  ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$R1" "JavaHome"
+  StrCpy $R0 "$R0\bin\javaw.exe"
+
+  CreateShortCut "$SMPROGRAMS\Gob Online Chat\Gob Online Chat Client.lnk" "$R0" '-jar "C:\Program Files\Gob Online Chat\app.jar"'
+
+SectionEnd
+
+Section "Server"
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  
+  File "..\config\gobd.conf.xml"
+  File "..\daemon\GobServerWin.exe"
+  File "..\daemon\server.jar"
+
+  CreateDirectory $INSTDIR\log
+
   ; Register service
 
   Call GetJRE
@@ -90,17 +99,22 @@ Section "Gob Online Chat (required)"
   SetOutPath '$GOBROOT'
   ExecWait 'GobServerWin -install "Gob Online Chat Server" $R0 -Djava.class.path=server.jar -start sh.bob.gob.server.Main -params gobd.conf.xml -err log\serviceerr.log -current $GOBROOT'
   Exec 'sc start "Gob Online Chat Server"'
-  
+
 SectionEnd
 
-; Optional section (can be disabled by the user)
-Section "Start Menu Shortcuts"
+Section "Web Based Client"
+  Call GetWebRoot
+  Pop $R0
 
-  CreateDirectory "$SMPROGRAMS\Gob Online Chat"
-  CreateShortCut "$SMPROGRAMS\Gob Online Chat\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateDirectory $R0\gob
+  SetOutPath $R0\gob
+  File "..\website\index.html"
+  File "..\website\gobapplet.html"
+  File "..\website\client.jar"
+
   SetOutPath "$SMPROGRAMS\Gob Online Chat"
   File "../dist/Gob Online Chat.url"
-  
+
 SectionEnd
 
 ;--------------------------------
