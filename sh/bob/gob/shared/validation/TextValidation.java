@@ -65,8 +65,23 @@ public class TextValidation {
         /* Messages shouldn't be 0 characters. Lets save bandwidth and not permit
          * them */
         
-        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,512}", message) == false)
-            throw new TextInvalidException("Invalid characters in message");
+        /* If the message is larger than 512 characters - disallow it */
+        
+        if(message.length() > 512)
+            throw new TextInvalidException("Message is too long");
+
+        /* If the message is smaller than 1 character - disallow it */
+        
+        if(message.length() < 1)
+            throw new TextInvalidException("Message cannot be empty");
+
+        /* If the message only contains spaces, tabs, line feeds or carriage returns - disallow it */
+
+        if(Pattern.matches("[ \t\n\r]{1,512}", message))
+            throw new TextInvalidException("Message cannot just contain whitespace");
+        
+//        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,512}", message) == false)
+//            throw new TextInvalidException("Invalid characters in message");
     }
 
     /**
