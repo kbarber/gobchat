@@ -224,7 +224,6 @@ public class ClientConnectionControl extends Thread {
                                     guiControl.deleteUser(params[0]);
                                 } else if(command[1].equals("list")) {
                                     String tempString = command[2];
-                                    tempString = tempString.substring(0, tempString.length() -1);
                                     String users[] = tempString.split(",");
                                     guiControl.clearList();
                                     

@@ -125,7 +125,10 @@ public class ClientCommand {
              * string */
             String list = new String();
             for(int loop = 0; loop <= (users.length -1); loop++) {
-                list = list + users[loop] + ",";
+                list = list + users[loop];
+                if(loop < (users.length -1)) {
+                    list = list + ",";
+                }
             }           
         
             /* Return the list of users to the user who requested it */
