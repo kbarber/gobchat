@@ -4,7 +4,7 @@ Gob Online Chat - Change Log
 
 ============
 Version: 0.3
-Date: 2003/12/16
+Date: 2004/01/19
 
 Features
 
@@ -14,8 +14,10 @@ Features
 * Server Configuration File (see sf #830828)
 * Debugging and Logging Runtime Configuration (see sf #830832)
 * XML Protocol Sub-system (see sf #830375)
+* Compressed protocol for speed
+* I dabbled in some colour changes
 
-Bugs
+Bug fixes
 
 * A UserList bug was fixed by the change to XML
 
@@ -35,7 +37,7 @@ Features
 * Documentation Updated.
 * Server port is now set on the command line.
 
-Bugs
+Bug fixes
 
 * Fixed handling of failed connections, signups and selector registration. 
 Now you don't need to hit disconnect yourself (see sf #686534).
