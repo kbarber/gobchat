@@ -146,7 +146,9 @@ public class GUIControl {
                 pControl.tfUserName.requestFocusInWindow();
                 
                 /* Now remove the lobby */
-                tbMain.removeTabAt(2);
+                if (tbMain.getTabCount() > 2) {
+                    tbMain.removeTabAt(2);
+                }
                 break;
         }
     }

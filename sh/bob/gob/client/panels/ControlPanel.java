@@ -12,6 +12,7 @@ import java.awt.event.*;
 
 import sh.bob.gob.client.controllers.*;
 import sh.bob.gob.client.*;
+import sh.bob.gob.shared.communication.*;
 
 
 /**
@@ -232,7 +233,20 @@ public class ControlPanel extends javax.swing.JPanel {
      * @param name New username
      */
     private void renameUser() {
-        conControl.sendCommand("rename:" + tfNewUserName.getText());
+        //conControl.sendCommand("rename:" + tfNewUserName.getText());
+        NameChange nc = null;
+        try {
+            nc = new NameChange (
+                conControl.getConnectionInfo().getUsername(), 
+                tfNewUserName.getText()
+                );
+        } catch (Exception ex) {
+            System.out.println("Aargh: " + ex);
+            return;
+        }
+
+        
+        conControl.sendData (nc);
         tfNewUserName.setText("");
     }
     

@@ -9,6 +9,8 @@ package sh.bob.gob.client.panels;
 import sh.bob.gob.client.controllers.*;
 import sh.bob.gob.client.*;
 import sh.bob.gob.client.components.*;
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.validation.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -156,7 +158,21 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
     private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
         // Add your handling code here:
-        ccControl.sendCommand("part:" + groupName);
+        RoomPart rp = new RoomPart();
+        try {
+            rp.setRoomName(groupName);
+            rp.setUserName(ccControl.getConnectionInfo().getUsername());
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid group name or username to close: " + ex);
+        }
+        ccControl.sendData(rp);
+        
+        RoomList rl = new RoomList();
+        try {
+            rl.setFilter("*");
+        } catch (TextInvalidException ex) {
+        }
+        ccControl.sendData(rl);
     }//GEN-LAST:event_bCloseMouseClicked
 
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
@@ -175,7 +191,20 @@ public class GroupChatPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bSendTextMouseClicked
     
     private void sendMessage() {
-        ccControl.sendCommand("roomsend:" + groupName + ":" + tfSendPrep.getText());
+        RoomSend rs = new RoomSend();
+        try {
+            rs.setRoomName(groupName);
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid group name: " + ex);
+            return;
+        }
+        
+        try {
+            rs.setMessage(tfSendPrep.getText());
+        } catch (TextInvalidException ex) {
+            return;
+        }
+        ccControl.sendData(rs);
         tfSendPrep.setText("");
         tfSendPrep.requestFocus();
     }

@@ -99,7 +99,15 @@ public final class Main {
         /* Start a new object */
         new Main(args[0]);
     }
-    
+
+    /**
+     * This function prepares all logging for the application.
+     * <p>
+     * We prepare both the server and shared logging facilities for output to
+     * a file.
+     * <p>
+     * @param logconf A Logging bean containing the log output configuration.
+     */
     private void prepareLogging(Logging logconf) {
         
         FileHandler fh = null;
@@ -114,10 +122,15 @@ public final class Main {
         /* Set the formatter */
         fh.setFormatter(new SimpleFormatter());
         
-        /* Create a logger and add the FileHandler */
-        Logger logger = Logger.getLogger("sh.bob.gob.server");
-        logger.setLevel(Level.parse(logconf.getLogLevel()));
-        logger.addHandler(fh);
+        /* Create the loggers and add the FileHandler.
+         */
+        Logger serverlogger = Logger.getLogger("sh.bob.gob.server");
+        serverlogger.setLevel(Level.parse(logconf.getLogLevel()));
+        serverlogger.addHandler(fh);
+        
+        Logger sharedlogger = Logger.getLogger("sh.bob.gob.shared");
+        sharedlogger.setLevel(Level.parse(logconf.getLogLevel()));
+        sharedlogger.addHandler(fh);
     }
     
 }

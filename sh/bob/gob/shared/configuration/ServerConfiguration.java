@@ -25,6 +25,9 @@ public class ServerConfiguration extends Object implements java.io.Serializable 
     /** Holds value of property logging. */
     private Logging logging;
     
+    /** Holds value of property network. */
+    private Network network;
+    
     /** Creates new ServerConfiguration */
     public ServerConfiguration() {
         propertySupport = new PropertyChangeSupport( this );
@@ -85,6 +88,22 @@ public class ServerConfiguration extends Object implements java.io.Serializable 
      */
     public void setLogging(Logging logging) {
         this.logging = logging;
+    }
+    
+    /** Getter for property network.
+     * @return Value of property network.
+     *
+     */
+    public Network getNetwork() {
+        return this.network;
+    }
+    
+    /** Setter for property network.
+     * @param network New value of property network.
+     *
+     */
+    public void setNetwork(Network network) {
+        this.network = network;
     }
     
 }

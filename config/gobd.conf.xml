@@ -10,7 +10,23 @@
      <string>/var/log/gob/gobchat.log</string> 
     </void> 
     <void property="logLevel"> 
-     <string>FINER</string> 
+     <string>FINEST</string> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="network"> 
+   <object class="sh.bob.gob.shared.configuration.Network"> 
+    <void property="maxBufferSize"> 
+     <int>8192</int> 
+    </void> 
+    <void property="maxObjectSize"> 
+     <int>1024</int> 
+    </void> 
+    <void property="maxObjectsInBuffer"> 
+     <int>8</int> 
+    </void> 
+    <void property="splitBufferTimeout"> 
+     <long>300</long> 
     </void> 
    </object> 
   </void> 

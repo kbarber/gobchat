@@ -9,6 +9,8 @@ package sh.bob.gob.client.panels;
 import sh.bob.gob.client.controllers.*;
 import sh.bob.gob.client.*;
 import sh.bob.gob.client.components.*;
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.validation.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -118,7 +120,16 @@ public class PrivChatPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bSendTextMouseClicked
     
     private void sendMessage() {
-        ccControl.sendCommand("usersend:" + userName + ":" + tfSendPrep.getText());
+        UserMessage um = new UserMessage();
+        try {
+            um.setMessage(tfSendPrep.getText());
+            um.setUserNameDst(userName);
+            um.setUserNameSrc(ccControl.getConnectionInfo().getUsername());
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid text: " + ex);
+        }
+        ccControl.sendData(um);
+//        ccControl.sendCommand("usersend:" + userName + ":" + tfSendPrep.getText());
         tfSendPrep.setText("");
         tfSendPrep.requestFocus();
     }    

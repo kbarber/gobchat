@@ -17,8 +17,7 @@
         </jar>
         <jar jarfile="website/client.jar" compress="true" basedir="." manifest="manifests/client.mf">
             <include name="sh/bob/gob/client/**/*.class"/>
-            <include name="sh/bob/gob/shared/communication/**/*.class"/>
-            <include name="sh/bob/gob/shared/validation/**/*.class"/>
+            <include name="sh/bob/gob/shared/**/*.class"/>
         </jar>
         <jar jarfile="config/serverconf.jar" compress="true" basedir="." manifest="manifests/serverconf.mf">
             <include name="sh/bob/gob/serverconf/**/*.class"/>

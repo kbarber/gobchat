@@ -6,6 +6,8 @@
 
 package sh.bob.gob.client.network;
 
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.configuration.*;
 import sh.bob.gob.client.controllers.*;
 import sh.bob.gob.client.*;
 
@@ -17,6 +19,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.regex.*;
+import java.beans.*;
 
 /**
  * This class is a thread class intended to connect to the Gob server and 
@@ -32,6 +35,10 @@ public class ServerConnectionThread implements Runnable {
     /* The channel that we will use for connecting */
     private SocketChannel channel;
     
+    private MessageBox mbox;
+    
+    private SplitBuffer splitBuffer;
+        
     /* The interrupt state */
     private boolean interruptState;    
     
@@ -39,8 +46,19 @@ public class ServerConnectionThread implements Runnable {
     public ServerConnectionThread(GUIControl gc, ConnectionInfo ci) {
         guiControl = gc;
         connectionInfo = ci;
+
+        splitBuffer = new SplitBuffer();
+        splitBuffer.setSplitBuffer(null);
+        
+        Network nw = new Network();
+        nw.setMaxBufferSize(8092);
+        nw.setMaxObjectSize(1024);
+        nw.setMaxObjectsInBuffer(8);
+        nw.setSplitBufferTimeout(300);
+        
+        mbox = new MessageBox(nw);
     }
-    
+                
     /** 
      * Setup the thread to be interrupted.
      */
@@ -58,25 +76,17 @@ public class ServerConnectionThread implements Runnable {
     }
     
     /**
-     * Send a command to the server.
+     * Sends a communication Bean of data to the server.
      *
-     * @param command Command to send
+     * @param obj Bean to send
      */
-    public void sendCommand(String command) {
-        // This is the character encoding parts required
-        Charset charset = Charset.forName("ISO-8859-1");
-        CharsetDecoder decoder = charset.newDecoder();
-        CharsetEncoder encoder = charset.newEncoder();
-        
-        // Allocate buffers for receiving
-        ByteBuffer readBuffer = ByteBuffer.allocateDirect(1024);
-        CharBuffer readCharBuffer = CharBuffer.allocate(1024);
+    public void sendData(Object obj) {
         
         try {
-            channel.write(encoder.encode(CharBuffer.wrap(command + "\n")));
-            //guiControl.statusMessage("sent command: " + command);
-        } catch(Exception e) {
-            guiControl.statusMessage("Problem with sending command: " + e);
+            mbox.sendData(channel, obj);
+        } catch (IOException ex) {
+            /* Disconnect the channel ... */
+            guiControl.statusMessage("Problem with sending command: " + ex);
         }
     }
     
@@ -138,6 +148,7 @@ public class ServerConnectionThread implements Runnable {
             channel.configureBlocking(false);
             
             channel.connect(sockAddress);
+            
 
             for(int loop = 0; loop < 30; loop++) {
                 
@@ -157,18 +168,20 @@ public class ServerConnectionThread implements Runnable {
             
             return;
         }
-        
-        /* Now signup */
+
+        SignOn so = null;
         try {
-            channel.write(encoder.encode(CharBuffer.wrap("signup:" + connectionInfo.getUsername() + "\n")));
-        } catch (Exception e) {
-            guiControl.statusMessage("Problem with signup: " + e);
-            
+            so = new SignOn (
+                connectionInfo.getUsername()
+                );
+        } catch (Exception ex) {
+            System.out.println("Aargh: " + ex);
+
             /* Update the control tab, we are disconnected */
             guiControl.setConnected(guiControl.DISCONNECTED, "Problem signing up");
-            
-            return;
+
         }
+        sendData (so);        
         
         /* Now register this channel with a selector */
         try {
@@ -230,160 +243,135 @@ public class ServerConnectionThread implements Runnable {
                         if(!socketchannel.isConnected()) {
                             guiControl.statusMessage("Socket not connected");
                         }
-                            
-                        /* Read in the buffer */
+                        
+                        Object databean[] = null;
+                        
+                        /* Read any pending data into a buffer */
                         try {
-                            if(socketchannel.read(readBuffer) == -1) {
-                                /*
-                                 * Deregister the socketchannel if end-of-stream.
-                                 * Do something which makes sense for clients.
-                                 */
-                                socketchannel.close();
-                                continue;
-                            }
-                        } catch(Exception e) {
-                            guiControl.statusMessage("Error receiving data on network: " + e);
-                        }
-
-                        readBuffer.flip();
-                        decoder.decode(readBuffer, readCharBuffer,false);
-                        readCharBuffer.flip();
-                                               
-                        String readString = readCharBuffer.toString();
-                            
-                        /* Ensure strings are of reasonable length */
-                        if(readString.length() < 6) {
-                            /* 
-                             * If this happens, the server has sent an invalid command.
-                             * Deal with it better than this!!
-                             */
+                            databean = mbox.receiveData(socketchannel, splitBuffer);
+                        } catch(IOException ex) {
+                            guiControl.statusMessage("Exception when receiving data: " + ex);
                             continue;
                         }
 
-                        /* Remove line-break */
-                        readString = readString.substring(0, readString.length() -1);
-                        
-                        /* Remove carriage-return if there is one */
-                        if(readString.substring(readString.length() -1).equals("\r")) {
-                            readString = readString.substring(0, readString.length() -1);
+                        if(databean == null) {
+                            guiControl.statusMessage("Databean is null");
+                            continue;
                         }
                         
-                        /* Break up commands, because there may be many in the buffer */
-                        String serverMsg[] = readString.split("\n");
+                        splitBuffer = (SplitBuffer)databean[0];
                         
-                        /* Cycle through each server message */
-                        for(int loop = 0; loop < serverMsg.length; loop++) {
-                                                
-                            /* Break up string into command and value */
-                            String command[] = serverMsg[loop].split(":", 3);
-                            
-                            /* All server commands have the GOB prefix ... */
-                            if(command[0].equals("GOB")) {
-                                /* Just send any received messages to the textarea for now */
-                                //guiControl.statusMessage(serverMsg[loop]);
-                                if(command[1].equals("signup")) {
-                                    /* Add this new user to the userlist */
-                                    //guiControl.addUser(command[2]);
+                        for(int i = 1; i < databean.length; i++) {
+                            String objectName = databean[i].getClass().getName();
+                            Object dataBean = databean[i];
+                            String objectShortName = objectName.replaceAll("sh.bob.gob.shared.communication.","");
+                       
+                            if(objectShortName.equals("SignOn")) {
+                                /* Add this new user to the userlist */
+                                //guiControl.addUser(command[2]);
                                     
-                                    /* Print a status message */
-                                    guiControl.statusMessage("New user \"" + command[2] + "\"");
-                                } else if(command[1].equals("greeting")) {
-                                    /* Send any greetings as a status message */
-                                    guiControl.statusMessage(command[2]);
-                                } else if(command[1].equals("fail")) {
-                                    /* Send the error */
-                                    guiControl.statusMessage("Server: " + command[2]);
-                                } else if(command[1].equals("roomlist")) {
-                                    /* Load the list control with the list of rooms */
-                                    
-                                    /* Split the list, and put it in an array (or compat. format) */
-                                    String rooms[] = command[2].split(",");
-                                    
-                                    /* Load the array into the list control in the Room List tab */
-                                    guiControl.setRoomList(rooms);
-                                } else if(command[1].equals("join")) {
-                                    /* split the parameters - room:user */
-                                    String params[] = command[2].split(":");
-                                    
-                                    if(params[1].equals(connectionInfo.getUsername())) {
-                                        /* If the user is us, we have joined a room, create a new group panel */
-                                        guiControl.getGroupTabControl().addGroup(params[0]);
-                                    } else {
-                                        /* If the user is someone else, they have joined the room, update
-                                         * the rooms user list */
-                                        guiControl.getGroupTabControl().addUser(params[0], params[1]);
-                                        guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + params[1] + "\" has joined the room.");
-                                    }
-                                } else if(command[1].equals("userlist")) {
-                                    /* split the parameters - room:users */
-                                    String params[] = command[2].split(":");
-                                    
-                                    /* Split the users */
-                                    String users[] = params[1].split(",");
-                                    
-                                    /* Reset the user list for the group */
-                                    guiControl.getGroupTabControl().resetUserList(params[0], users);
-                                    
-                                } else if(command[1].equals("quit")) {
-                                    /* split the parameters - room:params */
-                                    String params[] = command[2].split(":");
-                                    
-                                    /* Get the details */
-                                    String details[] = params[1].split(",");
-                                    
-                                    /* Remove the user from the group */
-                                    guiControl.getGroupTabControl().deleteUser(params[0], details[0]);
-                                    guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + details[0] + "\" has quit because \"" + details[1] + "\".");
-                                } else if(command[1].equals("roomsend")) {
-                                    /* Split the params room:user:message */
-                                    String params[] = command[2].split(":", 3);
-                                    
-                                    guiControl.getGroupTabControl().writeUserMessage(params[0], params[1], params[2]);
-                                } else if(command[1].equals("usersend")) {
-                                    /* Split the params usersrc:userdst:message */
-                                    String params[] = command[2].split(":", 3);
-                                    
-                                    /* Send the message */
-                                    if(params[0].equals(connectionInfo.getUsername())) {
-                                        if(guiControl.getPrivTabControl().isUser(params[1]) != true) {
-                                            guiControl.getPrivTabControl().addUser(params[1]);
-                                        }
-                                        guiControl.getPrivTabControl().writeUserMessage(params[1], params[0], params[2]);
-                                    } else if(params[1].equals(connectionInfo.getUsername())) {
-                                        if(guiControl.getPrivTabControl().isUser(params[0]) != true) {
-                                            guiControl.getPrivTabControl().addUser(params[0]);
-                                        }
-                                        guiControl.getPrivTabControl().writeUserMessage(params[0], params[0], params[2]);
-                                    }
-                                } else if(command[1].equals("part")) {
-                                    /* Split the params room:user */
-                                    String params[] = command[2].split(":", 2);
-                                    
-                                    /* If the user is me, remove the group */
-                                    if(connectionInfo.getUsername().equals(params[1])) {
-                                        guiControl.getGroupTabControl().removeGroup(params[0]);
-                                    } else {
-                                        /* If the user isn't me, remove the user */
-                                        guiControl.getGroupTabControl().deleteUser(params[0], params[1]);
-                                        guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + params[1] + "\" has left the room.");
-                                    }
-                                } else if(command[1].equals("rename")) {
-                                    /* Split the params oldName:newName */
-                                    String params[] = command[2].split(":", 2);
-                                    
-                                    /* Check if the user is me */
-                                    if(connectionInfo.getUsername().equals(params[0])) {
-                                        guiControl.setUsername(params[1]);
-                                        connectionInfo.setUsername(params[1]);
-                                    }
-                                    
-                                    /* Now change the username in every room */
-                                    guiControl.getGroupTabControl().renameUser(params[0], params[1]);
-                                    
-                                } else {
-                                    /* Just send any received messages to the textarea for now */
-//                                    guiControl.statusMessage(serverMsg[loop]);
+                                /* Print a status message */
+                                guiControl.statusMessage("New user \"" + ((SignOn)dataBean).getUserName() + "\"");
+                            } else if(objectShortName.equals("ServerMessage")) {
+                                /* Send any greetings as a status message */
+                                guiControl.statusMessage(((ServerMessage)dataBean).getMessage());
+                            } else if(objectShortName.equals("RoomList")) {
+                                /* Load the list control with the list of rooms */
+                                  
+                                RoomItem ri[] = ((RoomList)dataBean).getRooms();
+                                String roomlist[] = new String[ri.length];
+                                for(int i2 = 0; i2 < ri.length; i2++) {
+                                    roomlist[i2] = ri[i2].getRoomName();
                                 }
+
+                                /* Load the array into the list control in the Room List tab */
+                                guiControl.setRoomList(roomlist);
+                            } else if(objectShortName.equals("RoomJoin")) {
+                                    
+                                if(((RoomJoin)dataBean).getUserName().equals(connectionInfo.getUsername())) {
+                                    /* If the user is us, we have joined a room, create a new group panel */
+                                    guiControl.getGroupTabControl().addGroup(((RoomJoin)dataBean).getRoomName());
+                                } else {
+                                    /* If the user is someone else, they have joined the room, update
+                                     * the rooms user list */
+                                    guiControl.getGroupTabControl().addUser(((RoomJoin)dataBean).getRoomName(), 
+                                        ((RoomJoin)dataBean).getUserName());
+                                    guiControl.getGroupTabControl().writeStatusMessage(((RoomJoin)dataBean).getRoomName(), "User \"" 
+                                        + ((RoomJoin)dataBean).getUserName() + "\" has joined the room.");
+                                }
+                            } else if(objectShortName.equals("RoomUserList")) {
+                                UserItem ui[] = ((RoomUserList)dataBean).getUsers();
+                                String userlist[] = new String[ui.length];
+                                for(int i2 = 0; i2 < ui.length; i2++) {
+                                    userlist[i2] = ui[i2].getUserName();
+                                }
+                                    
+                                /* Reset the user list for the group */
+                                guiControl.getGroupTabControl().resetUserList(((RoomUserList)dataBean).getRoomName(), userlist);
+                                    
+                            } else if(objectShortName.equals("SignOff")) {
+                                String roomname = ((SignOff)dataBean).getRoomName();
+                                String username = ((SignOff)dataBean).getUserName();
+                                String reason = ((SignOff)dataBean).getMessage();
+                                
+                                /* Remove the user from the group */
+                                guiControl.getGroupTabControl().deleteUser(roomname, username);
+                                guiControl.getGroupTabControl().writeStatusMessage(roomname, "User \"" + username + "\" has quit because \"" + reason + "\".");
+                            } else if(objectShortName.equals("RoomSend")) {
+                                /* Split the params room:user:message */
+                                String user = ((RoomSend)dataBean).getUserName();
+                                String room = ((RoomSend)dataBean).getRoomName();
+                                String message = ((RoomSend)dataBean).getMessage();
+                                    
+                                guiControl.getGroupTabControl().writeUserMessage(room, user, message);
+                            } else if(objectShortName.equals("UserMessage")) {
+                                /* Split the params usersrc:userdst:message */
+                                String usersrc = ((UserMessage)dataBean).getUserNameSrc();
+                                String userdst = ((UserMessage)dataBean).getUserNameDst();
+                                String message = ((UserMessage)dataBean).getMessage();
+                                    
+                                /* Send the message */
+                                if(usersrc.equals(connectionInfo.getUsername())) {
+                                    if(guiControl.getPrivTabControl().isUser(userdst) != true) {
+                                        guiControl.getPrivTabControl().addUser(userdst);
+                                    }
+                                    guiControl.getPrivTabControl().writeUserMessage(userdst, usersrc, message);
+                                } else if(userdst.equals(connectionInfo.getUsername())) {
+                                    if(guiControl.getPrivTabControl().isUser(usersrc) != true) {
+                                        guiControl.getPrivTabControl().addUser(usersrc);
+                                    }
+                                    guiControl.getPrivTabControl().writeUserMessage(usersrc, usersrc, message);
+                                }
+                            } else if(objectShortName.equals("RoomPart")) {
+                                /* Split the params room:user */
+                                String room = ((RoomPart)dataBean).getRoomName();
+                                String user = ((RoomPart)dataBean).getUserName();
+                                 
+                                /* If the user is me, remove the group */
+                                if(connectionInfo.getUsername().equals(user)) {
+                                    guiControl.getGroupTabControl().removeGroup(room);
+                                } else {
+                                    /* If the user isn't me, remove the user */
+                                    guiControl.getGroupTabControl().deleteUser(room, user);
+                                    guiControl.getGroupTabControl().writeStatusMessage(room, "User \"" + user + "\" has left the room.");
+                                }
+                            } else if(objectShortName.equals("NameChange")) {
+                                /* Split the params oldName:newName */
+                                String oldname = ((NameChange)dataBean).getUserNameOld();
+                                String newname = ((NameChange)dataBean).getUserNameNew();
+                                   
+                                /* Check if the user is me */
+                                if(connectionInfo.getUsername().equals(oldname)) {
+                                    guiControl.setUsername(newname);
+                                    connectionInfo.setUsername(newname);
+                                }
+                                    
+                                /* Now change the username in every room */
+                                guiControl.getGroupTabControl().renameUser(oldname, newname);
+                                    
+                            } else {
+                                /* Just send any received messages to the textarea for now */
+//                                    guiControl.statusMessage(serverMsg[loop]);
                             }
                         }
                     }
@@ -394,7 +382,9 @@ public class ServerConnectionThread implements Runnable {
         /* Attempt to close the connection, wait till it is closed */
         try {
             selector.close();
+//            xmlEncoder.close();
             channel.close();
+            
             
             /* Inform the user we are disconnecting */
             guiControl.setConnected(guiControl.DISCONNECTING);

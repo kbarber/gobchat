@@ -7,7 +7,10 @@
 package sh.bob.gob.server;
 
 import sh.bob.gob.shared.configuration.*;
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.validation.*;
 
+import java.beans.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -46,6 +49,11 @@ public class ConnectionControl {
     private UserData userData;
     private ClientCommand clientCommand;
     
+    /**
+     * Message box for XML communication.
+     */
+    private MessageBox mbox;
+    
     /** 
      * Creates a new instance of ConnectionControl.
      *
@@ -77,7 +85,11 @@ public class ConnectionControl {
         
         /* Create new instances of the UserData and ClientCommand objects */
         userData = new UserData();
-        clientCommand = new ClientCommand(userData);
+        
+        /* Create a new MessageBox for XML comms */
+        mbox = new MessageBox(sconf.getNetwork());
+        
+        clientCommand = new ClientCommand(userData, mbox);
         
         /* 
          * This is the main networking loop, it will continue looping forever
@@ -129,9 +141,21 @@ public class ConnectionControl {
                         SocketChannel sc = readySocketChannel((ServerSocketChannel)key.channel());
 
                         /* Give GOB greeting */
+                        Logger.getLogger("sh.bob.gob.server").finest("Sending welcome message");
                         try {
                             /* Send the message */
-                            sc.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
+                            ServerMessage sm = new ServerMessage();
+                            try {
+                                sm = new ServerMessage (
+                                    "Welcome to the server!"
+                                    );
+                            } catch (Exception ex) {
+                                Logger.getLogger("sh.bob.gob.server").severe("Invalid server message");
+                                
+                                Main.programExit("Invalid server message");
+                            }
+                            
+                            mbox.sendData(sc, sm);
                             
                             /* Log new connection */
                             Logger.getLogger("sh.bob.gob.server").fine("New connection from: " + sc.socket().getInetAddress().toString());
@@ -148,12 +172,11 @@ public class ConnectionControl {
                                 Main.programExit("I am unable to close a socket that couldn\'t be written to in the first place: " + ne);
                             }
                         }
-
+                        
+                        userData.setSplitBuffer(sc, new SplitBuffer());
+                        
+                        System.out.print("Finished acceptable\n");
                     } else if (key.isReadable()) {  /* Someone has sent a command */
-                            
-                        /* Reset all buffers */
-                        inputByteBuffer.clear();                        
-                        inputCharBuffer.clear();
                             
                         /* Get the SocketChannel assocaited with this Key */
                         SocketChannel sc = (SocketChannel)key.channel();
@@ -174,12 +197,13 @@ public class ConnectionControl {
                             continue;
                         }
                             
-                        // readResult used for socketchannel read.
-                        int readResult = 0;
+                        Object databean[] = null;
                         
                         /* Read any pending data into a buffer */
                         try {
-                            readResult = sc.read(inputByteBuffer);
+                            Logger.getLogger("sh.bob.gob.server").finest("Attempting to receive data on network");
+                            databean = mbox.receiveData(sc, userData.getSplitBuffer(sc));
+                            Logger.getLogger("sh.bob.gob.server").finest("Succeeded in receiving data");
                         } catch(IOException e) {
                             /* Output any problems to the terminal */
                             Logger.getLogger("sh.bob.gob.server").warning("Error receiving data on network: " + e);
@@ -194,120 +218,82 @@ public class ConnectionControl {
                             /* Next SelectedKey */
                             continue;
                         }
+                        
+                        if(databean == null) {
+                            Logger.getLogger("sh.bob.gob.server").finest("Null databean");
+                            SignOff so = new SignOff();
+                            try {
+                                so.setMessage("Client forcefully disconnected");
+                            } catch (TextInvalidException ex) {
+                            }
+                            clientCommand.clientQuit(so, sc);
                             
-                        /* See if we have received an end-of-stream */
-                        if(readResult == -1) {
-                            clientCommand.clientQuit("Client forcefully disconnected", sc);
-                                
-                            /* Go the next next pending SelectionKey */
+                            /* DataBean wasn't read properly or end of file */
                             continue;
                         }
-
-                        /* Flip the buffer */
-                        inputByteBuffer.flip();
                         
-                        /* Decode the buffer using the character set specified above */
-                        decoder.decode(inputByteBuffer, inputCharBuffer, false);
-                        
-                        /* Flip the buffer we have justed decoded */
-                        inputCharBuffer.flip();
-                                               
-                        /* Now convert this buffer to a string */
-                        String inputString = inputCharBuffer.toString();
-                        
-                        /* We may have received a couple of commands, break them up first */
-                        String lineInputString[] = inputString.split("\n");
-
-                        for(int i = 0; i < lineInputString.length; i++) {
-                            Logger.getLogger("sh.bob.gob.server").finest("Line index [" + lineInputString[i] + "]");
+                        userData.setSplitBuffer(sc, (SplitBuffer)databean[0]);
                             
-                            String line = lineInputString[i];
+                        Logger.getLogger("sh.bob.gob.server").finest("Length of databean array: " + databean.length);
                         
-                            /* Ensure strings are of reasonable length */
-                            if(line.length() < 6) {
-                                /* Return an error to the user */
-                                clientCommand.returnError("Invalid Command", sc);
+                        /* Cycle through each databean */
+                        for(int i = 1; i < databean.length; i++) {
+                            String objectName = databean[i].getClass().getName();
+                            Object dataBean = databean[i];
+                            String objectShortName = objectName.replaceAll("sh.bob.gob.shared.communication.","");
+                            Logger.getLogger("sh.bob.gob.server").finer("Object Name: " + objectName);
+                            Logger.getLogger("sh.bob.gob.server").finer("Object Short Name: " + objectShortName);
                             
-                                /* Go to the next pending SelectionKey */
-                                continue;
-                            }
-
-                            /* Remove line-break at the end of the String */
-                            if(line.substring(line.length() -1).equals("\n")) {
-                                line = line.substring(0, line.length() -1);
-                            }
-                        
-                            /* Remove carriage-return if there is one from the String */
-                            if(line.substring(line.length() -1).equals("\r")) {
-                                line = line.substring(0, line.length() -1);
-                            }
-                        
-                            /* Break up string into command and value */
-                            String command[] = line.split(":", 2);
-
-                            /* All client commands should be have two parts */
-                            if(command.length == 2) {
-
-                                /* Ensure the command is reasonable, make sure it is
-                                 * alphabetical and between 3 and 15 characters 
-                                 */
-                                if(Pattern.matches("[a-z]{3,15}", command[0]) == false) {
-                                    clientCommand.returnError("Command format incorrect", sc);
-                                    continue;
+                            /* Deal with any commands */
+                            if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
+                                if(objectShortName.equals("RoomList")) { /* The command is roomlist */
+                                    /* Return a list of rooms */
+                                    clientCommand.clientRoomlist((RoomList)dataBean, sc);
+                                } else if(objectShortName.equals("RoomUserList")) { /* The command is list */
+                                    /* Return a list of users */
+                                    clientCommand.clientUserlist((RoomUserList)dataBean, sc);
+                                } else if(objectShortName.equals("RoomSend")) { /* The command is send */
+                                    /* Send the user message */
+                                    clientCommand.clientRoomsend((RoomSend)dataBean, sc);
+                                } else if(objectShortName.equals("UserMessage")) { /* The command is usersend */
+                                    /* Send the user message */
+                                    clientCommand.clientUsersend((UserMessage)dataBean, sc);
+                                } else if(objectShortName.equals("RoomJoin")) { /* The command is join */
+                                    /* Join the desired room */
+                                    clientCommand.clientJoin((RoomJoin)dataBean, sc);
+                                } else if(objectShortName.equals("RoomPart")) {
+                                    /* Part the desired room */
+                                    clientCommand.clientPart((RoomPart)dataBean, sc);
+                                } else if(objectShortName.equals("SignOff")) {
+                                    /* Quit the server */
+                                    clientCommand.clientQuit((SignOff)dataBean, sc);
+                                } else if(objectShortName.equals("NameChange")) {
+                                    /* Rename the user */
+                                    clientCommand.clientRename((NameChange)dataBean, sc);
+                                } else {
+                                    /* Other commands are not recognised, so return an error */
+                                    ServerMessage sm = new ServerMessage();
+                                    try {
+                                        sm.setMessage("Unknown command in this mode");
+                                        mbox.sendData(sc, sm);
+                                    } catch (Exception ex) { };
                                 }
-                            
-                                /* Deal with any commands */
-                                if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
-                                    if(command[0].equals("roomlist")) { /* The command is roomlist */
-                                        /* Return a list of rooms */
-                                        clientCommand.clientRoomlist(command[1], sc);
-                                    } else if(command[0].equals("userlist")) { /* The command is list */
-                                        /* Return a list of users */
-                                        clientCommand.clientUserlist(command[1], sc);
-                                    } else if(command[0].equals("roomsend")) { /* The command is send */
-                                        /* Send the user message */
-                                        clientCommand.clientRoomsend(command[1], sc);
-                                    } else if(command[0].equals("usersend")) { /* The command is usersend */
-                                        /* Send the user message */
-                                        clientCommand.clientUsersend(command[1], sc);
-                                    } else if(command[0].equals("join")) { /* The command is join */
-                                        /* Join the desired room */
-                                        clientCommand.clientJoin(command[1], sc);
-                                    } else if(command[0].equals("part")) {
-                                        /* Part the desired room */
-                                        clientCommand.clientPart(command[1], sc);
-                                    } else if(command[0].equals("quit")) {
-                                        /* Quit the server */
-                                        clientCommand.clientQuit(command[1], sc);
-                                    } else if(command[0].equals("rename")) {
-                                        /* Rename the user */
-                                        clientCommand.clientRename(command[1], sc);
-                                    } else {
-                                        /* Other commands are not recognised, so return an error */
-                                        clientCommand.returnError("Unknown command in this mode", sc);
-                                    }
-                                } else { /* Disconnected mode */
-                                    if(command[0].equals("signup")) { /* The command is a signup */
-                                        /* Signup the user */
-                                        clientCommand.clientSignup(command[1], sc);
+                            } else { /* Disconnected mode */
+                                if(objectShortName.equals("SignOn")) { /* The command is a signup */
+                                    /* Signup the user */
+                                    clientCommand.clientSignup((SignOn)dataBean, sc);
                                         
-                                    } else if(command[0].equals("quit")) { /* The command is quit */
-                                        /* Quit the user */
-                                        clientCommand.clientQuit(command[1], sc);
+                                } else if(objectShortName.equals("SignOff")) { /* The command is quit */
+                                    /* Quit the user */
+                                    clientCommand.clientQuit((SignOff)dataBean, sc);
                                 
-                                    } else {
-                                         /* Other commands are not recognised, so return an error */
-                                        clientCommand.returnError("Unknown command in this mode", sc);
+                                } else {
+                                    /* Other commands are not recognised, so return an error */
+                                    clientCommand.returnError(sc, (DataBean)dataBean, "Unknown command in this mode");
                                 
-                                    }
                                 }
-                                
-                            } else { /* The command did not have 2 parts */
-                                /* Return an error */
-                                clientCommand.returnError("Command format incorrect", sc);
-                                                                
                             }
-                        } /* Line cycling for loop */                       
+                        }
                     } /* If test */
                 } /* While loop */
             } /* If test */
@@ -361,10 +347,14 @@ public class ConnectionControl {
             /* Register this SocketChannel with the selector, requesting that 
              * read operations will be the thing to look for */
             sc.register(listenSelector, SelectionKey.OP_READ);
+        } catch (ClosedChannelException ex) {
+            /* Alert a problem to the logger */
+            Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE,"Unable to ready SocketChannel, because its closed", ex);
         } catch (IOException e) {
             /* Alert a problem on the terminal */
             Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE,"Unable to ready SocketChannel", e);
         }
+ 
         
         /* Return the channel, now accepted and registered to the selector */
         return sc;
@@ -401,3 +391,5 @@ public class ConnectionControl {
     }
     
 }
+
+

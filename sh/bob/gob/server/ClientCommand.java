@@ -7,6 +7,7 @@
 package sh.bob.gob.server;
 
 import sh.bob.gob.shared.validation.*;
+import sh.bob.gob.shared.communication.*;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -32,15 +33,17 @@ public class ClientCommand {
     private Charset charset;
     private CharsetDecoder decoder;
     private CharsetEncoder encoder;
+    private MessageBox mbox;
     
     /** 
      * Creates a new instance of ClientCommand.
      *
      * @param userdata UserData to use for instantiation.
      */
-    public ClientCommand(UserData userdata) {
+    public ClientCommand(UserData userdata, MessageBox mb) {
         /* Keep a local pointer to the user data object */
         userData = userdata;
+        mbox = mb;
 
         /* Setup charset,decoder and encoder for use by networking commands*/
         charset = Charset.forName("ISO-8859-1");
@@ -51,38 +54,44 @@ public class ClientCommand {
     /** 
      * Responsible for the proper signup of new clients. 
      *
-     * @param username Username of client
-     * @param socketchannel SocketChannel of client
+     * @param so SignOn databean
+     * @param sc SocketChannel of client
      */
-    public void clientSignup(String username, SocketChannel socketchannel) {
+    public void clientSignup(SignOn so, SocketChannel sc) {
+        String username = so.getUserName();
+        
         /* Check that the username is valid */
         try {
             TextValidation.isUserName(username);
         } catch(TextInvalidException ex) {
             /* Name is invalid, give error */
-            returnError("Username supplied: " + ex, socketchannel);
+            returnError(sc, so, "Username supplied: " + ex);
             
             /* Notify on terminal */
             Logger.getLogger("sh.bob.gob.server").log(Level.WARNING, "Attempt to sign-in with invalid username " +
-                "(not shown) from: " + socketchannel.socket().getInetAddress().toString(), ex);
+                "(not shown) from: " + sc.socket().getInetAddress().toString(), ex);
             return;
         }
         
         /* See if the user registration is valid */
-        if(userData.insertName(username, socketchannel)) {
+        if(userData.insertName(username, sc)) {
             /* Send a message to all users about the new user */
             /* messageAllExcept("signup", un, sc); */
 
             /* List all users currently logged in */
-            clientRoomlist("*", socketchannel);
+            RoomList rl = new RoomList();
+            try { 
+                rl.setFilter("*");
+            } catch (TextInvalidException ex) {
+            }
+            clientRoomlist(rl, sc);
                 
             /* Notify on the terminal that new user has signed up */
             Logger.getLogger("sh.bob.gob.server").fine("New user signed in: \"" + username + "\"" + 
-                " from " + userData.getHostIP(socketchannel));
+                " from " + userData.getHostIP(sc));
         } else {
             /* Let the user know that there was an error with signup. */
-            returnError("Already registered, or username taken", 
-                socketchannel);
+            returnError(sc, so, "Already registered, or username taken");
 
             /* Notify on the terminal about the new user */
             Logger.getLogger("sh.bob.gob.server").fine("Attempt to sign in with duplicate " +
@@ -94,7 +103,9 @@ public class ClientCommand {
      * This method is responsible for the proper terminate of a user
      * when a quit command is submitted.
      */
-    public void clientQuit(String pa, SocketChannel sc) {
+    public void clientQuit(SignOff so, SocketChannel sc) {
+        
+        String pa = so.getMessage();
         
         /* Make sure the quit reason is ... err ... reasonable */
         try {
@@ -114,7 +125,8 @@ public class ClientCommand {
             String userName = userData.getName(sc);
 
             /* Let every room know that the user has quit */
-            messageUserRooms("quit", userName, userName + "," + pa);
+            so.setSuccess(true);
+            messageUserRooms(userName, so);
            
             /* We need to part every room */
             partAllRooms(userName);
@@ -138,12 +150,14 @@ public class ClientCommand {
     /**
      * Deal with a request to see the list of users.
      */
-    public void clientUserlist(String room, SocketChannel sc) {
+    public void clientUserlist(RoomUserList rul, SocketChannel sc) {
+        
+        String room = rul.getRoomName();
         
         try {
             TextValidation.isRoomName(room);
         } catch (TextInvalidException ex) {
-            returnError("Room name not valid", sc);
+            returnError(sc, rul, "Room name not valid");
             
             return;
         }
@@ -152,7 +166,7 @@ public class ClientCommand {
           users in the room */
             
         if(userData.isRoomRegistered(room) != true) {
-            returnError("Room name not registered [" + room + "]", sc);
+            returnError(sc, rul, "Room name not registered [" + room + "]");
             Logger.getLogger("sh.bob.gob.server").warning("Userlist attempt on a non-registered room [" + room + "]");
             return;
         }
@@ -163,41 +177,49 @@ public class ClientCommand {
 
         /* Parse the array of users, and create a single comma delimited
          * string */
-        String list = new String();
-        for(int loop = 0; loop <= (users.length -1); loop++) {
-            list = list + users[loop];
-            if(loop < (users.length -1)) {
-                list = list + ",";
+        UserItem ui[] = new UserItem[users.length];
+        for(int loop = 0; loop < (users.length); loop++) {
+            try {
+                ui[loop] = new UserItem();
+                ui[loop].setUserName((String)users[loop]);
+            } catch (TextInvalidException ex) {
+                continue;
             }
         }           
+        rul.setUsers(ui);
         
         /* Return the list of users to the user who requested it */
-        message("userlist", room + ":" + list, sc);
+        rul.setSuccess(true);
+        
+        try {
+            mbox.sendData(sc, rul);
+        } catch (IOException ex) {
+        }
     }
     
     /**
      * Deal with requests for a user message to be sent.
      */
-    public void clientRoomsend(String se, SocketChannel sc) {
-        String[] Commands = se.split(":", 2);
+    public void clientRoomsend(RoomSend rs, SocketChannel sc) {
+        String[] Commands = {rs.getRoomName(), rs.getMessage()};
 
         try {
             TextValidation.isRoomName(Commands[0]);
         } catch (TextInvalidException ex) {
-            returnError("That room name is invalid: " + ex, sc);
+            returnError(sc, rs, "That room name is invalid: " + ex);
             return;
         }
 
         try {
-            TextValidation.isMessage(Commands[1]);
+            TextValidation.isMessage(rs.getMessage());
         } catch (TextInvalidException ex) {
-            returnError("That message is invalid: " + ex, sc);
+            returnError(sc, rs, "That message is invalid: " + ex);
             return;
         }
         
         /* Check if the room is actually registered */
         if(userData.isRoomRegistered(Commands[0]) == false) {
-            returnError("That room isn't registered", sc);
+            returnError(sc, rs, "That room isn't registered");
             return;
         }
         
@@ -206,32 +228,37 @@ public class ClientCommand {
             Commands[1] + "]");
         
         /* Send the message to all users */
-        messageRoom("roomsend", Commands[0], userData.getName(sc) + ":" + Commands[1]);
+        try {
+            rs.setUserName(userData.getName(sc));
+        } catch (TextInvalidException ex) {
+        }
+        rs.setSuccess(true);
+        messageRoom(rs.getRoomName(), rs);
     }
     
     /**
      * Send a user message to another user.
      */
-    public void clientUsersend(String se, SocketChannel sc) {
-        String[] Commands = se.split(":", 2);
+    public void clientUsersend(UserMessage um, SocketChannel sc) {
+        String[] Commands = {um.getUserNameDst(), um.getMessage()};
 
         try {
             TextValidation.isUserName(Commands[0]);
         } catch (TextInvalidException ex) {
-            returnError("The username is invalid: " + ex, sc);
+            returnError(sc, um, "The username is invalid: " + ex);
             return;
         }
         
         try {
             TextValidation.isMessage(Commands[1]);
         } catch (TextInvalidException ex) {
-            returnError("The message is invalid: " + ex, sc);
+            returnError(sc, um, "The message is invalid: " + ex);
             return;
         }        
         
         /* Make sure the user exists */
         if(userData.isNameRegistered(Commands[0]) == false) {
-            returnError("The user isn't logged on", sc);
+            returnError(sc, um, "The user isn't logged on");
             return;
         };
         
@@ -240,22 +267,26 @@ public class ClientCommand {
             Commands[1] + "]");
         
         /* Send the message to both the sender and originator */
-        message("usersend", userData.getName(sc) + ":" + Commands[0] +
-            ":" + Commands[1], userData.getSocket(Commands[0]));
-        message("usersend", userData.getName(sc) + ":" + Commands[0] +
-            ":" + Commands[1], sc);
+        um.setSuccess(true);
+        try {
+            mbox.sendData(sc,  um);
+            mbox.sendData(userData.getSocket(um.getUserNameDst()), um);
+        } catch (IOException ex) {
+        }
     }
     
     /**
      * A user has joined a room
      */
-    public void clientJoin(String room, SocketChannel sc) {
+    public void clientJoin(RoomJoin rj, SocketChannel sc) {
+        String room = rj.getRoomName();
+        
         /* Make sure the message to send is using good characters */
         try {
             TextValidation.isRoomName(room);
         } catch (TextInvalidException ex) {
             /* Reason doesn't match correct criteria, just clear it */
-            returnError("The room you are requesting has invalid characters or is too long.", sc);
+            returnError(sc, rj, "The room you are requesting has invalid characters or is too long.");
             return;
         }
         
@@ -271,7 +302,7 @@ public class ClientCommand {
             
         /* Is the user already a member ? */
         if(userData.isMemberOf(room, userData.getName(sc)) == true) {
-            returnError("Already a member of room \"" + room + "\".", sc);
+            returnError(sc, rj, "Already a member of room \"" + room + "\".");
             return;
         }
             
@@ -280,20 +311,24 @@ public class ClientCommand {
         userData.joinRoom(userData.getName(sc), room);
             
         /* Send a message to everyone in the room */
-        messageRoom("join", room, userData.getName(sc));
+        rj.setSuccess(true);
+        messageRoom(room, rj);
+//        messageRoom("join", room, userData.getName(sc));
             
     }
     
     /**
      * A user has left a room
      */
-    public void clientPart(String room, SocketChannel sc) {
+    public void clientPart(RoomPart rp, SocketChannel sc) {
+        String room = rp.getRoomName();
+        
         /* Make sure the message to send is using good characters */
         try {
             TextValidation.isRoomName(room);
         } catch (TextInvalidException ex) {
             /* Reason doesn't match correct criteria, just clear it */
-            returnError("The room you are attempting to part has invalid characters or is too long.", sc);            
+            returnError(sc, rp, "The room you are attempting to part has invalid characters or is too long.");            
             return;
         }
 
@@ -301,7 +336,7 @@ public class ClientCommand {
             
         /* Does the room exist? */
         if(userData.isRoomRegistered(room) != true) {
-            returnError("That room isn't registered: " + room, sc);
+            returnError(sc, rp, "That room isn't registered: " + room);
             return;
         }
         
@@ -309,7 +344,9 @@ public class ClientCommand {
             room + "] by user [" + userData.getName(sc) + "]");
             
         /* Send a message to everyone in the room */
-        messageRoom("part", room, userData.getName(sc));
+        rp.setSuccess(true);
+        messageRoom(room, rp);
+//        messageRoom("part", room, userData.getName(sc));
             
         /* Update the userdata bit */
         userData.partRoom(userData.getName(sc), room);
@@ -324,12 +361,14 @@ public class ClientCommand {
     /**
      * Return a list of rooms
      */
-    public void clientRoomlist(String search, SocketChannel sc) {
+    public void clientRoomlist(RoomList rl, SocketChannel sc) {
+        String search = rl.getFilter();
+        
         /* Make sure the criteria is correct */
         try {
             TextValidation.isSearch(search);
         } catch (TextInvalidException ex) {
-            returnError("Invalid search criteria.",  sc);
+            returnError(sc, rl, "Invalid search criteria.");
             return;
         }
         
@@ -340,18 +379,27 @@ public class ClientCommand {
          * registered rooms */
         Object[] rooms = userData.listRooms();
 
-        /* Parse the array of rooms, and create a single comma delimited
-         * string */
+        /* Parse the array of rooms, and creates an array */
+        RoomItem ri[] = new RoomItem[rooms.length];
         String list = new String();
         for(int loop = 0; loop <= (rooms.length -1); loop++) {
-            list = list + rooms[loop];
-            if(loop < (rooms.length -1)) {
-                list = list + ",";
+            try {
+                ri[loop] = new RoomItem();
+                ri[loop].setRoomName((String)rooms[loop]);
+            } catch (TextInvalidException ex) {
+                continue;
             }
-        }           
+        }
+        
+        rl.setRooms(ri);
+        rl.setSuccess(true);
         
         /* Return the list of users to the user who requested it */
-        message("roomlist", list, sc);
+        try {
+            mbox.sendData(sc, rl);
+        } catch (IOException ex) {
+            Logger.getLogger("sh.bob.gob.server").warning("IOException when returning list");
+        }
         
     }
     
@@ -359,14 +407,16 @@ public class ClientCommand {
      * Rename a user
      *
      */
-    public void clientRename(String name, SocketChannel sc) {
+    public void clientRename(NameChange nc, SocketChannel sc) {
+        String name = nc.getUserNameNew();
+        
         /* Check that the username is valid */
         try {
             TextValidation.isUserName(name);
         } catch (TextInvalidException ex) {
             /* Name is invalid, give error */
-            returnError("I\'m sorry, usernames must be between 3 and 15 " +
-                "characters and only alphanumeric", sc);
+            returnError(sc, nc, "I\'m sorry, usernames must be between 3 and 15 " +
+                "characters and only alphanumeric");
             
             /* Notify on terminal */
             Logger.getLogger("sh.bob.gob.server").warning("Attempt to rename user to invalid username " +
@@ -381,18 +431,23 @@ public class ClientCommand {
         /* See if the user rename is valid */
         if(userData.renameName(oldname, name)) {
             /* Send a message to all users that can see this user about the rename */
-            messageUsersInUserRooms("rename", userData.getName(sc), oldname + ":" + name);
+            nc.setSuccess(true);
+            messageUsersInUserRooms(userData.getName(sc), nc);
             //messageUserRooms("rename", userData.getName(sc), oldname + ":" + se);
                 
             /* Now message the original user */
-            message("rename", oldname + ":" + name, sc);
+            
+            try {
+                mbox.sendData(sc, nc);
+            } catch (IOException ex) {
+            }
 
             /* Notify on the terminal that new user has renamed */
             Logger.getLogger("sh.bob.gob.server").fine("User renamed from \"" + oldname + "\"" + 
                 " to \"" + name + "\"");
         } else {
             /* Let the user know that there was an error with rename. */
-            returnError("Username taken", sc);
+            returnError(sc, nc, "Username taken");
 
             /* Notify on the terminal about the new user */
             Logger.getLogger("sh.bob.gob.server").fine("Attempt to rename to existing username \"" + name + "\" by \"" +
@@ -404,41 +459,35 @@ public class ClientCommand {
     /**
      * This method is generic and will return an error to a user.
      */
-    public void returnError(String err, SocketChannel sc) {
+    public void returnError(SocketChannel sc, DataBean databean, String err) {
         /* Send the error message to the requested SocketChannel */
-        message("fail", err, sc);
-    }
-    
-    /** 
-     * This method will send a message to a SocketChannel in the GOB protocol 
-     * format.
-     */
-    private void message(String type, String msg, SocketChannel sc) {
-        //DEBUG
-        Logger.getLogger("sh.bob.gob.server").finest("ClientMessage Type: " + type + " Msg: " + msg);
+        try {
+            databean.setError(err);
+        } catch (TextInvalidException ex) {
+        }
+        databean.setSuccess(false);
         
         try {
-            /* Write the message to the SocketChannel */
-            sc.write(encoder.encode(CharBuffer.wrap("GOB:" + type + ":" + msg + "\n")));
-        } catch (IOException e) {    /* Is the SocketChannel closed? */
-            /* Log it */
-            Logger.getLogger("sh.bob.gob.server").warning("Error messaging users socket, type: " + type + " msg: " + msg);
-            /* Commented out due to an infinite loop, because clientQuit calls this routine */
-//            clientQuit("Error messaging users socket.", sc);
-            
-        } 
+            mbox.sendData(sc, databean);
+        } catch (IOException ex) {
+        }
+        
     }
-
+    
     /**
      * This method will message everyone in a room.
      */
-    private void messageRoom(String type, String room, String msg) {
+    private void messageRoom(String room, Object databean) {
         /* Obtain a list of all socketChannels in specified room */
         Object[] socketchannels = userData.listSockets(room);
         
         /* Cycle through each SocketChannel, and message each on in turn */
         for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
-            message(type + ":" + room, msg, (SocketChannel)socketchannels[loop]);
+            try {
+                mbox.sendData((SocketChannel)socketchannels[loop], databean);
+            } catch (IOException ex) {
+                continue;
+            }
         }
     }
     
@@ -451,7 +500,7 @@ public class ClientCommand {
      * @param username The username in particular
      * @param msg Message to send
      */
-    private void messageUsersInUserRooms(String type, String username, String msg) {
+    private void messageUsersInUserRooms(String username, Object databean) {
         /* Obtain a list of users rooms */
         Object[] rooms = userData.listRooms(username);
         
@@ -464,7 +513,10 @@ public class ClientCommand {
                 /* Don't send a message to the original user */
                 continue;
             } else {
-                message(type, msg, userData.getSocket((String)users[i]));
+                try {
+                    mbox.sendData(userData.getSocket((String)users[i]), databean);
+                } catch (IOException ex) {
+                }
             }
         }
     }
@@ -472,7 +524,7 @@ public class ClientCommand {
     /**
      * This method will message each room a user belongs to.
      */
-    private void messageUserRooms(String type, String username, String msg) {
+    private void messageUserRooms(String username, Object databean) {
         /* Check if username exists */
         if(userData.isNameRegistered(username) != true) {
             Logger.getLogger("sh.bob.gob.server").warning("Attempt to message all userrooms for a username that doesn't exist");
@@ -484,7 +536,13 @@ public class ClientCommand {
         
         /* Cycle through each room, and message each on in turn */
         for(int loop = 0; loop <= (rooms.length -1); loop++) {
-            messageRoom(type, (String)rooms[loop], msg);
+            try {
+                ((SignOff)databean).setRoomName((String)rooms[loop]);
+            } catch (TextInvalidException ex) {
+                Logger.getLogger("sh.bob.gob.server").warning("Invalid room name in listing");
+                continue;
+            }
+            messageRoom((String)rooms[loop], databean);
         }
     }
 
@@ -493,13 +551,16 @@ public class ClientCommand {
      * This method is an extended form of message. It will notify _all_ signed in
      * users.
      */
-    private void messageAll(String type, String msg) {
+    private void messageAll(String type, Object databean) {
         /* Obtain a list of all SocketChannels */
         Object[] socketchannels = userData.listSockets();
             
         /* Cycle through each SocketChannel, and message each one in turn */
         for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
-            message(type, msg, (SocketChannel)socketchannels[loop]);
+            try {
+                mbox.sendData((SocketChannel)socketchannels[loop], databean);
+            } catch (IOException ex) {
+            }
         }
     }
     
@@ -507,7 +568,7 @@ public class ClientCommand {
      * This methods is the same as a messageAll, yet it skips the specified
      * exception.
      */
-    private void messageAllExcept(String type, String msg, SocketChannel exception) {
+    private void messageAllExcept(SocketChannel exception, Object databean) {
         /* Obtain a list of all SocketChannels */
         Object[] socketchannels = userData.listSockets();
 
@@ -517,7 +578,10 @@ public class ClientCommand {
             if(socketchannels[loop].equals(exception)) {
                 continue;
             } else {
-                message(type, msg, (SocketChannel)socketchannels[loop]);
+                try {
+                    mbox.sendData((SocketChannel)socketchannels[loop], databean);
+                } catch (IOException ex) {
+                }
             }
         }
     }

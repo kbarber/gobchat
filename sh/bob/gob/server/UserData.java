@@ -6,10 +6,11 @@
 
 package sh.bob.gob.server;
 
-import java.nio.channels.SocketChannel;
-import java.util.Hashtable;
-import java.util.Set;
+import sh.bob.gob.shared.communication.*;
+
+import java.nio.channels.*;
 import java.util.logging.*;
+import java.util.*;
 
 /**
  * This class keeps the information regarding users currently logged in
@@ -24,6 +25,8 @@ public class UserData {
     private Hashtable hashNameRooms;
     private Hashtable hashRoomNames;
     
+    private Hashtable hashSocketSplitBuffer;
+    
     /** 
      * Creates a new instance of UserData.
      */
@@ -32,6 +35,7 @@ public class UserData {
         hashSocketName = new Hashtable();
         hashNameRooms = new Hashtable();
         hashRoomNames = new Hashtable();
+        hashSocketSplitBuffer = new Hashtable();
     }
     
     /** 
@@ -48,6 +52,11 @@ public class UserData {
         hashNameSocket.put(name, socket);
         hashSocketName.put(socket, name);
         hashNameRooms.put(name, new Hashtable());
+        
+        /* SplitBuffer setup */
+        SplitBuffer sb = new SplitBuffer();
+        sb.setSplitBuffer(null);
+        hashSocketSplitBuffer.put(socket, sb);
         
         /* Success!! */
         return true;
@@ -130,6 +139,27 @@ public class UserData {
     }
     
     /**
+     * Get the buffer from the previously split packet.
+     *
+     * @param socket Socket to query
+     * @return An array of bytes
+     */
+    public SplitBuffer getSplitBuffer(SocketChannel socket) {
+        return (SplitBuffer)hashSocketSplitBuffer.get(socket);
+    }
+    
+    /**
+     * Set split buffer.
+     *
+     * @param socket Socket to enact set
+     * @param inbuffer An array of bytes to put in the buffer
+     */
+    public void setSplitBuffer(SocketChannel socket, SplitBuffer inbuffer) {
+        inbuffer.setTimeStamp(new Long(new Date().getTime()));
+        hashSocketSplitBuffer.put(socket, inbuffer);
+    }
+    
+    /**
      * Rename the user to something new.
      *
      * @param oldname Old name of user
@@ -167,6 +197,8 @@ public class UserData {
     
     /** 
      * Delete the entry with the username supplied.
+     *
+     * @param name Username to delete
      */
     public void deleteName(String name) {
         /* Now remove the references to this user in each room */
@@ -179,8 +211,11 @@ public class UserData {
         }
         
         hashSocketName.remove(getSocket(name));
+        hashSocketSplitBuffer.remove(hashNameSocket.get(name));
+//        hashSocketSplitBufferTS.remove(hashNameSocket.get(name));
         hashNameSocket.remove(name);     
         hashNameRooms.remove(name);
+        
     }
     
     /** 
@@ -196,6 +231,8 @@ public class UserData {
         hashNameRooms.remove(getName(socket));
         hashNameSocket.remove(getName(socket));
         hashSocketName.remove(socket);
+        hashSocketSplitBuffer.remove(socket);
+//        hashSocketSplitBufferTS.remove(socket);
     }
     
     /**

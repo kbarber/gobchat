@@ -6,12 +6,15 @@
 
 package sh.bob.gob.client.panels;
 
+import sh.bob.gob.client.controllers.*;
+import sh.bob.gob.client.*;
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.validation.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import sh.bob.gob.client.controllers.*;
-import sh.bob.gob.client.*;
 
 /**
  * This panel is used to list the available chat rooms.
@@ -126,15 +129,44 @@ public class RoomListPanel extends javax.swing.JPanel {
 
     private void bRefreshListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bRefreshListMouseClicked
         // Add your handling code here:
-        ccControl.sendCommand("roomlist:*");
+        RoomList rl = new RoomList();
+        try {
+            rl.setFilter("*");
+        } catch (TextInvalidException ex) {
+        }
+        ccControl.sendData(rl);
     }//GEN-LAST:event_bRefreshListMouseClicked
     
     private void joinRoom() {
         /* obtain the currently selected room from tfRoom.getText */
         /* Send a command to the server to join the room */
-        ccControl.sendCommand("join:" + tfRoom.getText());  
-        ccControl.sendCommand("userlist:"+ tfRoom.getText());
-        ccControl.sendCommand("roomlist:*");
+        RoomJoin rj = new RoomJoin();
+        try {
+            rj.setRoomName(tfRoom.getText());
+            rj.setUserName(ccControl.getConnectionInfo().getUsername());
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid room name: " + ex);
+            return;
+        }
+        ccControl.sendData(rj);
+        
+        RoomUserList rul = new RoomUserList();
+        try {
+            rul.setFilter("*");
+            rul.setRoomName(tfRoom.getText());
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid room name: " + ex);
+            return;
+        }
+        ccControl.sendData(rul);
+        
+        RoomList rl = new RoomList();
+        try {
+            rl.setFilter("*");
+        } catch (TextInvalidException ex) {
+        }
+        ccControl.sendData(rl);
+
         tfRoom.setText(null);
     }
     

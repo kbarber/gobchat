@@ -11,9 +11,9 @@ Features
 * A progress bar is now presented while the applet is loading
 * Re-arranged Package Name under sh.bob.gob  (see sf #830410)
 * Created Common Regex Libs and utilised them in ClientCommand (see sf #830411)
-* Server Configuration File 830828
-* Debugging and Logging Runtime Configuration 830832
-* XML Protocol Sub-system 830375
+* Server Configuration File (see sf #830828)
+* Debugging and Logging Runtime Configuration (see sf #830832)
+* XML Protocol Sub-system (see sf #830375)
 * Run as Windows Service 830890
 * Provide MS Windows Installation 830889
 * Room/Priv Activity Notification 830378
@@ -25,7 +25,7 @@ Features
 
 Bugs
 
-*
+* A UserList bug was fixed by the change to XML
 
 ============
 Version: 0.2

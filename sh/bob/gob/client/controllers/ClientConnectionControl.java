@@ -8,6 +8,8 @@ package sh.bob.gob.client.controllers;
 
 import sh.bob.gob.client.network.*;
 import sh.bob.gob.client.controllers.*;
+import sh.bob.gob.shared.communication.*;
+import sh.bob.gob.shared.validation.*;
 
 import javax.swing.*;
 import java.io.*;
@@ -52,13 +54,22 @@ public class ClientConnectionControl {
     }
     
     /**
+     * Sends a communication Bean of data to the server.
+     *
+     * @param obj Bean to send
+     */
+    public void sendData(Object obj) {
+        scThread.sendData(obj);
+    }
+    
+    /**
      * Send a message to the server.
      *
      * @param message Message to send
      */
-    public void sendCommand(String message) {
-        scThread.sendCommand(message);
-    }
+//    public void sendCommand(String message) {
+//        scThread.sendCommand(message);
+//    }
     
     /**
      * Code to spawn a new connect thread, and connect to the server as the username
@@ -90,7 +101,21 @@ public class ClientConnectionControl {
      * @param message Disconnection message to pass to server
      */
     public void serverDisconnect(String message) {
-        scThread.sendCommand("quit:" + message);
+        SignOff so = new SignOff();
+        try {
+            so.setMessage(message);
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid disconnection message: " + ex);
+        }
+        
+        try {
+            so.setUserName(getConnectionInfo().getUsername());
+        } catch (TextInvalidException ex) {
+            guiControl.statusMessage("Invalid username: " + ex);
+        }
+        
+        sendData(so);
+//        scThread.sendCommand("quit:" + message);
         guiControl.getGroupTabControl().removeAllGroups();
         guiControl.getPrivTabControl().removeAllUsers();
         scThread.setInterrupt();
