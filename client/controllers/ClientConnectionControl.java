@@ -91,6 +91,7 @@ public class ClientConnectionControl {
      */
     public void serverDisconnect(String message) {
         scThread.sendCommand("quit:" + message);
+        guiControl.getGroupTabControl().removeAllGroups();
         scThread.setInterrupt();
         threadInstance.interrupt();
     }
