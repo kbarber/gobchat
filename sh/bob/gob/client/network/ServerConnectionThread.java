@@ -113,7 +113,7 @@ public class ServerConnectionThread implements Runnable {
     
     public void run() {
         
-        System.out.println("Starting connection thread.");
+        Logger.getLogger("sh.bob.gob.client").info("Starting connection thread.");
         
         /* Thread is not to be interrupted. */
         interruptState = false;
@@ -290,6 +290,10 @@ public class ServerConnectionThread implements Runnable {
                             String objectName = databean[i].getClass().getName();
                             Object dataBean = databean[i];
                             String objectShortName = objectName.replaceAll("sh.bob.gob.shared.communication.","");
+                            
+                            if(((DataBean)dataBean).getError() != null) {
+                                guiControl.statusMessage(((DataBean)dataBean).getError());
+                            }
                        
                             if(objectShortName.equals("SignOn")) {
                                 /* This should only occur if the signon has failed */
@@ -298,8 +302,6 @@ public class ServerConnectionThread implements Runnable {
                                 if(signOnDB.getError() != null) {
                                     /* There was a signon error ... bail out 
                                      * No need to signoff, we aren't signed in */
-                                    guiControl.statusMessage(signOnDB.getError());
-                                    
                                     setInterrupt();
                                     break;
                                 } else {
@@ -415,6 +417,7 @@ public class ServerConnectionThread implements Runnable {
                                     
                             } else if(objectShortName.equals("Ping")) {
                                 /* Alright, now respond with a ping */
+                                Logger.getLogger("sh.bob.gob.client").info("Ping!");
                                 ((Ping)dataBean).setSuccess(true);
                                 try {
                                     mbox.sendData(socketchannel, dataBean);
