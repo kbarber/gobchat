@@ -129,66 +129,37 @@ Follow the instructions provided.
 
 Step 2:
 
-Download the Gob ZIP file from http://sourceforge.net/projects/gob/.
+Download the Gob Online Chat windows installation file from http://sourceforge.net/projects/gob/.
 
-Install the tarball into a safe place.
+Run the application to install the software. Choose defaults.
 
 Step 3:
 
-Place the contents of the 'website' directory somewhere in the servers
-web server content area. For IIS, this would probably be C:\InetPub\wwwroot.
-
-You will need to configure the web server to point to this directory, if it 
-isn't already.
+Ensure IIS is running, by checking the Services MMC application.
 
 Step 4:
 
-Modify the HTML file index.html, and specify your server name.
+Modify the HTML file index.html, and specify your server name. This file will
+probably be located:
+
+C:\Inetpub\wwwroot\gob\index.html
 
 Step 5:
-
-Create a directory for the server component.
-
-    mkdir C:\Program Files\Gob Online Chat
-
-Step 6:
-
-Copy the following directories from the unpacked ZIP file.
-
-    xcopy config daemon doc log website "C:\Program Files\Gob Online Chat" /E /Q
-
-Now the environment has been prepared.
-
-Step 7:
 
 Modify the file '%GobRoot%\config\gobd.conf.xml' to taste. Ensure the log file location
 is valid and that all settings are correct, or else the daemon may not run.
 
-Step 8:
+Restart the Gob Online Chat Server service to enact the changes.
 
-Edit this script, and ensure the %GobRoot% variable is set correctly. Run the script.
-
-%GobRoot%\daemon\InstallService
-
-The service should have been installed. You can now start the service in 
-the MMC for Services (Start -> All Programs -> Administrative Tools -> Services).
-
-NOTE: The %GobRoot% variable in the InstallService batch file must be set 
-without using spaces in the path. Use ~1 style notation instead. This is a bug
-in JavaService, where it is not double quoting paths with spaces as it should.
-
-For example, instead of:
-
-set GobRoot="C:\Program Files\Gob Online Chat\"
-
-Use:
-
-set GobRoot="C:\progra~1\gobonl~1\"
-
-Silly I know.
-
-Step 9:
+Step 6:
 
 Access the website using the proper hostname. The client should work, and
 you should be able to connect to the server.
 
+You can also use the shortcut provided:
+
+Start -> All Programs -> Gob Online Chat -> Gob Online Chat
+
+Step 7:
+
+Consult the log files to track any problems.
