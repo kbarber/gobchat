@@ -2,7 +2,7 @@
 Gob Online Chat - Installation Instructions
 ---------------
 
-Version: 0.3 alpha
+Version: 0.4 (alpha)
 Author: Ken Barber (ken@bob.sh)
 
 
@@ -15,7 +15,7 @@ Intel IA32:
 RedHat Linux 7.3, 8.0
 Windows 2000, XP
 
-Sparc2u:
+Sparc4u:
 
 Solaris 8, 9
 
@@ -32,7 +32,7 @@ Step 1:
 
 Download and install Java JRE 1.4.1 or greater. It is available from:
 
-    http://java.sun.com/
+    http://www.java.com/
 
 Follow the instructions provided.
 
@@ -43,7 +43,7 @@ Download the Gob RPM from http://sourceforge.net/projects/gob/.
 
 Once you have obtained the Gob RPM, you can install it:
 
-    rpm -Uvh gobchat-0.1-1.rpm
+    rpm -Uvh gobchat-0.4-1.rpm
 
 
 Step 3:
@@ -80,7 +80,7 @@ Step 1:
 
 Download and install Java JRE 1.4.1 or greater. It is available from:
 
-    http://java.sun.com/
+    http://www.java.com/
 
 Follow the instructions provided.
 

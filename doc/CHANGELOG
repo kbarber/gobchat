@@ -3,6 +3,16 @@ Gob Online Chat - Change Log
 ---------------
 
 ============
+Version: 0.4
+Date:
+
+Features
+
+Bug Fixes
+
+* Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
+
+============
 Version: 0.3
 Date: 2004/01/19
 
