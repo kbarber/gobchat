@@ -13,6 +13,7 @@ Features
 * KB - 686542
 * KB - 688367
 * KB - 688363
+* KB - Gob now loads "panels" for each tab, allowing a more modular configuration.
 * KB - Documentation Updated
 
 Bugs
