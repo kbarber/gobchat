@@ -51,7 +51,7 @@ public class ClientApp extends javax.swing.JApplet {
         conInfo = new ConnectionInfo();
         
         /* Initialise guicontrol for the conncetion thread to use */
-        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput);
+        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput, tbMain, tfUserName, tfSendPrep);
                             
     }
     
@@ -86,6 +86,7 @@ public class ClientApp extends javax.swing.JApplet {
         pControl.setLayout(null);
 
         tfUserName.setToolTipText("Type your username here");
+        tfUserName.setFocusCycleRoot(true);
         tfUserName.setAutoscrolls(false);
         tfUserName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -94,7 +95,7 @@ public class ClientApp extends javax.swing.JApplet {
         });
 
         pControl.add(tfUserName);
-        tfUserName.setBounds(80, 10, 180, 20);
+        tfUserName.setBounds(80, 10, 220, 20);
 
         bDisconnect.setText("Disconnect");
         bDisconnect.setToolTipText("Click to disconnect");
@@ -108,7 +109,7 @@ public class ClientApp extends javax.swing.JApplet {
         });
 
         pControl.add(bDisconnect);
-        bDisconnect.setBounds(110, 70, 80, 20);
+        bDisconnect.setBounds(400, 40, 80, 20);
 
         lUserName.setText("Username");
         pControl.add(lUserName);
@@ -125,14 +126,14 @@ public class ClientApp extends javax.swing.JApplet {
         });
 
         pControl.add(bConnect);
-        bConnect.setBounds(10, 70, 80, 20);
+        bConnect.setBounds(400, 10, 80, 20);
 
         lConnectionStatus.setFont(new java.awt.Font("Dialog", 0, 12));
         lConnectionStatus.setText("Disconnected");
         lConnectionStatus.setToolTipText("Status");
         lConnectionStatus.setBorder(new javax.swing.border.EtchedBorder());
         pControl.add(lConnectionStatus);
-        lConnectionStatus.setBounds(10, 100, 450, 20);
+        lConnectionStatus.setBounds(10, 70, 470, 20);
 
         lHost.setText("Host");
         pControl.add(lHost);
@@ -141,7 +142,7 @@ public class ClientApp extends javax.swing.JApplet {
         tfGobServer.setEditable(false);
         tfGobServer.setToolTipText("Host to connect to");
         pControl.add(tfGobServer);
-        tfGobServer.setBounds(80, 40, 180, 19);
+        tfGobServer.setBounds(80, 40, 220, 19);
 
         taErrorOutput.setEditable(false);
         taErrorOutput.setLineWrap(true);
@@ -149,7 +150,7 @@ public class ClientApp extends javax.swing.JApplet {
         spErrorOutput.setViewportView(taErrorOutput);
 
         pControl.add(spErrorOutput);
-        spErrorOutput.setBounds(13, 133, 450, 130);
+        spErrorOutput.setBounds(10, 100, 470, 210);
 
         tbMain.addTab("Control", pControl);
 
@@ -169,6 +170,7 @@ public class ClientApp extends javax.swing.JApplet {
         bSendText.setBounds(426, 290, 34, 20);
 
         tfSendPrep.setToolTipText("Type your message here");
+        tfSendPrep.setFocusCycleRoot(true);
         tfSendPrep.setAutoscrolls(false);
         tfSendPrep.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -274,7 +276,6 @@ public class ClientApp extends javax.swing.JApplet {
      */
     private void serverDisconnect() {
         conControl.setInterrupt();
-        conControl.interrupt();
     }
     
     /**
@@ -290,6 +291,9 @@ public class ClientApp extends javax.swing.JApplet {
             /* Else just default to localhost */
             tfGobServer.setText("localhost");
         }
+        
+        /* Focus on the username textfield */
+        tfUserName.requestFocusInWindow();
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
