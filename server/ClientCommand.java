@@ -52,7 +52,7 @@ public class ClientCommand {
             messageAll("signup", un);
 
             /* Notify on the terminal that new user has signed up */
-            System.out.println(new Date().toString() + ": New user signed in: \"" + un + "\"");
+            Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
         } else {
             /* Let the user know that there was an error with signup. */
             returnError("Already registered, or username taken", sc);
@@ -69,12 +69,12 @@ public class ClientCommand {
     public void clientQuit(String pa, SocketChannel sc) {
         /* Get the username using the given SocketChannel */
         String userName = userData.getName(sc);
-            
-        /* Let everyone know that the user has quit */
-        messageAll("quit", userName + "," + pa);
-            
+
         /* Remove the users entry from the UserData object */
         userData.deleteEntry(sc);
+        
+        /* Let everyone know that the user has quit */
+        messageAll("quit", userName + "," + pa);
             
         /* Notify on the terminal that the user has quit */
         Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
