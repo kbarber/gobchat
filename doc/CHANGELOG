@@ -12,6 +12,7 @@ Features
 * Added Windows Installation instructions (see sf #888024)
 * Added Windows Installation application (see sf #830899)
 * Windows Service support for server.jar (see sf #830890)
+* Applet Window Resizing (see sf #830892)
 
 Bug Fixes
 
