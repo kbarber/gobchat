@@ -24,22 +24,34 @@ public class ClientApp extends javax.swing.JApplet {
     private ClientConnectionControl conControl;
     private GUIControl guiControl;
     
-    /** Creates new form ClientApp */
+    /** 
+     * Creates new ClientApp applet. The primary part of the Gob client.
+     */
     public ClientApp() {
         
+        /* Set the look and feel of the GUI */
         try {
+            /* Update the look and feel with the local look and feel */
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (Exception e) { 
-            System.out.println("Inability to set look and feel: " + e);
             
-        }
-        
+            /* Update any components */
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception e) { /* There are that many exceptions that may occur, I have defaulted */
+            System.out.println("Inability to set look and feel: " + e);
+        } 
+
+        /* Build all Forte generated components */
         initComponents();
         
-        // Setup both controls for the ChatArea and UserList
+        /* Setup both controls for the ChatArea and UserList */
         caControl = new ChatAreaControl(taMsgHistory);
         ulControl = new UserListControl(lUsers);
+        
+        /* Initialise the connection info object */
+        conInfo = new ConnectionInfo();
+        
+        /* Initialise guicontrol for the conncetion thread to use */
+        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput);
                             
     }
     
@@ -75,6 +87,12 @@ public class ClientApp extends javax.swing.JApplet {
 
         tfUserName.setToolTipText("Type your username here");
         tfUserName.setAutoscrolls(false);
+        tfUserName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfUserNameKeyPressed(evt);
+            }
+        });
+
         pControl.add(tfUserName);
         tfUserName.setBounds(80, 10, 180, 20);
 
@@ -185,56 +203,94 @@ public class ClientApp extends javax.swing.JApplet {
 
     }//GEN-END:initComponents
 
+    private void tfUserNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUserNameKeyPressed
+        // Add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            serverConnect();
+        }
+    }//GEN-LAST:event_tfUserNameKeyPressed
+
+    /** 
+     * Deal with someone hitting the enter key in the SendPrep area.
+     */
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
         // Add your handling code here:
         if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            if(tfSendPrep.getText().length() != 0) {
-                conControl.sendMessage(tfSendPrep.getText());
-                tfSendPrep.setText("");
-            }
+            sendPreppedMessage();
         }
     }//GEN-LAST:event_tfSendPrepKeyPressed
 
+    /**
+     * Deal with someone pushing the send button.
+     */
     private void bSendTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bSendTextMouseClicked
         // Add your handling code here:
+        sendPreppedMessage();
+    }//GEN-LAST:event_bSendTextMouseClicked
+
+    /**
+     * Deal with someone hitting the disconnect button.
+     */
+    private void bDisconnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bDisconnectMouseClicked
+        // Add your handling code here:
+        serverDisconnect();
+    }//GEN-LAST:event_bDisconnectMouseClicked
+
+    /**
+     * Deal with someone hitting the connect button.
+     */
+    private void bConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bConnectMouseClicked
+        // Add your handling code here:
+        serverConnect();
+    }//GEN-LAST:event_bConnectMouseClicked
+
+    /**
+     * Send the message typed into the PrepArea.
+     */
+    private void sendPreppedMessage() {
         if(tfSendPrep.getText().length() != 0) {
             conControl.sendMessage(tfSendPrep.getText());
             tfSendPrep.setText("");
         }
-    }//GEN-LAST:event_bSendTextMouseClicked
-
-    private void bDisconnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bDisconnectMouseClicked
-        // Add your handling code here:
-        conControl.setInterrupt();
-        conControl.interrupt();
-    }//GEN-LAST:event_bDisconnectMouseClicked
-
-    private void bConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bConnectMouseClicked
-        // Add your handling code here:
+    }
+    
+    /**
+     * Code to spawn a new connect thread, and connect to the server.
+     */
+    private void serverConnect() {
+        /* Obtain username and hostname from GUI */
         conInfo.setUsername(tfUserName.getText());
         conInfo.setServer(tfGobServer.getText());
         
+        /* Create a new thread object */
         conControl = new ClientConnectionControl(conInfo, guiControl);
         
+        /* Start thread */
         conControl.start();
-    }//GEN-LAST:event_bConnectMouseClicked
-
+    }
+    
+    /**
+     * Code to interrupt the connection thread.
+     */
+    private void serverDisconnect() {
+        conControl.setInterrupt();
+        conControl.interrupt();
+    }
+    
+    /**
+     * The method first executed after the object has been initiated.
+     */
     public void init() {
+        /* Obtain the "host" parameter from the web page hosting the
+         * applet */
         if(getParameter("host").length() > 0) {
+            /* Set the host parameter as the host to connect to */
             tfGobServer.setText(getParameter("host"));
         } else {
+            /* Else just default to localhost */
             tfGobServer.setText("localhost");
         }
-        
-        conInfo = new ConnectionInfo();
-        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput);
     }
-    
-        
-    public void destroy() {        
-    }
-    
-    private JScrollPane spUserList;
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane spUsers;
