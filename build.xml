@@ -11,7 +11,7 @@
     </target>
 
     <target name="jar" depends="init,compile">
-        <jar jarfile="server.jar" compress="true" basedir="." manifest="manifests/server.mf">
+        <jar jarfile="daemon/server.jar" compress="true" basedir="." manifest="manifests/server.mf">
             <include name="server/*.class"/>
         </jar>
         <jar jarfile="website/client.jar" compress="true" basedir="." manifest="manifests/client.mf">
@@ -43,7 +43,7 @@
             </fileset>
         </delete>
         <delete file="website/client.jar"/>
-        <delete file="server.jar"/>
+        <delete file="daemon/server.jar"/>
         <delete dir="apidoc"/>
     </target>
 
