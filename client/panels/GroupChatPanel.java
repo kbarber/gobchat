@@ -8,6 +8,7 @@ package client.panels;
 
 import client.controllers.*;
 import client.*;
+import client.components.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,8 @@ public class GroupChatPanel extends javax.swing.JPanel {
     private GUIControl guiControl;
     private ClientConnectionControl ccControl;
     private String groupName;
+    private ListControl listControl;
+    private MsgAreaControl msgAreaControl;
     
     /** 
      * Creates new form ChatPanel 
@@ -38,6 +41,9 @@ public class GroupChatPanel extends javax.swing.JPanel {
         groupName = name;
         
         initComponents();
+        
+        listControl = new ListControl(lUsers);
+        msgAreaControl = new MsgAreaControl(taMsgHistory);
     }
     
     /** This method is called from within the constructor to
@@ -53,6 +59,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         taMsgHistory = new javax.swing.JTextArea();
         spUsers = new javax.swing.JScrollPane();
         lUsers = new javax.swing.JList();
+        bClose = new javax.swing.JButton();
 
         setLayout(null);
 
@@ -106,9 +113,23 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spMsgUsers.setRightComponent(spUsers);
 
         add(spMsgUsers);
-        spMsgUsers.setBounds(1, 2, 504, 298);
+        spMsgUsers.setBounds(1, 20, 504, 280);
+
+        bClose.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bCloseMouseClicked(evt);
+            }
+        });
+
+        add(bClose);
+        bClose.setBounds(6, 4, 12, 12);
 
     }//GEN-END:initComponents
+
+    private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
+        // Add your handling code here:
+        ccControl.sendCommand("part:" + groupName);
+    }//GEN-LAST:event_bCloseMouseClicked
 
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
         // Add your handling code here:
@@ -126,12 +147,38 @@ public class GroupChatPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bSendTextMouseClicked
     
     private void sendMessage() {
-        ccControl.sendCommand(tfSendPrep.getText());
+        ccControl.sendCommand("roomsend:" + groupName + ":" + tfSendPrep.getText());
         tfSendPrep.setText("");
         tfSendPrep.requestFocus();
     }
     
+    /**
+     * Resets the user list.
+     *
+     * @param users Array of users
+     */
+    public void resetUserList(String users[]) {
+        listControl.replaceList(users);
+    }
+    
+    public void addUser(String name) {
+        listControl.addUser(name);
+    }
+    
+    public void deleteUser(String name) {
+        listControl.deleteUser(name);
+    }
+    
+    public void writeUserMessage(String name, String message) {
+        msgAreaControl.userMessage(name, message);
+    }
+    
+    public void writeStatusMessage(String message) {
+        msgAreaControl.statusMessage(message);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bClose;
     public javax.swing.JButton bSendText;
     public javax.swing.JList lUsers;
     private javax.swing.JScrollPane spMsgHistory;
