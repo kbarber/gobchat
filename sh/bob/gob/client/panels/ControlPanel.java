@@ -29,6 +29,7 @@ package sh.bob.gob.client.panels;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.*;
 
 import sh.bob.gob.client.controllers.*;
 import sh.bob.gob.client.*;
@@ -58,7 +59,9 @@ public class ControlPanel extends javax.swing.JPanel {
         conControl = ccc;
         hostname = host;
         
-        
+        if(hostname == null) {
+            hostname = "localhost";
+        }
         
         if(hostname.length() > 0) {
         } else {
@@ -349,7 +352,7 @@ public class ControlPanel extends javax.swing.JPanel {
                 tfNewUserName.getText()
                 );
         } catch (Exception ex) {
-            System.out.println("Aargh: " + ex);
+            Logger.getLogger("sh.bob.gob.client").severe("Unable to get current username: " + ex);
             return;
         }
 
