@@ -39,6 +39,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.logging.*;
 
 /**
  * This class is responsible for controlling the connection
@@ -61,6 +62,9 @@ public class ClientConnectionControl {
     /* Thread vars */
     private ServerConnectionThread scThread;
     private Thread threadInstance;
+    
+    /* Is the server connected? */
+    private boolean connectionState;
         
     /** 
      * Creates a new instance of ConnectionControl.
@@ -99,6 +103,9 @@ public class ClientConnectionControl {
      * @param gobserver The host to connect to
      */
     public void serverConnect(String username, String gobserver) {
+        if(connectionState == true) {
+            return;
+        }
         
         /* Set connection info */
         conInfo.setUsername(username);
@@ -109,9 +116,9 @@ public class ClientConnectionControl {
             scThread = new ServerConnectionThread(guiControl,conInfo);
             threadInstance = new Thread(scThread);
             threadInstance.start();
-            // start();
-        } catch (Exception e) {
-            System.out.println("Failure to start thread: " + e);
+            connectionState = true;
+        } catch (Exception ex) {
+            Logger.getLogger("sh.bob.gob.client").severe("Failure to start thread: " + ex);
         }
     }
     
@@ -121,6 +128,12 @@ public class ClientConnectionControl {
      * @param message Disconnection message to pass to server
      */
     public void serverDisconnect(String message) {
+        Logger.getLogger("sh.bob.gob.client").info("Disconnecting.");
+        
+        if(connectionState == false) {
+            return;
+        }
+        
         SignOff so = new SignOff();
         try {
             so.setMessage(message);
@@ -130,12 +143,11 @@ public class ClientConnectionControl {
         
         try {
             so.setUserName(getConnectionInfo().getUsername());
+            sendData(so);
         } catch (TextInvalidException ex) {
             guiControl.statusMessage("Invalid username: " + ex);
         }
         
-        sendData(so);
-//        scThread.sendCommand("quit:" + message);
         guiControl.getGroupTabControl().removeAllGroups();
         guiControl.getPrivTabControl().removeAllUsers();
         scThread.setInterrupt();
