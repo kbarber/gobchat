@@ -21,14 +21,20 @@ import java.util.regex.*;
  */
 public class ConnectionControl {
     
-    /* The port for the server to listen on - this will eventually be dynamic. */
+    /**
+     * The port for the server to listen on - this will eventually be dynamic. 
+     */
     private static final int serverPort = 6666;
     
-    /* These are the pointers used for the server networking */
-    private ServerSocketChannel listen_channel;
-    private Selector listen_selector;
+    /** 
+     * These are the pointers used for the server networking 
+     */
+    private ServerSocketChannel listenServerSC;
+    private Selector listenSelector;
     
-    /* References for the UserData and ClientCommand objects passed to us */
+    /** 
+     * References for the UserData and ClientCommand objects passed to us 
+     */
     private UserData userData;
     private ClientCommand clientCommand;
     
@@ -38,8 +44,8 @@ public class ConnectionControl {
     public ConnectionControl() {
         
         /* Prepare a ServerSocketChannel, and register it with a selector */
-        listen_channel = readyServerSocketChannel();
-        listen_selector = readySelector(listen_channel);
+        listenServerSC = readyServerSocketChannel();
+        listenSelector = readySelector(listenServerSC);
         
         /* This is the character encoding parts required by the networking commands */
         Charset charset = Charset.forName("ISO-8859-1");
@@ -63,7 +69,7 @@ public class ConnectionControl {
             
             try {
                 /* Wait until network activity is detected on any attached sockets */
-                selectResponse = listen_selector.select(500);
+                selectResponse = listenSelector.select(500);
             } catch(Exception e) {
                 /* Log problems to the terminal */
                 Main.consoleOutput("Problem with select: " + e);
@@ -73,7 +79,7 @@ public class ConnectionControl {
              * activity on one of its registered SocketChannel's */
             if(selectResponse > 0) {
                 /* Obtain Set of detected activities or Keys */
-                Set readyKeys = listen_selector.selectedKeys();
+                Set readyKeys = listenSelector.selectedKeys();
                 Iterator readyItor = readyKeys.iterator();
 
                 /* Cycle through each Key until the queue is empty */
@@ -286,7 +292,7 @@ public class ConnectionControl {
                         
             /* Register this SocketChannel with the selector, requesting that 
              * read operations will be the thing to look for */
-            channel.register(listen_selector, SelectionKey.OP_READ);
+            channel.register(listenSelector, SelectionKey.OP_READ);
         } catch (Exception e) {
             /* Alert a problem on the terminal */
             Main.consoleOutput("readySocketChannel: " + e);
