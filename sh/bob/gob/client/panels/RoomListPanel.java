@@ -65,6 +65,7 @@ public class RoomListPanel extends javax.swing.JPanel {
         tfRoom = new javax.swing.JTextField();
         bJoinRoom = new javax.swing.JButton();
         bRefreshList = new javax.swing.JButton();
+        lRoom = new javax.swing.JLabel();
 
         setLayout(null);
 
@@ -84,7 +85,7 @@ public class RoomListPanel extends javax.swing.JPanel {
         add(spRooms);
         spRooms.setBounds(0, 0, 504, 298);
 
-        tfRoom.setToolTipText("Selected room");
+        tfRoom.setToolTipText("Selected room name");
         tfRoom.setFocusCycleRoot(true);
         tfRoom.setAutoscrolls(false);
         tfRoom.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -94,11 +95,11 @@ public class RoomListPanel extends javax.swing.JPanel {
         });
 
         add(tfRoom);
-        tfRoom.setBounds(0, 300, 388, 24);
+        tfRoom.setBounds(46, 300, 312, 24);
 
         bJoinRoom.setFont(new java.awt.Font("Dialog", 0, 12));
-        bJoinRoom.setText("Join");
-        bJoinRoom.setToolTipText("Click here to join the chosen room");
+        bJoinRoom.setText("Join/Create");
+        bJoinRoom.setToolTipText("Click here to join the chosen room, or create a new room with the name specified");
         bJoinRoom.setActionCommand("jButton1");
         bJoinRoom.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
         bJoinRoom.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -108,7 +109,7 @@ public class RoomListPanel extends javax.swing.JPanel {
         });
 
         add(bJoinRoom);
-        bJoinRoom.setBounds(390, 300, 42, 23);
+        bJoinRoom.setBounds(360, 300, 72, 23);
 
         bRefreshList.setFont(new java.awt.Font("Dialog", 0, 12));
         bRefreshList.setText("Refresh list");
@@ -123,6 +124,10 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         add(bRefreshList);
         bRefreshList.setBounds(434, 300, 70, 23);
+
+        lRoom.setText("Room:");
+        add(lRoom);
+        lRoom.setBounds(3, 302, 42, 20);
 
     }//GEN-END:initComponents
 
@@ -194,6 +199,7 @@ public class RoomListPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton bJoinRoom;
     public javax.swing.JButton bRefreshList;
+    private javax.swing.JLabel lRoom;
     public javax.swing.JList lRooms;
     private javax.swing.JScrollPane spRooms;
     public javax.swing.JTextField tfRoom;
