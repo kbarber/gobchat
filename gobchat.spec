@@ -50,8 +50,6 @@ chown gob /var/log/gob
 chgrp gob /var/log/gob
 
 %preun
-rm /var/run/gob/*
-rm /var/log/gob/*
 
 %postun
 /usr/sbin/userdel gob
