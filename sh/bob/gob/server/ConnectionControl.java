@@ -220,9 +220,8 @@ public class ConnectionControl {
                         
                         /* Read any pending data into a buffer */
                         try {
-                            Logger.getLogger("sh.bob.gob.server").finest("Attempting to receive data on network");
                             databean = mbox.receiveData(sc, userData.getSplitBuffer(sc));
-                            Logger.getLogger("sh.bob.gob.server").finest("Succeeded in receiving data");
+                            Logger.getLogger("sh.bob.gob.server").finest("Successfully received data from network.");
                         } catch(IOException e) {
                             /* Output any problems to the terminal */
                             Logger.getLogger("sh.bob.gob.server").warning("Error receiving data on network: " + e);
@@ -232,6 +231,18 @@ public class ConnectionControl {
                                 sc.close();
                             } catch(IOException ne) {
                                 Main.programExit("I\'ve attempted to close a socket that I was having problems reading on: " + e);
+                            }
+                            
+                            /* Did this connection exist in the DB, if so - cleanup */
+                            if(userData.isSocketRegistered(sc)) {
+                                Logger.getLogger("sh.bob.gob.server").info("Socket for user [" + userData.getName(sc) + "] has closed, will cleanup.");
+                                SignOff so = new SignOff();
+                                try {
+                                    so.setMessage("Client has terminated connection");
+                                    so.setUserName(userData.getName(sc));
+                                } catch (TextInvalidException tiex) {
+                                }
+                                clientCommand.clientQuit(so, sc);
                             }
                             
                             /* Next SelectedKey */
@@ -253,15 +264,14 @@ public class ConnectionControl {
                         
                         userData.setSplitBuffer(sc, (SplitBuffer)databean[0]);
                             
-                        Logger.getLogger("sh.bob.gob.server").finest("Length of databean array: " + databean.length);
+                        Logger.getLogger("sh.bob.gob.server").finest("Number of databeans to analyse: " + databean.length);
                         
                         /* Cycle through each databean */
                         for(int i = 1; i < databean.length; i++) {
                             String objectName = databean[i].getClass().getName();
                             Object dataBean = databean[i];
                             String objectShortName = objectName.replaceAll("sh.bob.gob.shared.communication.","");
-                            Logger.getLogger("sh.bob.gob.server").finer("Object Name: " + objectName);
-                            Logger.getLogger("sh.bob.gob.server").finer("Object Short Name: " + objectShortName);
+                            Logger.getLogger("sh.bob.gob.server").finer("Object Name: " + objectName + " (" + objectShortName + ")");
                             
                             /* Deal with any commands */
                             if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
@@ -294,6 +304,7 @@ public class ConnectionControl {
                                     /* Aaah, do nothing */
                                 } else {
                                     /* Other commands are not recognised, so return an error */
+                                    Logger.getLogger("sh.bob.gob.server").warning("Unknown command in this mode, or invalid command: " + objectShortName);
                                     ServerMessage sm = new ServerMessage();
                                     try {
                                         sm.setMessage("Unknown command in this mode");
@@ -377,6 +388,16 @@ public class ConnectionControl {
                     
                     try {
                         mbox.sendData(sctoping, pi);
+                    } catch (ClosedChannelException ex) {
+                        /* The channel has closed, therefore the user is no longer there */
+                        Logger.getLogger("sh.bob.gob.server").info("User: " + userData.getName(sctoping) + " channel has closed, will disconnect.");
+                        SignOff so = new SignOff();
+                        try {
+                            so.setMessage("Client has terminated connection");
+                            so.setUserName(userData.getName(sctoping));
+                        } catch (TextInvalidException tiex) {
+                        }
+                        clientCommand.clientQuit(so, sctoping);
                     } catch (Exception ex) {
                     }
                     
