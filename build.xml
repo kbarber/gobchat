@@ -41,7 +41,16 @@
             </sourcepath>
         </javadoc>
     </target>
-
+    
+    <target name="windowsinstaller" depends="init,all" description="Build a Windows Installer for the built application.">
+        <delete file="dist/Install Gob.exe"/>
+        <exec dir="dist/" executable="C:\Program Files\NSIS\makensis.exe">
+            <arg line="WindowsInstall.nsi"/>
+        </exec>
+    </target>
+    
+    <target name="redhatpackage" depends="init,all" description="Build a RedHat RPM file for the built application."/>
+    
     <target name="clean" depends="init" description="Clean all build products.">
         <delete>
             <fileset dir=".">
