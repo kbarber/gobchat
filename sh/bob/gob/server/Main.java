@@ -36,7 +36,8 @@ import java.util.logging.*;
  * Primary class for the Gob server. This class spawns the ConnectionControl
  * class only and catches any exceptions.
  *
- * <p>A standard message output is also provided by this class.
+ * <p>A standard message output is also provided by this class, utilising the new
+ * java.util.logging package.
  *
  * @author  Ken Barber
  */
@@ -66,13 +67,22 @@ public final class Main {
         /* Startup message log */
         Logger.getLogger("sh.bob.gob.server").info("Connection control: Starting");
         
-        /* Create a new ConnectionControl */
-        try {
-            cc = new ConnectionControl(sc);
-        } catch (Exception ex) {
-            /* Catch all exceptions */
-            Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE, "Connection control exception", ex);
-            ex.printStackTrace();
+        /* Loop forever, if we catch an exception - lets just restart. 
+         * 
+         * No reason to just bail out completely. Cool.
+         */
+        for (;;) {
+            /* Create a new ConnectionControl */
+            try {
+                cc = new ConnectionControl(sc);
+            } catch (Exception ex) {
+                /* Catch all exceptions */
+                Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE, "Connection control exception", ex);
+                ex.printStackTrace();
+            }
+            
+            /* Log that this has happened, I wouldn't mind an email alert? */
+            Logger.getLogger("sh.bob.gob.server").severe("Exception caught, respawning a new ConnectionControl.");
         }
     }
     
