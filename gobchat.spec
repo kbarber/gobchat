@@ -27,6 +27,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin
 mkdir -p $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 mkdir -p $RPM_BUILD_ROOT/var/run/gob
 mkdir -p $RPM_BUILD_ROOT/var/log/gob
+mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d/
 
 install -m644 daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
 install -m755 daemon/gobd $RPM_BUILD_ROOT/usr/sbin
@@ -35,6 +36,7 @@ install -m644 website/client.jar $RPM_BUILD_ROOT/var/www/html/gob
 install -m644 website/index.html $RPM_BUILD_ROOT/var/www/html/gob
 install -m644 INSTALL $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 install -m644 README $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
+install -m644 logrotate/gob $RPM_BUILD_ROOT/etc/logrotate.d/gob
 cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 
 %clean
@@ -64,6 +66,7 @@ chgrp gob /var/log/gob
 /usr/share/doc/%{name}-%{version}
 /etc/rc.d/init.d/gobd
 /usr/sbin/gobd
+/etc/logrotate.d/gob
 
 %changelog
 
