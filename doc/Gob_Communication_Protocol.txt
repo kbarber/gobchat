@@ -1,0 +1,169 @@
+---------------
+Gob Online Chat - Gob Communication Protocol
+---------------
+
+Version: 0.3 alpha
+Date: 2003/12/16
+Author: Ken Barber (ken@bob.sh)
+
+1. Introduction
+
+This document describes the Gob Communication Protocol (GCP).
+
+This version is the first release, and replaces the previous colon delimited
+communication protocol. The previous protocol was custom and had issues with
+delimiting character strings and was a general pain as new protocol elements
+had to be engineered each time.
+
+This implementation is XML based, utilising XMLEncoder and XMLDecoder to send
+and receive commands respectively. Because the protocol transaction is performed
+by the JavaBeans classes, I don't have to care about the underlying protocol.
+
+This document contains the proposed JavaBeans used in communication
+and their properties. These will be implemented in the next version of Gob.
+
+2. Categories and JavaBeans
+
+These 5 categories breakdown the main JavaBeans that will be used for 
+communication.
+
+2.1 SignOn
+- SignOn
+- SignOff
+
+2.2 Rooms
+- RoomList
+- RoomJoin
+- RoomMessage
+- RoomPart
+
+2.3 Users
+- RoomUserList
+- UserMessage
+
+2.4 Settings
+- NameChange
+
+2.5 Control
+- SignOff
+
+3. JavaBeans and Properties
+
+Client Initiated:
+
+NameChange
+- boolean success
+- String userNameOld
+- String userNameNew
+- String error
+RoomJoin
+- boolean success
+- String roomName
+- String userName
+- String error
+RoomList
+- boolean success
+- String filter
+- RoomItem[] rooms
+- String error
+RoomPart
+- boolean success
+- String roomName
+- String userName
+- String message
+- String error
+RoomSend
+- boolean success
+- String roomName
+- String userName
+- String message
+- String error
+RoomUserList
+- boolean success
+- String roomName
+- String filter
+- UserItem[] users
+- String error
+SignOn
+- boolean success
+- String userName
+- String error
+SignOff
+- boolean success
+- String userName
+- String message
+- String error
+UserMessage
+- boolean success
+- String userNameSrc
+- String userNameDst
+- String message
+- String error
+
+Server Initiated:
+
+ServerMessage
+- String message
+
+Sub-Beans:
+
+RoomItem
+- String userName
+- int users
+UserItem
+- String userName
+
+4. Some sample conversations
+
+When you connect
+
+(Server->Client) ServerMessage - message "Hi there"
+(Client->Server) SignOn - success "false", userName "bob"
+(Server->Client) SignOn - success "true", userName "bob"
+
+(Server->Client) ServerMessage - Message "Hi there"
+(Client->Server) SignOff - success "false", userName null, message "I don't want to anymore"
+(Server->Client) SignOff - success "true", username null, message "I don't want to anymore"
+
+Rooms
+
+(Client->Server) RoomList - success "false", filter "*", room null
+(Server->Client) RoomList - success "true", filter "*", room ['asdf', 'lkj', 'iouer']
+
+(Client->Server) RoomJoin - success "false", roomName "asdf"
+(Server->Client) RoomJoin - success "true", roomName "asdf", userName "bob"
+(Server->Other room members) RoomJoin - success "true", roomName "asdf", userName "bob"
+
+(Client->Server) RoomSend - success "false", roomName "asdf", message "Hello all you happy people"
+(Server->Client) RoomSend - success "true", roomName "asdf", message "Hello all you happy people"
+(Server->Other room members) RoomSend - success "true", roomName "asdf", message "Hello all you happy people"
+
+(Client->Server) RoomPart - success "false", roomName "asdf", userName "bob", message "Goodbye to all"
+(Server->Client) RoomPart - success "true", roomName "asdf", userName "bob", message "Goodbye to all"
+(Server->Other room members) RoomSend - success "true", roomName "asdf", userName "bob", message "Goodbye to all"
+
+Users
+
+(Client->Server) RoomUserList - success "false", roomName "asdf", filter "*", users null
+(Server->Client) RoomUserList - success "true", roomName "asdf", filter "*", users ['jane', 'mary', 'george']
+
+(Client->Server) UserMessage - success "false", userNameSrc "bob", userNameDst "jane", message "Hi there Jane"
+(Server->Client) UserMessage - success "true", userNameSrc "bob", userNameDst "jane", message "Hi there Jane"
+(Server->DestClient) UserMessage - success "true", userNameSrc "bob", userNameDst "jane", message "Hi there Jane"
+
+Settings
+
+(Client->Server) NameChange - success "false", userNameOld "bob", userNameNew "derwit"
+(Server->Client) NameChange - success "true", userNameOld "bob", userNameNew "derwit"
+(Server->Other room members) NameChange - success "true", userNameOld "bob", userNameNew "derwit"
+
+Control
+
+(Client->Server) SignOff - success "false", userName "bob", message "I'm gone ..."
+(Server->Client) SignOff - success "true", userName "bob", message "I'm gone ..."
+(Server->Other room members) SignOff - success "true", userName "bob", message "I'm gone ..."
+
+A sample error
+
+(Client->Server) NameChange - success "false", userNameOld "bob", userNameNew "sally"
+(Server->Client) NameChange - success "false", userNameOld "bob", userNameNew "sally", error "Username taken"

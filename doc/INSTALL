@@ -1,0 +1,122 @@
+---------------
+Gob Online Chat - Installation Instructions
+---------------
+
+Version: 0.3 alpha
+Author: Ken Barber (ken@bob.sh)
+
+
+1. System Requirements
+
+The following platforms have been tested.
+
+Intel IA32:
+
+RedHat Linux 7.3, 8.0
+Windows 2000, XP
+
+Sparc2u:
+
+Solaris 8, 9
+
+For all platforms, you will need the following packages:
+
+* Sun Java JRE 1.4.2 or greater (available from java.sun.com)
+
+
+2. Installation
+2.1 Linux
+
+
+Step 1:
+
+Download and install Java JRE 1.4.1 or greater. It is available from:
+
+    http://java.sun.com/
+
+Follow the instructions provided.
+
+
+Step 2:
+
+Download the Gob RPM from http://sourceforge.net/projects/gob/.
+
+Once you have obtained the Gob RPM, you can install it:
+
+    rpm -Uvh gobchat-0.1-1.rpm
+
+
+Step 3:
+
+Modify the HTML file index.html, and specify your server hostname.
+
+
+Step 4: 
+
+Start the application using the system V script:
+
+    /etc/init.d/gob start
+
+
+Step 5:
+
+Setup your OS to start Gob when the system starts. Its best to use a provided 
+utility for this, on RedHat the utility:
+
+    /usr/sbin/ntsysv
+
+Can be used.
+
+
+Step 6:
+
+Access the website using the proper hostname. The client should work, and
+you should be able to connect to the server.
+
+
+2.2 Unix (and like flavours)
+
+Step 1:
+
+Download and install Java JRE 1.4.1 or greater. It is available from:
+
+    http://java.sun.com/
+
+Follow the instructions provided.
+
+Step 2:
+
+Download the Gob tarball from http://sourceforge.net/projects/gob/.
+
+Install the tarball into a safe place.
+
+Step 3:
+
+Place the contents of the 'website' directory somewhere in the servers
+web server content area.
+
+You will need to configure the web server to point to this directory.
+
+Step 4:
+
+Modify the HTML file index.html, and specify your server name.
+
+Step 5:
+
+The server application can be run like this:
+
+    $JAVA_HOME/bin/java -jar server.jar
+
+By default, the server dislays error messages on the console. This should 
+probably be piped to a text file or some such.
+
+I suggest creating an init script for this.
+
+Step 6:
+
+Access the website using the proper hostname. The client should work, and
+you should be able to connect to the server.
+
+2.3 Windows
+
+Sorry, no instructions yet. Email me if you need some help.
