@@ -128,15 +128,53 @@ public class UserData {
         return ((SocketChannel)hashNameSocket.get(name)).socket().getInetAddress().toString();
     }
     
+    /**
+     * Rename the user to something new.
+     *
+     * @param oldname Old name of user
+     * @param newname New name of user
+     * @return Returns a boolean, true if the rename is fine, false if the username is taken
+     */
+    public boolean renameName(String oldname, String newname) {
+        /* Lets check if the username is taken */
+        if(isNameRegistered(newname) == true) {
+            /* Sorry, name taken */
+            return false;
+        };
+        
+        /* Grab the socket channel of the user */
+        SocketChannel sc = getSocket(oldname);
+        
+        /* Grab the list of rooms the user was in */
+        Object[] rooms = listRooms(oldname);
+        
+        /* Delete the name */
+        deleteName(oldname);
+        
+        /* Create the name */
+        insertName(newname, sc);
+        
+        /* Now the user must join all the groups they were once in */
+        for(int i = 0; i < rooms.length; i++) {
+            joinRoom(newname, (String)rooms[i]);
+        }
+        
+        /* All good */
+        return true;
+    }
+    
     
     /** 
      * Delete the entry with the username supplied.
      */
     public void deleteName(String name) {
         /* Now remove the references to this user in each room */
-        String[] Rooms = (String[])listRooms(name);
+        Main.consoleOutput("Delete user: " + name);
+        
+        Object[] Rooms = (Object[])listRooms(name);
+        
         for(int i = 0; i < Rooms.length; i++) {
-            ((Hashtable)hashRoomNames.get(Rooms[i])).remove(name);
+            ((Hashtable)hashRoomNames.get((String)Rooms[i])).remove(name);
         }
         
         hashSocketName.remove(getSocket(name));
@@ -239,6 +277,30 @@ public class UserData {
     }
     
     /**
+     * Return an array of every username in a list of rooms.
+     *
+     * @param rooms Array of String for names
+     * @return Array of Objects representing Strings of users
+     */
+    public Object[] listNames(Object[] rooms) {
+        Hashtable userHash = new Hashtable();
+        
+        /* Run through each room */
+        for(int i = 0; i < rooms.length; i++ ) {
+            String room = (String)rooms[i];
+            
+            Object[] users = listNames(room);
+            
+            for(int l = 0; l < users.length; l++ ) {
+                userHash.put(users[l], "dummy");
+            }
+            
+        }
+        
+        return userHash.keySet().toArray();
+    }
+    
+    /**
      * Return an array of every SocketChannel listed.
      */
     public Object[] listSockets() {
@@ -286,6 +348,7 @@ public class UserData {
     public Object[] listRooms(String name) {
         /* Check if the user exists first */
         if(isNameRegistered(name) != true) {
+            Main.consoleOutput("Invalid listRooms for a name not registered: " + name);
             return null;
         }
         
