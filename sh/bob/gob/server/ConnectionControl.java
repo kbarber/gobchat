@@ -266,6 +266,7 @@ public class ConnectionControl {
                             
                             /* Deal with any commands */
                             if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
+                                userData.setLastRx(sc); // Reset the counter for this user
                                 if(objectShortName.equals("RoomList")) { /* The command is roomlist */
                                     /* Return a list of rooms */
                                     clientCommand.clientRoomlist((RoomList)dataBean, sc);
@@ -290,6 +291,8 @@ public class ConnectionControl {
                                 } else if(objectShortName.equals("NameChange")) {
                                     /* Rename the user */
                                     clientCommand.clientRename((NameChange)dataBean, sc);
+                                } else if(objectShortName.equals("Ping")) {
+                                    /* Aaah, do nothing */
                                 } else {
                                     /* Other commands are not recognised, so return an error */
                                     ServerMessage sm = new ServerMessage();
@@ -322,8 +325,69 @@ public class ConnectionControl {
                         }
                     } /* If test */
                 } /* While loop */
-            } /* If test */
-        } /* Networking infinite loop */
+            } /* If selectResponse was true test, only executed if there was data */
+            
+            /* Now I need to do the test for pings and disconnects, this happens every time */
+            
+            /* Disconnects first */
+            // First lets determine what I am searching for, it should be a LastRx timestamp 
+            // that is less than the Current time minus the configuration item idleDisconnectTimestamp
+            long compareTime = (new java.util.Date().getTime()) - (sconf.getNetwork().getIdleDisconnectTimeout());
+            
+            // Find each one
+            // This should be UserData's job ... give it the compareTime, it returns a list of sockets
+            Object disconnectsockets[] = null;
+            disconnectsockets = userData.listSocketsLastRxLT(compareTime);
+            
+            /* Is there any? */
+            if(disconnectsockets.length > 0) {
+                for(int i = 0; i < disconnectsockets.length; i++) {
+                    /* Now disconnect this socket */
+                    SocketChannel sctoclose = (SocketChannel)disconnectsockets[i];
+                    
+                    Logger.getLogger("sh.bob.gob.server").finest("User: " + userData.getName(sctoclose) + " has timed out, will disconnect.");
+                    SignOff so = new SignOff();
+                    try {
+                        so.setMessage("Client has timed out");
+                        so.setUserName(userData.getName(sctoclose));
+                    } catch (TextInvalidException ex) {
+                    }
+                    clientCommand.clientQuit(so, sctoclose);
+
+                }
+            }
+            
+            /* Pings next */
+            
+            /* First we calculate the time to look for */
+            long isPingReadyTime = (new java.util.Date().getTime()) - (sconf.getNetwork().getIdlePingTimeout());
+            // Find each one
+            // This should be UserData's job ... give it the compareTime, it returns a list of sockets
+            Object pingablesockets[] = null;
+            pingablesockets = userData.listSocketsLastRxLastPingLT(isPingReadyTime);
+            
+            // Ping each one
+            /* Is there any? */
+            if(pingablesockets.length > 0) {
+                for(int i = 0; i < pingablesockets.length; i++) {
+                    /* Now ping this socket */
+                    SocketChannel sctoping = (SocketChannel)pingablesockets[i];
+                    
+                    Logger.getLogger("sh.bob.gob.server").finest("User: " + userData.getName(sctoping) + " has timed out, will ping.");
+                    Ping pi = new Ping();
+                    
+                    try {
+                        mbox.sendData(sctoping, pi);
+                    } catch (Exception ex) {
+                    }
+                    
+                    /* Now reset the LastPing counter */
+                    userData.setLastPing(sctoping);
+
+                }
+            }
+            
+        } /* Networking infinite loop (for(;;)) */
     }
     
     /** 

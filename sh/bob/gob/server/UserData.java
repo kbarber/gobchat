@@ -47,6 +47,9 @@ public class UserData {
     
     private Hashtable hashSocketSplitBuffer;
     
+    private Hashtable hashSocketLastRx;
+    private Hashtable hashSocketLastPing;
+    
     /** 
      * Creates a new instance of UserData.
      */
@@ -56,6 +59,8 @@ public class UserData {
         hashNameRooms = new Hashtable();
         hashRoomNames = new Hashtable();
         hashSocketSplitBuffer = new Hashtable();
+        hashSocketLastRx = new Hashtable();
+        hashSocketLastPing = new Hashtable();
     }
     
     /** 
@@ -77,6 +82,11 @@ public class UserData {
         SplitBuffer sb = new SplitBuffer();
         sb.setSplitBuffer(null);
         hashSocketSplitBuffer.put(socket, sb);
+        
+        /* LastRX setup */
+        long CurrentTime = new Date().getTime();
+        hashSocketLastRx.put(socket, new Long(CurrentTime));
+        hashSocketLastPing.put(socket, new Long(CurrentTime));
         
         /* Success!! */
         return true;
@@ -180,6 +190,46 @@ public class UserData {
     }
     
     /**
+     * Get LastRx in seconds since epoch.
+     *
+     * @param socket Socket to check
+     * @return A long representing the time since epoch
+     */
+    public long getLastRx(SocketChannel socket) {
+        return ((Long)hashSocketLastRx.get(socket)).longValue();
+    }
+    
+    /**
+     * Get LastPing in milliseconds since epoch.
+     *
+     * @param socket Socket to check
+     * @return A long representing the time in milliseconds since epoch
+     */
+    public long getLastPing(SocketChannel socket) {
+        return ((Long)hashSocketLastPing.get(socket)).longValue();
+    }
+    
+    /**
+     * Set LastRx to current time. This doesn't allow abritrarily setting.
+     *
+     * @param socket Socket to set time
+     */
+    public void setLastRx(SocketChannel socket) {
+        long CurrentTime = new Date().getTime();
+        hashSocketLastRx.put(socket, new Long(CurrentTime));
+    }
+    
+    /** 
+     * Set LastPing to current time. This doesn't allow arbritrarily setting.
+     *
+     * @param socket Socket to set time
+     */
+    public void setLastPing(SocketChannel socket) {
+        long CurrentTime = new Date().getTime();
+        hashSocketLastPing.put(socket, new Long(CurrentTime));
+    }
+    
+    /**
      * Rename the user to something new.
      *
      * @param oldname Old name of user
@@ -231,8 +281,9 @@ public class UserData {
         }
         
         hashSocketName.remove(getSocket(name));
+        hashSocketLastRx.remove(getSocket(name));
+        hashSocketLastPing.remove(getSocket(name));
         hashSocketSplitBuffer.remove(hashNameSocket.get(name));
-//        hashSocketSplitBufferTS.remove(hashNameSocket.get(name));
         hashNameSocket.remove(name);     
         hashNameRooms.remove(name);
         
@@ -251,6 +302,8 @@ public class UserData {
         hashNameRooms.remove(getName(socket));
         hashNameSocket.remove(getName(socket));
         hashSocketName.remove(socket);
+        hashSocketLastRx.remove(socket);
+        hashSocketLastPing.remove(socket);
         hashSocketSplitBuffer.remove(socket);
 //        hashSocketSplitBufferTS.remove(socket);
     }
@@ -412,5 +465,73 @@ public class UserData {
         
         Set KeySet = ((Hashtable)hashNameRooms.get(name)).keySet();
         return KeySet.toArray();
+    }
+    
+    public Object[] listSocketsLastRxLT(long lessthan) {
+        /* Get a list of sockets first */
+        Object socketlist[] = listSockets();
+        HashSet candidateset = new HashSet();
+        
+        /* Now cycle through each */
+        for(int i = 0; i < socketlist.length; i++) {
+            /* Get the time */
+            long lastrx = getLastRx((SocketChannel)socketlist[i]);
+            
+            /* Compare the time given to the lastrx time */
+            if(lastrx < lessthan) {
+                /* A candidate for disconnection */
+                candidateset.add(socketlist[i]);
+                Logger.getLogger("sh.bob.gob.server").finest("User: " + getName((SocketChannel)socketlist[i]) + " is a candidate because " + lastrx + " is less than " + lessthan + " (btw the current time is " + new java.util.Date().getTime() + ").");
+            } else {
+                /* Is okay, move on */
+            }
+        }
+        
+        /* Return the array */
+        return candidateset.toArray();
+    }
+    
+    public Object[] listSocketsLastRxLastPingLT(long lessthan) {
+        /* Get a list of sockets first */
+        Object socketlist[] = listSockets();
+        HashSet candidateset = new HashSet();
+        
+        /* Now cycle through each */
+        for(int i = 0; i < socketlist.length; i++) {
+            /* Get the time */
+            long lastrx = getLastRx((SocketChannel)socketlist[i]);
+            
+            /* Compare the time given to the lastrx time */
+            if(lastrx < lessthan) {
+                /* A candidate for disconnection */
+                candidateset.add(socketlist[i]);
+                Logger.getLogger("sh.bob.gob.server").finest("User: " + getName((SocketChannel)socketlist[i]) + " is a candidate because " + lastrx + " is less than " + lessthan + " (btw the current time is " + new java.util.Date().getTime() + ").");
+            } else {
+                /* Is okay, move on */
+            }
+        }
+        
+        Object candidatelist[] = candidateset.toArray();
+        candidateset = new HashSet();
+        
+        /* Now cycle through these candidates */
+        for(int l = 0; l < candidatelist.length; l++) {
+            /* Get the time */
+            long lastping = getLastPing((SocketChannel)candidatelist[l]);
+            
+            /* Compare the time given to the lastrx time */
+            if(lastping < lessthan) {
+                /* A candidate for disconnection */
+                candidateset.add(candidatelist[l]);
+                Logger.getLogger("sh.bob.gob.server").finest("User: " + getName((SocketChannel)socketlist[l]) + " is a candidate because " + lastping + " is less than " + lessthan + " (btw the current time is " + new java.util.Date().getTime() + ").");
+            } else {
+                /* Is okay, move on */
+            }
+        }
+        
+        candidatelist = candidateset.toArray();
+        
+        /* Return the array */
+        return candidatelist;
     }
 }

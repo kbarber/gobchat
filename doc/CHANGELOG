@@ -16,6 +16,8 @@ Features
 * Put in new Ant targets for building Windows Packaging (.exe)
 * Put in new Ant targets for building Tarball packaging (.tar.gz)
 * Added a thick client for testing - still a little buggy
+* Keepalive support now provided with regular pings and timeouts (see sf 
+#831429)
 
 Bug Fixes
 

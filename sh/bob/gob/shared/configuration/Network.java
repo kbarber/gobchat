@@ -48,6 +48,12 @@ public class Network extends Object implements java.io.Serializable {
     /** Holds value of property maxObjectsInBuffer. */
     private int maxObjectsInBuffer;
     
+    /** Holds value of property idlePingTimeout. */
+    private long idlePingTimeout;
+    
+    /** Holds value of property idleDisconnectTimeout. */
+    private long idleDisconnectTimeout;
+    
     /** Creates new Logging */
     public Network() {
         propertySupport = new PropertyChangeSupport( this );
@@ -124,6 +130,38 @@ public class Network extends Object implements java.io.Serializable {
      */
     public void setMaxObjectsInBuffer(int maxObjectsInBuffer) {
         this.maxObjectsInBuffer = maxObjectsInBuffer;
+    }
+    
+    /** Getter for property idlePingTimeout.
+     * @return Value of property idlePingTimeout.
+     *
+     */
+    public long getIdlePingTimeout() {
+        return this.idlePingTimeout;
+    }
+    
+    /** Setter for property idlePingTimeout.
+     * @param idlePingTimeout New value of property idlePingTimeout.
+     *
+     */
+    public void setIdlePingTimeout(long idlePingTimeout) {
+        this.idlePingTimeout = idlePingTimeout;
+    }
+    
+    /** Getter for property idleDisconnectTimeout.
+     * @return Value of property idleDisconnectTimeout.
+     *
+     */
+    public long getIdleDisconnectTimeout() {
+        return this.idleDisconnectTimeout;
+    }
+    
+    /** Setter for property idleDisconnectTimeout.
+     * @param idleDisconnectTimeout New value of property idleDisconnectTimeout.
+     *
+     */
+    public void setIdleDisconnectTimeout(long idleDisconnectTimeout) {
+        this.idleDisconnectTimeout = idleDisconnectTimeout;
     }
     
 }

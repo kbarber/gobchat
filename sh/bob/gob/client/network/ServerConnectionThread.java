@@ -340,13 +340,22 @@ public class ServerConnectionThread implements Runnable {
                                 guiControl.getGroupTabControl().resetUserList(((RoomUserList)dataBean).getRoomName(), userlist);
                                     
                             } else if(objectShortName.equals("SignOff")) {
-                                String roomname = ((SignOff)dataBean).getRoomName();
-                                String username = ((SignOff)dataBean).getUserName();
-                                String reason = ((SignOff)dataBean).getMessage();
+                                /* I want to check what the username is */
+                                if(((SignOff)dataBean).getUserName().equals(connectionInfo.getUsername())) {
+                                    /* I am the user, need to return to the main screen log off and all that */
+                                    guiControl.getGroupTabControl().removeAllGroups();
+                                    guiControl.getPrivTabControl().removeAllUsers();
+                                    setInterrupt();
+                                } else {
+                                    /* Ge the details */
+                                    String roomname = ((SignOff)dataBean).getRoomName();
+                                    String username = ((SignOff)dataBean).getUserName();
+                                    String reason = ((SignOff)dataBean).getMessage();
                                 
-                                /* Remove the user from the group */
-                                guiControl.getGroupTabControl().deleteUser(roomname, username);
-                                guiControl.getGroupTabControl().writeStatusMessage(roomname, "User \"" + username + "\" has quit because \"" + reason + "\".");
+                                    /* Remove the user from the group */
+                                    guiControl.getGroupTabControl().deleteUser(roomname, username);
+                                    guiControl.getGroupTabControl().writeStatusMessage(roomname, "User \"" + username + "\" has quit because \"" + reason + "\".");
+                                }
                             } else if(objectShortName.equals("RoomSend")) {
                                 /* Split the params room:user:message */
                                 String user = ((RoomSend)dataBean).getUserName();
@@ -399,6 +408,17 @@ public class ServerConnectionThread implements Runnable {
                                 /* Now change the username in every room */
                                 guiControl.getGroupTabControl().renameUser(oldname, newname);
                                     
+                            } else if(objectShortName.equals("Ping")) {
+                                /* Alright, now respond with a ping */
+                                ((Ping)dataBean).setSuccess(true);
+                                try {
+                                    mbox.sendData(socketchannel, dataBean);
+                                } catch (Exception ex) {
+                                }
+                                
+                                /* Log this */
+                                guiControl.statusMessage("Ping!");
+                                
                             } else {
                                 /* Just send any received messages to the textarea for now */
 //                                    guiControl.statusMessage(serverMsg[loop]);

@@ -34,6 +34,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import javax.swing.ImageIcon;
 
 /**
  * This object is responsible for loading and saving the server configuration

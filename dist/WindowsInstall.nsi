@@ -1,4 +1,8 @@
 ; WindowsInstall.nsi
+;
+; Configuration File for Creation of a valid NSIS 
+; installer for Gob Online Chat.
+;
 !verbose 4
 
 ;--------------------------------
@@ -9,7 +13,7 @@ Name "Gob Online Chat Installer"
 Var GOBROOT
 
 ; The file to write
-OutFile "Install Gob.exe"
+OutFile "Install Gob v0.4.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Gob Online Chat"

@@ -2,8 +2,8 @@
 Gob Online Chat - Gob Communication Protocol
 ---------------
 
-Version: 0.3 alpha
-Date: 2003/12/16
+Version: 0.4 alpha
+Date: 2004/02/11
 Author: Ken Barber (ken@bob.sh)
 
 1. Introduction
@@ -22,7 +22,13 @@ by the JavaBeans classes, I don't have to care about the underlying protocol.
 This document contains the proposed JavaBeans used in communication
 and their properties. These will be implemented in the next version of Gob.
 
-2. Categories and JavaBeans
+2. Implementation
+
+Essentially, the XML encoded JavaBeans are sent double null delimited. A zLib 
+compression is applied to each JavaBean to decrease bandwidth usage for modem
+users.
+
+3. Categories and JavaBeans
 
 These 5 categories breakdown the main JavaBeans that will be used for 
 communication.
@@ -46,6 +52,7 @@ communication.
 
 2.5 Control
 - SignOff
+- Ping
 
 3. JavaBeans and Properties
 
@@ -104,6 +111,9 @@ Server Initiated:
 
 ServerMessage
 - String message
+Ping
+- boolean success
+- String error
 
 Sub-Beans:
 
@@ -162,6 +172,8 @@ Control
 (Client->Server) SignOff - success "false", userName "bob", message "I'm gone ..."
 (Server->Client) SignOff - success "true", userName "bob", message "I'm gone ..."
 (Server->Other room members) SignOff - success "true", userName "bob", message "I'm gone ..."
+(Server->Client) Ping - success "false"
+(Client->Server) Ping - success "true"
 
 A sample error
 

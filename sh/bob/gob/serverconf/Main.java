@@ -47,13 +47,18 @@ public class Main {
         network.setMaxObjectSize(1024);
         network.setMaxObjectsInBuffer(8);
         network.setSplitBufferTimeout(300L); // 5 Minutes
+//        network.setIdleDisconnectTimeout(300000L); // 5 Minutes
+        network.setIdleDisconnectTimeout(60000L); // One minute
+//        network.setIdlePingTimeout(100000L); // 1 minute 20 seconds for every Ping to a user
+        network.setIdlePingTimeout(10000L); // 10 seconds
         
         Logging log = new Logging();
-        log.setLogFile("/var/log/gob/gobchat.log");
+//        log.setLogFile("/var/log/gob/gobchat.log");
+        log.setLogFile("C:\\Program Files\\Gob Online Chat\\log\\gobchat.log");
         log.setLogLevel("FINEST");
         
         ServerConfiguration sc = new ServerConfiguration();
-        sc.setVersion("0.3");
+        sc.setVersion("0.4");
         sc.setTCPPort((short)6666);
         sc.setNetwork(network);
         sc.setLogging(log);
