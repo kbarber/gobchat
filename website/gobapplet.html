@@ -1,19 +1,47 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 <HTML>
-  <HEAD>
+
+<HEAD>
     <TITLE>Gob Chat Window v0.4</TITLE>
+
     <style type="text/css">
         /* <![CDATA[ */
 	body {margin:-10px 0 0 -10px}
 	html body {margin:0;padding:0}
 	/* ]]> */
     </style>
-  </HEAD>
-  <BODY>
-  <applet code="sh/bob/gob/client/ClientApplet.class" archive="client.jar" width="100%" height="100%">
-    <param name=host value="localhost">
-    <param name="progressbar" value="true">
-  </applet>
-  </BODY>
+</HEAD>
+
+<BODY onResize="resizeit()" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+    <applet name="myApplet" code="sh/bob/gob/client/ClientApplet.class" archive="client.jar"
+width="100%" height="100%" mayscript="true" scriptable="true">
+        <param name=host value="localhost">
+        <param name="progressbar" value="true">
+    </applet>
+
+    <script LANGUAGE="JavaScript">
+        function resizeit() {
+
+            var w_newWidth,w_newHeight;
+
+            if (navigator.appName.indexOf("Microsoft") != -1) {
+                w_newWidth=document.body.clientWidth;
+                w_newHeight=document.body.clientHeight;
+            }else{
+                w_newWidth=window.innerWidth;
+                w_newHeight=window.innerHeight;
+            }
+
+            document.myApplet.changeSize(w_newWidth, w_newHeight);
+
+            window.scroll(0,0);
+
+        }
+
+        window.onResize = resizeit();
+    </script>
+
+</BODY>
+
 </HTML>

@@ -33,6 +33,7 @@ import javax.swing.JApplet;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.util.logging.*;
+import java.awt.Dimension;
 
 
 /**
@@ -86,7 +87,7 @@ public class ClientApplet extends JApplet {
     private void initComponents() {//GEN-BEGIN:initComponents
         tbMain = new javax.swing.JTabbedPane();
 
-        getContentPane().setLayout(null);
+        getContentPane().setLayout(new java.awt.CardLayout());
 
         setBackground(new java.awt.Color(204, 204, 255));
         setName("mainapplet");
@@ -94,8 +95,7 @@ public class ClientApplet extends JApplet {
         tbMain.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         tbMain.setFont(new java.awt.Font("Dialog", 0, 12));
         tbMain.setOpaque(true);
-        getContentPane().add(tbMain);
-        tbMain.setBounds(0, 0, 510, 350);
+        getContentPane().add(tbMain, "card2");
 
     }//GEN-END:initComponents
 
@@ -132,6 +132,18 @@ public class ClientApplet extends JApplet {
      */
     public void destroy() {
         conControl.serverDisconnect("Applet closed");
+    }
+    
+    public void changeSize(int width, int height) {
+
+
+        /* Redraw screen */
+        guiControl.statusMessage("Recieved resize request - now X: " + width + " and Y: " + height);
+        getRootPane().setSize(width,height);
+        getRootPane().validate();
+        
+        Dimension dim = getRootPane().getSize();
+        guiControl.statusMessage("RootPane now X: " + dim.width + " Y: " + dim.height);
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
