@@ -41,6 +41,16 @@ public final class Main {
     }
     
     /**
+     * Close the program, and output reason to console.
+     *
+     * @param message Output Error
+     */
+    protected static void programExit(String message) {
+        consoleOutput("Quitting: " + message);
+        System.exit(1);
+    }
+    
+    /**
      * Where it all starts.
      *
      * @param args the command line arguments
