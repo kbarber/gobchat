@@ -1,0 +1,5 @@
+/var/log/gob/output.log {
+    missingok
+    postrotate
+        /etc/init.d/gobd restart || true    endscript
+}
