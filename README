@@ -11,13 +11,14 @@ This is the Beta release of Gob.
 
 Gob is a chat program that provides a Java chat server and chat client in the form of a Java Applet.
 
-2. Installation
-
-For installation instructions, see the INSTALL document.
-
-3. Licensing
+2. Licensing
 
 Gob is subject to the GNU license, which is available somewhere on the net. If
 your not familiar with this concept, please try the following site:
 
 http://www.gnu.org/
+
+3. Installation
+
+For installation instructions, see the INSTALL document.
+
