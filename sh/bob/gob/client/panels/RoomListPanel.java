@@ -34,6 +34,7 @@ import sh.bob.gob.shared.validation.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.*;
 
 
 /**
@@ -198,6 +199,8 @@ public class RoomListPanel extends javax.swing.JPanel {
     private void joinRoom() {
         /* obtain the currently selected room from tfRoom.getText */
         /* Send a command to the server to join the room */
+        Logger.getLogger("sh.bob.gob.client").finest("Joining a room");
+        
         RoomJoin rj = new RoomJoin();
         try {
             rj.setRoomName(tfRoom.getText());
