@@ -71,7 +71,7 @@ public class ClientApplet extends JApplet {
             /* Update any components */
             SwingUtilities.updateComponentTreeUI(this);
         } catch (Exception e) { /* There are that many exceptions that may occur, I have defaulted */
-            System.out.println("Inability to set look and feel: " + e);
+            Logger.getLogger("sh.bob.gob.client").warning("Inability to set look and feel: " + e);
         } 
         
         /* Build all NetBeans generated components */
