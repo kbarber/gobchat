@@ -20,8 +20,9 @@ import java.util.*;
 public class GUIControl {
     
     private String hostname;
-    private UserListControl ulControl;
-    private MsgAreaControl maControl;
+    private ListControl ulControl;
+    private ListControl roomListControl;
+    private MsgAreaControl saControl;
     private JButton bConnect;
     private JButton bDisconnect;
     private JLabel lConnectionStatus;
@@ -32,6 +33,7 @@ public class GUIControl {
     private ControlPanel pControl;
     private StatusPanel pStatus;
     private GroupChatPanel pLobby;
+    private RoomListPanel pRoomList;
     private ClientConnectionControl conControl;
     
     private int connectionStatus;
@@ -68,14 +70,17 @@ public class GUIControl {
         
         pControl = new ControlPanel(this, conControl, hostname);
         pStatus = new StatusPanel();
-        pLobby = new GroupChatPanel(this, conControl);
+        //pLobby = new GroupChatPanel(this, conControl);
+        pRoomList = new RoomListPanel(this, conControl);
         
         tbMain.addTab("Control", null, pControl, "For connecting and changing username");
         tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
+        //tbMain.addTab("Room List", null, pRoomList, "A list of all open rooms");
                 
         /* Setup both controls for the ChatArea and UserList */
-        maControl = new MsgAreaControl(pLobby.taMsgHistory);
-        ulControl = new UserListControl(pLobby.lUsers);
+        saControl = new MsgAreaControl(pStatus.taErrorOutput);
+        //ulControl = new ListControl(pLobby.lUsers);
+        roomListControl = new ListControl(pRoomList.lRooms);
         
     }
     
@@ -113,13 +118,13 @@ public class GUIControl {
                 pControl.lConnectionStatus.setText("Connected");
                 
                 /* Add the lobby tab to the tabbed pain */
-                tbMain.addTab("Lobby", pLobby);
+                tbMain.addTab("Room List", null, pRoomList, "A list of all open rooms");
                 
                 /* Now open the lobby tab */
                 tbMain.setSelectedIndex(2);
                 
-                /* And focus on the sendprep area */
-                pLobby.tfSendPrep.requestFocusInWindow();
+                /* And focus on the roomlist area */
+                //pLobby.tfSendPrep.requestFocusInWindow();
                 break;
             case 3: // Disconnecting   
                 pControl.bConnect.setEnabled(true);
@@ -167,7 +172,7 @@ public class GUIControl {
      * @param output Message to send
      */
     public void statusMessage(String output) {
-        maControl.statusMessage(output);
+        saControl.statusMessage(output);
     }
     
     /**
@@ -177,14 +182,14 @@ public class GUIControl {
      * @param output Message contents
      */
     public void userMessage(String un, String output) {
-        maControl.userMessage(un, output);
+        saControl.userMessage(un, output);
     }
     
     /**
      * Clear the chosen message text area
      */
     public void clearTextArea() {
-        maControl.clearTextArea();
+        saControl.clearTextArea();
     }
     
     /**
@@ -211,4 +216,14 @@ public class GUIControl {
     public void clearList() {
         ulControl.clearList();
     }
+    
+    /**
+     * Clear the rooms list in the room list panel.
+     */
+    public void setRoomList(String[] rooms) {
+        //ulControl.clearList();
+        /* grab pRoomList */
+        roomListControl.replaceList(rooms);
+    }
+
 }
