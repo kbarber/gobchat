@@ -82,6 +82,8 @@ public class ClientApplet extends JApplet {
         conControl = new ClientConnectionControl(guiControl, conInfo);
         
         guiControl.displayGUI(conControl);
+        
+//        guiControl.statusMessage(this.getParameter("host"));
     }
     
     /**

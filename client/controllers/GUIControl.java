@@ -57,6 +57,7 @@ public class GUIControl {
     public GUIControl(JTabbedPane tbm, String hn) {
         tbMain = tbm;
         hostname = hn;
+//        statusMessage(hn); //DEBUG
         
     }
     
@@ -69,6 +70,7 @@ public class GUIControl {
         conControl = cc;
         
         /* Add a control and status panel */
+        
         
         pControl = new ControlPanel(this, conControl, hostname);
         pStatus = new StatusPanel();

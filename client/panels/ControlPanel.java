@@ -37,12 +37,17 @@ public class ControlPanel extends javax.swing.JPanel {
         conControl = ccc;
         hostname = host;
         
+        
+        
         if(hostname.length() > 0) {
         } else {
             hostname = "localhost";
         }
         
         initComponents();
+
+        /* Set the server */
+        tfGobServer.setText(hostname);
     }
     
     /** This method is called from within the constructor to
