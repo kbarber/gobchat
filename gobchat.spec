@@ -41,7 +41,7 @@ cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -c "Gob Online Chat User" -g gob -M -d / -r -s /bin/bash gob
+/usr/sbin/useradd -c "Gob Online Chat User" -M -d / -r -s /bin/bash gob
 
 %post
 chown gob /var/run/gob
