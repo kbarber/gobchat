@@ -53,13 +53,9 @@ public class MsgAreaControl {
      * @param msg The status message to output
      */
     public synchronized void statusMessage(String msg) {
-        if(chatArea.getText().length() != 0) {
-            chatArea.append("\n");
-        }
         
-        chatArea.append("- " + msg);
+        chatArea.append("- " + msg + "\n");
         
-        chatArea.setCaretPosition(chatArea.getText().length());
     }
     
     /**
