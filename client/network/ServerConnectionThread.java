@@ -269,13 +269,13 @@ public class ServerConnectionThread implements Runnable {
                                     guiControl.statusMessage("New user \"" + command[2] + "\"");
                                 } else if(command[1].equals("quit")) {
                                     /* Split the quit command, get the user and the reason */
-                                    String params[] = command[2].split(",", 2);
+                                    String params[] = command[2].split(",", 3);
                                     
                                     /* Print a status message */
                                     guiControl.statusMessage("User \"" + params[0] + "\" has disconnected because \"" + params[1] + "\"");
                                     
                                     /* Remove the user from the list */
-                                    guiControl.deleteUser(params[0]);
+//                                    guiControl.deleteUser(params[0]);
                                 } else if(command[1].equals("list")) {
                                     /* Split the list of users */
                                     String users[] = command[2].split(",");
@@ -313,7 +313,7 @@ public class ServerConnectionThread implements Runnable {
                                     
                                     if(params[1].equals(connectionInfo.getUsername())) {
                                         /* If the user is us, we have joined a room, create a new group panel */
-                                        
+                                        guiControl.getGroupTabControl().addGroup(params[0]);
                                     } else {
                                         /* If the user is someone else, they have joined the room, update
                                          * the rooms user list */

@@ -22,17 +22,20 @@ import java.awt.event.*;
 public class GroupChatPanel extends javax.swing.JPanel {
 
     private GUIControl guiControl;
-    private ClientConnectionControl ccControl;    
+    private ClientConnectionControl ccControl;
+    private String groupName;
     
     /** 
      * Creates new form ChatPanel 
      *
      * @param gui The GUIControl interface
      * @param ccc The ClientConnectionControl interface
+     * @param name The name of the panel
      */
-    public GroupChatPanel(GUIControl gui, ClientConnectionControl ccc) {
+    public GroupChatPanel(GUIControl gui, ClientConnectionControl ccc, String name) {
         guiControl = gui;
         ccControl = ccc;
+        groupName = name;
         
         initComponents();
     }
@@ -123,7 +126,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bSendTextMouseClicked
     
     private void sendMessage() {
-        ccControl.sendMessage(tfSendPrep.getText());
+        ccControl.sendCommand(tfSendPrep.getText());
         tfSendPrep.setText("");
         tfSendPrep.requestFocus();
     }

@@ -63,6 +63,12 @@ public class RoomListPanel extends javax.swing.JPanel {
         tfRoom.setToolTipText("Selected room");
         tfRoom.setFocusCycleRoot(true);
         tfRoom.setAutoscrolls(false);
+        tfRoom.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfRoomKeyPressed(evt);
+            }
+        });
+
         add(tfRoom);
         tfRoom.setBounds(0, 300, 388, 24);
 
@@ -96,13 +102,17 @@ public class RoomListPanel extends javax.swing.JPanel {
 
     }//GEN-END:initComponents
 
+    private void tfRoomKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfRoomKeyPressed
+        // Add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            joinRoom();
+        }        
+    }//GEN-LAST:event_tfRoomKeyPressed
+
     private void bJoinRoomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bJoinRoomMouseClicked
         // Add your handling code here:
-        
-        /* obtain the currently selected room from tfRoom.getText */
-        /* Send a command to the server to join the room */
-        ccControl.sendCommand("join:" + tfRoom.getText());  
-        ccControl.sendCommand("roomlist:*");
+
+        joinRoom();        
     }//GEN-LAST:event_bJoinRoomMouseClicked
 
     private void lRoomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lRoomsMouseClicked
@@ -119,6 +129,14 @@ public class RoomListPanel extends javax.swing.JPanel {
         ccControl.sendCommand("roomlist:*");
     }//GEN-LAST:event_bRefreshListMouseClicked
     
+    private void joinRoom() {
+        /* obtain the currently selected room from tfRoom.getText */
+        /* Send a command to the server to join the room */
+        ccControl.sendCommand("join:" + tfRoom.getText());  
+        ccControl.sendCommand("userlist:"+ tfRoom.getText());
+        ccControl.sendCommand("roomlist:*");
+        tfRoom.setText(null);
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton bJoinRoom;
