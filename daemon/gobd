@@ -6,7 +6,7 @@
 JAVACMD=$JAVA_HOME/bin/java
 SERVJAR=/usr/share/java/gob/server.jar
 LOGDIR=/var/log/gob
-PORT=6666
+CONFIG=/etc/gobd/gobd.conf.xml
 
 if [ ! -f $JAVACMD ] ; then
     echo "I cannot find java! Is JAVA_HOME set? Try setting it in the SysV script."
@@ -27,4 +27,4 @@ LOGFILE=$LOGDIR/gobchat.log
 
 touch $LOGFILE
 
-( $JAVACMD -jar $SERVJAR $PORT >> $LOGFILE 2>&1 ) &
+( $JAVACMD -jar $SERVJAR $CONFIG >> $LOGFILE 2>&1 ) &
