@@ -54,8 +54,23 @@ public class TextValidation {
         /* Must allow for bigger user names */
         /* Must allow for usernames of one letter */
         
-        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
-            throw new TextInvalidException("Invalid characters");
+        /* If larger than 30 characters - disallow it */
+        
+        if(name.length() > 30)
+            throw new TextInvalidException("User name is too long");
+
+        /* If smaller than 1 character - disallow it */
+        
+        if(name.length() < 1)
+            throw new TextInvalidException("User name cannot be empty");
+
+        /* If contains spaces, tabs, line feeds or carriage returns - disallow it */
+
+        if(Pattern.matches("[ \t\n\r]{1,30}", name))
+            throw new TextInvalidException("User name cannot only contain whitespace");            
+        
+//        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
+//            throw new TextInvalidException("Invalid characters");
     }
 
     /**
@@ -69,8 +84,23 @@ public class TextValidation {
         
         /* Should allow spaces ... but no starting or trailing perhaps? */
         
-        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
-            throw new TextInvalidException("Invalid characters");
+        /* If larger than 30 characters - disallow it */
+        
+        if(name.length() > 30)
+            throw new TextInvalidException("Room name is too long");
+
+        /* If smaller than 1 character - disallow it */
+        
+        if(name.length() < 1)
+            throw new TextInvalidException("Room name cannot be empty");
+
+        /* If contains spaces, tabs, line feeds or carriage returns - disallow it */
+
+        if(Pattern.matches("[ \t\n\r]{1,30}", name))
+            throw new TextInvalidException("Room name cannot only contain whitespace");        
+        
+//        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
+//            throw new TextInvalidException("Invalid characters");
     }
     
     /**
@@ -113,8 +143,23 @@ public class TextValidation {
     public static void isQuitReason(java.lang.String message) throws TextInvalidException {
         /* Most chars, 0 - 64 characters*/
         
-        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,64}", message) == false) 
-            throw new TextInvalidException("Invalid characters in message");
+        /* If the message is larger than 512 characters - disallow it */
+        
+        if(message.length() > 64)
+            throw new TextInvalidException("Message is too long");
+
+        /* If the message is smaller than 1 character - disallow it */
+        
+        if(message.length() < 0)
+            throw new TextInvalidException("Why is the message size a negative?");
+
+        /* If the message only contains spaces, tabs, line feeds or carriage returns - disallow it */
+
+        if(Pattern.matches("[ \t\n\r]{0,64}", message))
+            throw new TextInvalidException("Message cannot just contain whitespace");        
+        
+//        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,64}", message) == false) 
+//            throw new TextInvalidException("Invalid characters in message");
     }
     
     /**
