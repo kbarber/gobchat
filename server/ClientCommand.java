@@ -55,12 +55,12 @@ public class ClientCommand {
             Main.consoleOutput("Attempt to sign-in with invalid username (not shown)");
         } else {
             /* See if the user registration is valid */
-            if(userData.insertData(un, sc)) {
+            if(userData.insertName(un, sc)) {
                 /* Send a message to all users about the new user */
-                messageAllExcept("signup", un, sc);
+                /* messageAllExcept("signup", un, sc); */
 
                 /* List all users currently logged in */
-                clientList("*", sc);
+                clientRoomlist("*", sc);
                 
                 /* Notify on the terminal that new user has signed up */
                 Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
@@ -86,12 +86,12 @@ public class ClientCommand {
             pa = "";
         }
         
-        if(userData.isRegistered(sc)) {
+        if(userData.isSocketRegistered(sc)) {
             /* Get the username using the given SocketChannel */
             String userName = userData.getName(sc);
 
             /* Remove the users entry from the UserData object */
-            userData.deleteEntry(sc);
+            userData.deleteName(sc);
         
             /* Let everyone know that the user has quit */
             messageAll("quit", userName + "," + pa);
@@ -116,13 +116,21 @@ public class ClientCommand {
     /**
      * Deal with a request to see the list of users.
      */
-    public void clientList(String se, SocketChannel sc) {
+    public void clientUserlist(String se, SocketChannel sc) {
         
-        if(se.equals("*")) {
-        
-            /* Obtain an array which contains a list of the currently
-             * logged in users */
-            Object[] users = userData.listNames();
+        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,64}", se) == false) {
+            returnError("Room name not valid", sc);
+        } else {
+            /* Obtain an array which contains a list of the current
+             * users in the room */
+            
+            if(userData.isRoomRegistered(se)) {
+            } else {
+                returnError("Room name not valid", sc);
+                return;
+            }
+            
+            Object[] users = userData.listNames(se);
 
             /* Parse the array of users, and create a single comma delimited
              * string */
@@ -135,24 +143,104 @@ public class ClientCommand {
             }           
         
             /* Return the list of users to the user who requested it */
-            message("list", list, sc);
-        } else {
-            returnError("List parameter not supported", sc);
+            message("userlist", se + ":" + list, sc);
         }
     }
     
     /**
      * Deal with requests for a user message to be sent.
      */
-    public void clientSend(String se, SocketChannel sc) {
+    public void clientRoomsend(String se, SocketChannel sc) {
+        String[] Commands = (Pattern.compile(":")).split(se);
         /* Make sure the message to send is using good characters */
-        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", se) == false) {
+        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", Commands[1]) == false) {
             /* Reason doesn't match correct criteria, just clear it */
             returnError("The message you have sent has invalid characters or is too long.", sc);
         } else {
             /* Send the message to all users */
-            messageAll("send", userData.getName(sc) + "," + se);
+            messageRoom("roomsend", Commands[0], userData.getName(sc) + ":" + Commands[1]);
         }
+    }
+    
+    /**
+     * A user has joined a room
+     */
+    public void clientJoin(String se, SocketChannel sc) {
+        /* Make sure the message to send is using good characters */
+        if(Pattern.matches("[a-zA-Z0-9]{0,32}", se) == false) {
+            /* Reason doesn't match correct criteria, just clear it */
+            returnError("The room you are requesting has invalid characters or is too long.", sc);
+        } else {
+            /* Join a room */
+            
+            /* If room doesn't exist, create it */
+            if(userData.isRoomRegistered(se) == false) {
+                userData.insertRoom(se);
+                
+                Main.consoleOutput("New room created: " + se);
+            };
+            
+            /* If user isn't already a member, join it */
+            Main.consoleOutput("The user: " + userData.getName(sc) + " is trying to join the room: " + se);
+            userData.joinRoom(userData.getName(sc), se);
+            
+            /* Send a message to everyone in the room */
+            messageRoom("join", se, userData.getName(sc));
+            
+        }
+    }
+    
+    /**
+     * A user has left a room
+     */
+    public void clientPart(String se, SocketChannel sc) {
+        /* Make sure the message to send is using good characters */
+        if(Pattern.matches("[a-zA-Z0-9]{0,32}", se) == false) {
+            /* Reason doesn't match correct criteria, just clear it */
+            returnError("The room you are attempting to part has invalid characters or is too long.", sc);
+        } else {
+            /* Part a room */
+            
+            /* Send a message to everyone in the room */
+            messageRoom("part", se, userData.getName(sc));
+            
+            /* Update the userdata bit */
+            userData.partRoom(userData.getName(sc), se);
+            
+            /* If last in room, remove room */
+            if(userData.listNames(se).length == 0) {
+                userData.deleteRoom(se);
+            }
+        }
+    }
+    
+    /**
+     * Return a list of rooms
+     */
+    public void clientRoomlist(String se, SocketChannel sc) {
+        /* Make sure the criteria is correct */
+        if(se.equals("*")) {
+            /* Obtain an array which contains a list of the currently
+             * registered rooms */
+            Object[] rooms = userData.listRooms();
+
+            /* Parse the array of rooms, and create a single comma delimited
+             * string */
+            String list = new String();
+            for(int loop = 0; loop <= (rooms.length -1); loop++) {
+                list = list + rooms[loop];
+                if(loop < (rooms.length -1)) {
+                    list = list + ",";
+                }
+            }           
+        
+            /* Return the list of users to the user who requested it */
+            message("roomlist", list, sc);
+
+        } else {
+            returnError("Invalid search criteria.",  sc);
+        }
+        
     }
     
     /**
@@ -177,6 +265,17 @@ public class ClientCommand {
         } 
     }
 
+    private void messageRoom(String type, String room, String msg) {
+        /* Obtain a list of all socketChannels in specified room */
+        Object[] socketchannels = userData.listSockets(room);
+        
+        /* Cycle through each SocketChannel, and message each on in turn */
+        for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
+            message(type + ":" + room, msg, (SocketChannel)socketchannels[loop]);
+            Main.consoleOutput("Type: " + type + " Room: " + room + " Msg: " + msg);
+        }
+    }
+    
     /**
      * This method is an extended form of message. It will notify _all_ signed in
      * users.

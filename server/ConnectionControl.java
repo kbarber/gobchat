@@ -232,35 +232,41 @@ public class ConnectionControl {
                                 continue;
                             }
                             
-                            /* Deal with any command */
-                            if(command[0].equals("signup")) { /* The command is a signup */
-                                /* Signup the user */
-                                clientCommand.clientSignup(command[1], sc);
-                            } else if(command[0].equals("quit")) { /* The command is quit */
-                                /* Quit the user */
-                                clientCommand.clientQuit(command[1], sc);
-                            } else if(command[0].equals("list")) { /* The command is list */
-                                /* If the user is signed in, return a list of users */
-                                if(userData.isRegistered(sc)) {
-                                    clientCommand.clientList(command[1], sc);
-                                } else { /* User isn't logged in */
-                                    /* Return an error, informing the user he is not logged in */
-                                    clientCommand.returnError("Not logged in", sc);
+                            /* Deal with any commands */
+                            if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
+                                if(command[0].equals("roomlist")) { /* The command is roomlist */
+                                    /* Return a list of rooms */
+                                    clientCommand.clientRoomlist(command[1], sc);
+                                } else if(command[0].equals("userlist")) { /* The command is list */
+                                    /* Return a list of users */
+                                    clientCommand.clientUserlist(command[1], sc);
+                                } else if(command[0].equals("roomsend")) { /* The command is send */
+                                    /* Send the user message */
+                                    clientCommand.clientRoomsend(command[1], sc);
+                                } else if(command[0].equals("join")) { /* The command is join */
+                                    /* Join the desired room */
+                                    clientCommand.clientJoin(command[1], sc);
+                                } else if(command[0].equals("part")) {
+                                    /* Part the desired room */
+                                    clientCommand.clientPart(command[1], sc);
+                                } else {
+                                    /* Other commands are not recognised, so return an error */
+                                    clientCommand.returnError("Unknown command in this mode", sc);
                                 }
+                            } else { /* Disconnected mode */
+                                if(command[0].equals("signup")) { /* The command is a signup */
+                                    /* Signup the user */
+                                    clientCommand.clientSignup(command[1], sc);
                                 
-                            } else if(command[0].equals("send")) { /* The command is send */
-                                /* If the user is signed in, send the user message */
-                                if(userData.isRegistered(sc)) {
-                                    clientCommand.clientSend(command[1], sc);
-                                } else { /* User isn't logged in */
-                                    /* Return an error, informing the user he is not logged in */
-                                    clientCommand.returnError("Not logged in", sc);
+                                } else if(command[0].equals("quit")) { /* The command is quit */
+                                    /* Quit the user */
+                                    clientCommand.clientQuit(command[1], sc);
+                                
+                                } else {
+                                    /* Other commands are not recognised, so return an error */
+                                    clientCommand.returnError("Unknown command in this mode", sc);
+                                
                                 }
-                                
-                            } else {
-                                /* Other commands are not recognised, so return an error */
-                                clientCommand.returnError("Unknown command", sc);
-                                
                             }
                                 
                         } else { /* The command did not have 2 parts */

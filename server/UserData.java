@@ -17,8 +17,10 @@ import java.nio.channels.*;
 public class UserData {
     
     private Hashtable hashNameSocket;    
-        
     private Hashtable hashSocketName;
+
+    private Hashtable hashNameRooms;
+    private Hashtable hashRoomNames;
     
     /** 
      * Creates a new instance of UserData.
@@ -26,12 +28,14 @@ public class UserData {
     public UserData() {
         hashNameSocket = new Hashtable();
         hashSocketName = new Hashtable();
+        hashNameRooms = new Hashtable();
+        hashRoomNames = new Hashtable();
     }
     
     /** 
      * Insert new user data.
      */
-    public boolean insertData(String name, SocketChannel socket) {
+    public boolean insertName(String name, SocketChannel socket) {
         /* Ensure these values don't already exist */
         if(hashNameSocket.containsKey(name) || hashSocketName.containsKey(socket)) {
             /* Return a failure if they do */
@@ -41,13 +45,62 @@ public class UserData {
         /* Create duplicated entries */
         hashNameSocket.put(name, socket);
         hashSocketName.put(socket, name);
+        hashNameRooms.put(name, new Hashtable());
         
         /* Success!! */
         return true;
     }
     
+    /**
+     * Insert new room data.
+     *
+     * @param room New room
+     */
+    public boolean insertRoom(String room) {
+        /* Ensure the room doesn't already exist */
+        if(hashRoomNames.containsKey(room)) {
+            return false;
+        }
+        
+        /* Create a new entry */
+        hashRoomNames.put(room, new Hashtable());
+        
+        /* Success */
+        return true;
+    }
+    
+    /**
+     * User joins room
+     *
+     * @param name Username to join
+     * @param room Room to join
+     */
+    public void joinRoom(String name, String room) {
+        Main.consoleOutput("Room: " + room + ", Name: " + name);
+        
+        /* Add the user to the room */
+        ((Hashtable)hashRoomNames.get(room)).put(name, "dummy");
+        
+        /* Now the room to the user */
+        ((Hashtable)hashNameRooms.get(name)).put(room, "dummy");
+    }
+    
+    /**
+     * User parts room
+     *
+     * @param name Username to part
+     * @param room Room to part
+     */
+    public void partRoom(String name, String room) {
+        /* Remove the user from the room */
+        ((Hashtable)hashRoomNames.get(room)).remove(name);
+        
+        /* Now remove the room from the user */
+        ((Hashtable)hashNameRooms.get(name)).remove(room);
+    }
+    
     /** 
-     * Return the name assocaited with the socket parameter 
+     * Return the name associated with the socket parameter 
      */
     public String getName(SocketChannel socket) {
         return (String)hashSocketName.get(socket);
@@ -78,31 +131,69 @@ public class UserData {
     /** 
      * Delete the entry with the username supplied.
      */
-    public void deleteEntry(String name) {
+    public void deleteName(String name) {
+        /* Now remove the references to this user in each room */
+        String[] Rooms = (String[])listRooms(name);
+        for(int i = 0; i < Rooms.length; i++) {
+            ((Hashtable)hashRoomNames.get(Rooms[i])).remove(name);
+        }
+        
         hashSocketName.remove(getSocket(name));
-        hashNameSocket.remove(name);      
+        hashNameSocket.remove(name);     
+        hashNameRooms.remove(name);
     }
     
     /** 
-     * Delete the entry with the SoccketChannel supplied.
+     * Delete the entry with the SocketChannel supplied.
      */
-    public void deleteEntry(SocketChannel socket) {
+    public void deleteName(SocketChannel socket) {
+        /* Now remove the references to this user in each room */
+        Object[] Rooms = (Object[])listRooms(getName(socket));
+        for(int i = 0; i < Rooms.length; i++) {
+            ((Hashtable)hashRoomNames.get((String)Rooms[i])).remove(getName(socket));
+        }
+        
+        hashNameRooms.remove(getName(socket));
         hashNameSocket.remove(getName(socket));
         hashSocketName.remove(socket);
     }
     
     /**
+     * Delete the room specified.
+     *
+     * @param room Name of the room to delete
+     */
+    public void deleteRoom(String room) {
+        /* Now remove the references to the room for each user */
+        Object[] Names = (Object[])listNames(room);
+        for(int i = 0; i < Names.length; i++) {
+            ((Hashtable)hashNameRooms.get((String)Names[i])).remove(room);
+        }
+        
+        hashRoomNames.remove(room);
+    }
+    
+    /**
      * See if this username is registered.
      */
-    public boolean isRegistered(String name) {
+    public boolean isNameRegistered(String name) {
         return hashNameSocket.containsKey(name);
     }
     
     /** 
      * See if this SocketChannel is registered.
      */
-    public boolean isRegistered(SocketChannel socket) {
+    public boolean isSocketRegistered(SocketChannel socket) {
         return hashSocketName.containsKey(socket);
+    }
+    
+    /**
+     * See if this Room is registered.
+     *
+     * @param room Room to check
+     */
+    public boolean isRoomRegistered(String room) {
+        return hashRoomNames.containsKey(room);
     }
     
     /**
@@ -113,9 +204,50 @@ public class UserData {
     }
     
     /**
+     * Return an array of every username in a particular room.
+     * 
+     * @param room Room to list users
+     */
+    public Object[] listNames(String room) {
+        return ((Hashtable)hashRoomNames.get(room)).keySet().toArray();
+    }
+    
+    /**
      * Return an array of every SocketChannel listed.
      */
     public Object[] listSockets() {
         return (hashSocketName.keySet()).toArray();
+    }
+    
+    /**
+     * Return an array of every SocketChannel in a room.
+     *
+     * @param room Room to list from
+     */
+    public Object[] listSockets(String room) {
+        Object[] Names = ((Hashtable)hashRoomNames.get(room)).keySet().toArray();
+        Object[] Sockets = new Object[Names.length];
+        
+        for(int i = 0; i < Names.length; i++) {
+            Sockets[i] = getSocket((String)Names[i]);
+        }
+        
+        return Sockets;
+    }
+    
+    /**
+     * Return an array of every room registered
+     */
+    public Object[] listRooms() {
+        return (hashRoomNames.keySet()).toArray();
+    }
+    
+    /**
+     * Return an array of rooms that a particular user has joined
+     *
+     * @param name Username of interest
+     */
+    public Object[] listRooms(String name) {
+        return ((Hashtable)hashNameRooms.get(name)).keySet().toArray();
     }
 }
