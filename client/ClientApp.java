@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
+ * This is the main JApplet class. From this all other classes are derived.
+ * This class also contains all displayable content.
  *
  * @author  Ken Barber
  */
@@ -24,23 +26,16 @@ public class ClientApp extends javax.swing.JApplet {
     
     /** Creates new form ClientApp */
     public ClientApp() {
+        
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception e) { 
+            System.out.println("Inability to set look and feel: " + e);
+            
+        }
+        
         initComponents();
-        
-        /*  Make the UserList scrollable
-        
-            The JList bean used by Forte is lacking this ... 
-            I will need to workaround this limitation
-        
-            the right thing to do is to create a new bean, and load it into
-            Forte, perhaps even submitting it to Sun
-            however I'm being lazy - perhaps another day */        
-        pLobby.remove(lUsers);     // De-register the list from the Panel
-        spUserList = new JScrollPane(lUsers);
-        pLobby.add(spUserList); // Add the wrapped list to the Panel
-        
-        /*  Due to Forte's limitations these boundaries have to be set using the
-            boundaries set in the GUI for UserList */
-        spUserList.setBounds(lUsers.getBounds());
         
         // Setup both controls for the ChatArea and UserList
         caControl = new ChatAreaControl(taMsgHistory);
@@ -63,12 +58,15 @@ public class ClientApp extends javax.swing.JApplet {
         lConnectionStatus = new javax.swing.JLabel();
         lHost = new javax.swing.JLabel();
         tfGobServer = new javax.swing.JTextField();
+        spErrorOutput = new javax.swing.JScrollPane();
         taErrorOutput = new javax.swing.JTextArea();
         pLobby = new javax.swing.JPanel();
-        lUsers = new javax.swing.JList();
         bSendText = new javax.swing.JButton();
         tfSendPrep = new javax.swing.JTextField();
+        spMsgHistory = new javax.swing.JScrollPane();
         taMsgHistory = new javax.swing.JTextArea();
+        spUsers = new javax.swing.JScrollPane();
+        lUsers = new javax.swing.JList();
 
         getContentPane().setLayout(null);
 
@@ -130,16 +128,14 @@ public class ClientApp extends javax.swing.JApplet {
         taErrorOutput.setEditable(false);
         taErrorOutput.setLineWrap(true);
         taErrorOutput.setDoubleBuffered(true);
-        pControl.add(taErrorOutput);
-        taErrorOutput.setBounds(10, 135, 450, 110);
+        spErrorOutput.setViewportView(taErrorOutput);
+
+        pControl.add(spErrorOutput);
+        spErrorOutput.setBounds(13, 133, 450, 130);
 
         tbMain.addTab("Control", pControl);
 
         pLobby.setLayout(null);
-
-        lUsers.setToolTipText("List of users");
-        pLobby.add(lUsers);
-        lUsers.setBounds(400, 10, 90, 270);
 
         bSendText.setText("Send");
         bSendText.setToolTipText("Click here to send");
@@ -168,11 +164,19 @@ public class ClientApp extends javax.swing.JApplet {
         taMsgHistory.setEditable(false);
         taMsgHistory.setLineWrap(true);
         taMsgHistory.setWrapStyleWord(true);
-        taMsgHistory.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        taMsgHistory.setBorder(null);
         taMsgHistory.setDoubleBuffered(true);
         taMsgHistory.setDragEnabled(true);
-        pLobby.add(taMsgHistory);
-        taMsgHistory.setBounds(10, 10, 380, 270);
+        spMsgHistory.setViewportView(taMsgHistory);
+
+        pLobby.add(spMsgHistory);
+        spMsgHistory.setBounds(10, 10, 380, 270);
+
+        lUsers.setToolTipText("List of users");
+        spUsers.setViewportView(lUsers);
+
+        pLobby.add(spUsers);
+        spUsers.setBounds(400, 10, 90, 270);
 
         tbMain.addTab("Lobby", pLobby);
 
@@ -224,7 +228,6 @@ public class ClientApp extends javax.swing.JApplet {
         
         conInfo = new ConnectionInfo();
         guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput);
-
     }
     
         
@@ -234,10 +237,13 @@ public class ClientApp extends javax.swing.JApplet {
     private JScrollPane spUserList;
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane spUsers;
     private javax.swing.JButton bDisconnect;
     private javax.swing.JTextField tfSendPrep;
     private javax.swing.JLabel lConnectionStatus;
+    private javax.swing.JScrollPane spErrorOutput;
     private javax.swing.JTextArea taMsgHistory;
+    private javax.swing.JScrollPane spMsgHistory;
     private javax.swing.JLabel lUserName;
     private javax.swing.JTabbedPane tbMain;
     private javax.swing.JTextArea taErrorOutput;
