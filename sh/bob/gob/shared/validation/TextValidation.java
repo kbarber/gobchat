@@ -54,6 +54,11 @@ public class TextValidation {
         /* Must allow for bigger user names */
         /* Must allow for usernames of one letter */
         
+        /* Null Validation */
+        if(name.equals(null)) {
+            throw new TextInvalidException("That name string is null");
+        }
+        
         /* If larger than 30 characters - disallow it */
         
         if(name.length() > 30)
@@ -81,6 +86,11 @@ public class TextValidation {
      */
     public static void isRoomName(java.lang.String name) throws TextInvalidException {
         /* Basic chars, spaces, 1 - 30 characters */
+        
+        /* Null Validation */
+        if(name.equals(null)) {
+            throw new TextInvalidException("That room string is null");
+        }
         
         /* Should allow spaces ... but no starting or trailing perhaps? */
         
@@ -111,6 +121,11 @@ public class TextValidation {
      */
     public static void isMessage(java.lang.String message) throws TextInvalidException {
         /* Most chars, 0 - 512 characters */
+        
+        /* Null Validation */
+        if(message.equals(null)) {
+            throw new TextInvalidException("That messages string is null");
+        }
         
         /* Messages shouldn't be 0 characters. Lets save bandwidth and not permit
          * them */
@@ -143,6 +158,11 @@ public class TextValidation {
     public static void isQuitReason(java.lang.String message) throws TextInvalidException {
         /* Most chars, 0 - 64 characters*/
         
+        /* Null Validation */
+        if(message.equals(null)) {
+            throw new TextInvalidException("That message string is null");
+        }
+        
         /* If the message is larger than 512 characters - disallow it */
         
         if(message.length() > 64)
@@ -170,6 +190,11 @@ public class TextValidation {
      */
     public static void isSearch(java.lang.String search) throws TextInvalidException {
         /* Most chars, 0 - 64 characters*/
+        
+        /* Null Validation */
+        if(search.equals(null)) {
+            throw new TextInvalidException("That search string is null");
+        }
         
         if(Pattern.matches("[*]{1,1}", search) == false) 
             throw new TextInvalidException("Invalid characters in search");
