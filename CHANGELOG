@@ -16,6 +16,7 @@ Features
 * Gob now loads "panels" for each tab, allowing a more modular configuration.
 * There is a seperate Runnable class for the thread. 
 * Documentation Updated.
+* Server port is now set on the command line.
 
 Bugs
 
