@@ -110,12 +110,14 @@ public class GroupChatPanel extends javax.swing.JPanel {
     private void bSendTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bSendTextMouseClicked
         // Add your handling code here:
         sendMessage();
+        
                 
     }//GEN-LAST:event_bSendTextMouseClicked
     
     private void sendMessage() {
         ccControl.sendMessage(tfSendPrep.getText());
         tfSendPrep.setText("");
+        tfSendPrep.requestFocus();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

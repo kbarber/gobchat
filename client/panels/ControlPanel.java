@@ -61,11 +61,9 @@ public class ControlPanel extends javax.swing.JPanel {
 
         setLayout(null);
 
-        setBackground(new java.awt.Color(204, 204, 255));
         pConnection.setLayout(null);
 
-        pConnection.setBackground(new java.awt.Color(204, 204, 255));
-        pConnection.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(null, new java.awt.Color(153, 153, 255)), "Connection"));
+        pConnection.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(), "Connection"));
         lUserName.setFont(new java.awt.Font("Dialog", 0, 12));
         lUserName.setText("Username");
         pConnection.add(lUserName);
@@ -89,7 +87,6 @@ public class ControlPanel extends javax.swing.JPanel {
         pConnection.add(tfUserName);
         tfUserName.setBounds(80, 20, 220, 20);
 
-        tfGobServer.setBackground(new java.awt.Color(204, 204, 255));
         tfGobServer.setEditable(false);
         tfGobServer.setText("localhost");
         tfGobServer.setToolTipText("Host to connect to");
@@ -97,7 +94,6 @@ public class ControlPanel extends javax.swing.JPanel {
         pConnection.add(tfGobServer);
         tfGobServer.setBounds(80, 50, 220, 15);
 
-        bDisconnect.setBackground(new java.awt.Color(204, 204, 255));
         bDisconnect.setFont(new java.awt.Font("Dialog", 0, 12));
         bDisconnect.setText("Disconnect");
         bDisconnect.setToolTipText("Click to disconnect");
@@ -113,7 +109,6 @@ public class ControlPanel extends javax.swing.JPanel {
         pConnection.add(bDisconnect);
         bDisconnect.setBounds(414, 50, 80, 20);
 
-        bConnect.setBackground(new java.awt.Color(204, 204, 255));
         bConnect.setFont(new java.awt.Font("Dialog", 0, 12));
         bConnect.setText("Connect");
         bConnect.setToolTipText("Click to connect");
@@ -131,7 +126,7 @@ public class ControlPanel extends javax.swing.JPanel {
         lConnectionStatus.setFont(new java.awt.Font("Dialog", 0, 12));
         lConnectionStatus.setText("Disconnected");
         lConnectionStatus.setToolTipText("Status");
-        lConnectionStatus.setBorder(new javax.swing.border.EtchedBorder(null, new java.awt.Color(153, 153, 255)));
+        lConnectionStatus.setBorder(new javax.swing.border.EtchedBorder());
         pConnection.add(lConnectionStatus);
         lConnectionStatus.setBounds(10, 80, 484, 20);
 
@@ -140,8 +135,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         pUser.setLayout(null);
 
-        pUser.setBackground(new java.awt.Color(204, 204, 255));
-        pUser.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(null, new java.awt.Color(153, 153, 255)), "User"));
+        pUser.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(), "User"));
         lNewUserName.setFont(new java.awt.Font("Dialog", 0, 12));
         lNewUserName.setText("New Username");
         pUser.add(lNewUserName);
@@ -149,9 +143,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
         tfNewUserName.setEditable(false);
         tfNewUserName.setToolTipText("Type your username here");
-        tfNewUserName.setDisabledTextColor(new java.awt.Color(204, 204, 255));
         tfNewUserName.setFocusCycleRoot(true);
-        tfNewUserName.setAutoscrolls(false);
         tfNewUserName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfNewUserNameKeyPressed(evt);
@@ -161,7 +153,6 @@ public class ControlPanel extends javax.swing.JPanel {
         pUser.add(tfNewUserName);
         tfNewUserName.setBounds(110, 20, 220, 20);
 
-        bRename.setBackground(new java.awt.Color(204, 204, 255));
         bRename.setFont(new java.awt.Font("Dialog", 0, 12));
         bRename.setText("Rename");
         bRename.setToolTipText("Click to connect");
