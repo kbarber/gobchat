@@ -10,8 +10,8 @@ Features
 
 * Java Applet is now started in its own HTML window (see sf #688359)
 * The lobby is now removed while disconnected (see sf #686540)
-* 686542
-* 688367
+* Added support for user renaming (see sf #686542)
+* Added support for private chat (see sf #688367)
 * Added support for rooms (see sf #688363)
 * Gob now loads "panels" for each tab, allowing a more modular configuration.
 * There is a seperate Runnable class for the thread. 
