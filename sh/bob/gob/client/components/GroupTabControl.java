@@ -87,6 +87,9 @@ public class GroupTabControl {
             
             /* Now focus on the tab */
             tbMain.setSelectedComponent(gcp);
+            
+            /* Now focus on the TextField */
+            gcp.tfSendPrep.requestFocusInWindow();
         }
     }
 

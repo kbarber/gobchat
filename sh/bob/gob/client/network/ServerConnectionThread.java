@@ -45,7 +45,7 @@ import java.beans.*;
  * This class is a thread class intended to connect to the Gob server and 
  * manage all communication.
  *
- * @author  ken
+ * @author  Ken Barber
  */
 public class ServerConnectionThread implements Runnable {
     
@@ -152,8 +152,6 @@ public class ServerConnectionThread implements Runnable {
         }            
             
         
-        //guiControl.statusMessage("Created InetSocketAddress");
-        
         /* Set the IP and port to connect to */
         InetSocketAddress sockAddress = new InetSocketAddress(inetAddress, 6666);
         
@@ -195,12 +193,15 @@ public class ServerConnectionThread implements Runnable {
                 connectionInfo.getUsername()
                 );
         } catch (Exception ex) {
-            System.out.println("Aargh: " + ex);
+            guiControl.statusMessage("Problem creating SignOn data bean: " + ex);
 
             /* Update the control tab, we are disconnected */
             guiControl.setConnected(guiControl.DISCONNECTED, "Problem signing up");
-
+            
+            return;
         }
+        
+        /* Now send the data */
         sendData (so);        
         
         /* Now register this channel with a selector */

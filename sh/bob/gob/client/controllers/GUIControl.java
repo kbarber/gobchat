@@ -142,6 +142,9 @@ public class GUIControl {
                 /* Now open the lobby tab */
                 tbMain.setSelectedIndex(2);
                 
+                /* Focus on the RoomName TextField */
+                pRoomList.tfRoom.requestFocus();
+                
                 break;
             case 3: // Disconnecting   
                 pControl.bConnect.setEnabled(true);
