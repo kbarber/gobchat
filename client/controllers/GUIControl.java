@@ -36,6 +36,7 @@ public class GUIControl {
     private RoomListPanel pRoomList;
     private ClientConnectionControl conControl;
     private GroupTabControl groupTabControl;
+    private PrivTabControl privTabControl;
     
     private int connectionStatus;
     
@@ -85,6 +86,9 @@ public class GUIControl {
         
         /* Create a new GroupTabControl for creation of groups */
         groupTabControl = new GroupTabControl(this,  conControl, tbMain);
+        
+        /* Create a new PrivTabControl for creation of users */
+        privTabControl = new PrivTabControl(this, conControl, tbMain);
         
     }
     
@@ -210,6 +214,13 @@ public class GUIControl {
     public GroupTabControl getGroupTabControl() {
         return groupTabControl;
     }
+    
+    /**
+     * Return the PrivTabControl
+     */
+    public PrivTabControl getPrivTabControl() {
+        return privTabControl;
+    }    
     
     /**
      * Set the username of the user in the ControlPanel.

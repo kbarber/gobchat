@@ -92,8 +92,18 @@ public class ClientConnectionControl {
     public void serverDisconnect(String message) {
         scThread.sendCommand("quit:" + message);
         guiControl.getGroupTabControl().removeAllGroups();
+        guiControl.getPrivTabControl().removeAllUsers();
         scThread.setInterrupt();
         threadInstance.interrupt();
     }
+    
+    /**
+     * Return the ConnectionInfo.
+     *
+     * @return The ConnectionInfo object
+     */
+    public ConnectionInfo getConnectionInfo() {
+        return conInfo;
+    };
 
 }

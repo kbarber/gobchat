@@ -6,6 +6,10 @@
 
 package client.panels;
 
+import client.controllers.*;
+import client.*;
+import client.components.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,9 +21,20 @@ import java.awt.event.*;
  */
 public class PrivChatPanel extends javax.swing.JPanel {
     
+    private GUIControl guiControl;
+    private ClientConnectionControl ccControl;
+    private String userName;
+    private MsgAreaControl msgAreaControl;    
+    
     /** Creates new form ChatPanel */
-    public PrivChatPanel() {
+    public PrivChatPanel(GUIControl gui, ClientConnectionControl ccc, String name) {
+        guiControl = gui;
+        ccControl = ccc;
+        userName = name;        
+        
         initComponents();
+        
+        msgAreaControl = new MsgAreaControl(taMsgHistory);        
     }
     
     /** This method is called from within the constructor to
@@ -87,16 +102,34 @@ public class PrivChatPanel extends javax.swing.JPanel {
 
     private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
         // Add your handling code here:
+        guiControl.getPrivTabControl().removeUser(userName);
     }//GEN-LAST:event_bCloseMouseClicked
 
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
         // Add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            sendMessage();
+        }
     }//GEN-LAST:event_tfSendPrepKeyPressed
 
     private void bSendTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bSendTextMouseClicked
         // Add your handling code here:
+        sendMessage();        
     }//GEN-LAST:event_bSendTextMouseClicked
     
+    private void sendMessage() {
+        ccControl.sendCommand("usersend:" + userName + ":" + tfSendPrep.getText());
+        tfSendPrep.setText("");
+        tfSendPrep.requestFocus();
+    }    
+    
+    public void writeUserMessage(String name, String message) {
+        msgAreaControl.userMessage(name, message);
+    }
+    
+    public void writeStatusMessage(String message) {
+        msgAreaControl.statusMessage(message);
+    }    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClose;

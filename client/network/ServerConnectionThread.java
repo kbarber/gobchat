@@ -321,6 +321,22 @@ public class ServerConnectionThread implements Runnable {
                                     String params[] = command[2].split(":", 3);
                                     
                                     guiControl.getGroupTabControl().writeUserMessage(params[0], params[1], params[2]);
+                                } else if(command[1].equals("usersend")) {
+                                    /* Split the params usersrc:userdst:message */
+                                    String params[] = command[2].split(":", 3);
+                                    
+                                    /* Send the message */
+                                    if(params[0].equals(connectionInfo.getUsername())) {
+                                        if(guiControl.getPrivTabControl().isUser(params[1]) != true) {
+                                            guiControl.getPrivTabControl().addUser(params[1]);
+                                        }
+                                        guiControl.getPrivTabControl().writeUserMessage(params[1], params[0], params[2]);
+                                    } else if(params[1].equals(connectionInfo.getUsername())) {
+                                        if(guiControl.getPrivTabControl().isUser(params[0]) != true) {
+                                            guiControl.getPrivTabControl().addUser(params[0]);
+                                        }
+                                        guiControl.getPrivTabControl().writeUserMessage(params[0], params[0], params[2]);
+                                    }
                                 } else if(command[1].equals("part")) {
                                     /* Split the params room:user */
                                     String params[] = command[2].split(":", 2);

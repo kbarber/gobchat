@@ -188,15 +188,19 @@ public class ClientCommand {
      * Send a user message to another user.
      */
     public void clientUsersend(String se, SocketChannel sc) {
-        String[] Commands = (Pattern.compile(":")).split(se);
+//        String[] Commands = (Pattern.compile(":")).split(se);
+        String[] Commands = se.split(":", 2);
+        
         /* Check for good characters */
         if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", Commands[1]) == false) {
             /* Reason doesn't match correct criteria, just clear it */
             returnError("The message you have sent has invalid characters or is too long.", sc);
         } else {
             /* Send the message to both the sender and originator */
-            message("usersend", Commands[1], userData.getSocket(Commands[0]));
-            message("usersend", Commands[1], sc);            
+            message("usersend", userData.getName(sc) + ":" + Commands[0] +
+                ":" + Commands[1], userData.getSocket(Commands[0]));
+            message("usersend", userData.getName(sc) + ":" + Commands[0] +
+                ":" + Commands[1], sc);
         }
     }
     
