@@ -6,12 +6,19 @@
 
 package sh.bob.gob.shared;
 
+import sh.bob.gob.shared.TextInvalidException;
+
+import java.util.regex.Pattern;
+
 /**
  * <p>This is a package of static test methods. This is specifically used by routines 
  * that require validation of input, such as in a packet or typed in by a user.
  *
  * <p>This package uses the standard Java regex library extensively. Each routine
- * returns a boolean to indicate if the fed parameter patches.
+ * throws a TextInvalidException to indicate if the fed parameter patches.
+ *
+ * <p>The thrown TextInvalidException can be caught and a reason for test failure
+ * can be retrieved.
  *
  * @author  Ken Barber
  */
@@ -27,13 +34,14 @@ public class TextValidation {
      * @param name User name to test
      * @return A boolean, true if the user name is valid
      */
-    public static boolean isUserName(java.lang.String name) {
-        /* Alphanumeric + - no spaces, 3 - 15 characters */
+    public static void isUserName(java.lang.String name) throws TextInvalidException {
+        /* Basic chars, spaces, 1 - 30 characters */
         
         /* Must allow for bigger user names */
         /* Must allow for usernames of one letter */
         
-        return false;
+        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
+            throw new TextInvalidException("Invalid characters");
     }
 
     /**
@@ -42,12 +50,13 @@ public class TextValidation {
      * @param name Room name to test
      * @return A boolean, true if the room name is valid
      */
-    public static boolean isRoomName(java.lang.String name) {
-        /* Alphanumeric no spaces, 1-32 characters */
+    public static void isRoomName(java.lang.String name) throws TextInvalidException {
+        /* Basic chars, spaces, 1 - 30 characters */
         
         /* Should allow spaces ... but no starting or trailing perhaps? */
         
-        return false;
+        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
+            throw new TextInvalidException("Invalid characters");
     }
     
     /**
@@ -56,13 +65,14 @@ public class TextValidation {
      * @param message Message text to test
      * @return A boolean, true if the message is valid
      */
-    public static boolean isMessage(java.lang.String message) {
+    public static void isMessage(java.lang.String message) throws TextInvalidException {
         /* Most chars, 0 - 512 characters */
         
         /* Messages shouldn't be 0 characters. Lets save bandwidth and not permit
          * them */
         
-        return false;
+        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,512}", message) == false)
+            throw new TextInvalidException("Invalid characters in message");
     }
 
     /**
@@ -71,11 +81,24 @@ public class TextValidation {
      * @param message Message text to test
      * @return A boolean, true if the quit reason is valid
      */
-    public static boolean isQuitReason(java.lang.String message) {
+    public static void isQuitReason(java.lang.String message) throws TextInvalidException {
         /* Most chars, 0 - 64 characters*/
         
-        /* Quit reasons can be 0 chars. But shouldn't be null. */
-        
-        return false;
+        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,64}", message) == false) 
+            throw new TextInvalidException("Invalid characters in message");
     }
+    
+    /**
+     * Returns true if the search string is valid.
+     *
+     * @param message Search text to test
+     * @return A boolean, true if the search string is valid
+     */
+    public static void isSearch(java.lang.String search) throws TextInvalidException {
+        /* Most chars, 0 - 64 characters*/
+        
+        if(Pattern.matches("[*]{1,1}", search) == false) 
+            throw new TextInvalidException("Invalid characters in search");
+    }
+
 }
