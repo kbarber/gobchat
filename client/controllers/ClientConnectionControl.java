@@ -56,8 +56,8 @@ public class ClientConnectionControl {
      *
      * @param message Message to send
      */
-    public void sendMessage(String message) {
-        scThread.sendMessage(message);
+    public void sendCommand(String message) {
+        scThread.sendCommand(message);
     }
     
     /**
