@@ -28,14 +28,13 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/doc/%{name}-${version}
 mkdir -p $RPM_BUILD_ROOT/var/run/gobd
 mkdir -p $RPM_BUILD_ROOT/var/log/gobd
 
-pwd
-#install -m644 $RPM_SOURCE_DIR/daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
-#install -m755 $RPM_SOURCE_DIR/daemon/gobd $RPM_BUILD_ROOT/usr/sbin
-#install -m755 $RPM_SOURCE_DIR/daemon/linux-sysv.sh $RPM_BUILD_ROOT/etc/rc.d/init.d/gobd
-#install -m644 $RPM_SOURCE_DIR/website/* $RPM_BUILD_ROOT/var/www/html/gob
-#install -m644 $RPM_SOURCE_DIR/INSTALL $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
-#install -m644 $RPM_SOURCE_DIR/README $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
-#cp -r $RPM_SOURCE_DIR/apidoc $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
+install -m644 daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
+install -m755 daemon/gobd $RPM_BUILD_ROOT/usr/sbin
+install -m755 daemon/linux-sysv.sh $RPM_BUILD_ROOT/etc/rc.d/init.d/gobd
+install -m644 website/* $RPM_BUILD_ROOT/var/www/html/gob
+install -m644 INSTALL $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
+install -m644 README $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
+cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/${name}-${version}
 
 %clean
 
