@@ -7,6 +7,7 @@
 package client;
 
 import client.network.*;
+import client.controllers.*;
 
 import javax.swing.*;
 import java.io.*;
