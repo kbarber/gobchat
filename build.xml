@@ -19,6 +19,10 @@
             <include name="sh/bob/gob/client/**/*.class"/>
             <include name="sh/bob/gob/shared/**/*.class"/>
         </jar>
+        <jar jarfile="config/serverconf.jar" compress="true" basedir="." manifest="manifests/serverconf.mf">
+            <include name="sh/bob/gob/serverconf/**/*.class"/>
+            <include name="sh/bob/gob/shared/**/*.class"/>
+        </jar>
     </target>
 
     <target name="all" depends="init,jar,javadoc" description="Build everything.">
@@ -31,7 +35,7 @@
 
     <target name="javadoc" depends="init" description="Javadoc for my API.">
         <mkdir dir="apidoc"/>
-        <javadoc packagenames="sh.bob.gob.server.*,sh.bob.gob.client.*,sh.bob.gob.shared.*" destdir="apidoc">
+        <javadoc packagenames="sh.bob.gob.server.*,sh.bob.gob.client.*,sh.bob.gob.shared.*,sh.bob.gob.serverconf.*" destdir="apidoc">
             <sourcepath>
                 <pathelement location="."/>
             </sourcepath>
