@@ -59,7 +59,7 @@ public class ClientCommand {
             
             /* Notify on terminal */
             Main.consoleOutput("Attempt to sign-in with invalid username " +
-                "(not shown)");
+                "(not shown) from: " + socketchannel.socket().getInetAddress().toString());
         } else {
             /* See if the user registration is valid */
             if(userData.insertName(username, socketchannel)) {
@@ -116,7 +116,7 @@ public class ClientCommand {
             
         } else {
             /*The user never logged in, just log to console */
-            Main.consoleOutput("An unknown user quit because " + pa);
+            Main.consoleOutput("An unknown user from: " + sc.socket().getInetAddress().toString() + " quit: " + pa);
         }
 
         try {
