@@ -113,7 +113,7 @@ public class ConnectionControl {
 
                     /* Deal with the activity for the SelectionKey */
                     if(!key.isValid()) { /* The SelectionKey/SocketChannel is not valid */
-                        /* Altert the problem on the terminal
+                        /* Alert the problem on the terminal
                          *
                          * I don't actually know what would generate this condition */
                         Main.consoleOutput("This SelectionKey isn\'t valid. This is unexpected behaviour.");
