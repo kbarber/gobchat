@@ -43,6 +43,11 @@ public class ConnectionControl {
      */
     public ConnectionControl() {
         
+        /* 
+         * The following code prepares all the necessary objects for 
+         * network programming
+         */
+        
         /* Prepare a ServerSocketChannel, and register it with a selector */
         listenServerSC = readyServerSocketChannel();
         listenSelector = readySelector(listenServerSC);
@@ -53,26 +58,29 @@ public class ConnectionControl {
         CharsetEncoder encoder = charset.newEncoder();
         
         /* Allocate buffers for receiving */
-        ByteBuffer read_buffer = ByteBuffer.allocateDirect(1024);
-        CharBuffer read_charbuffer = CharBuffer.allocate(1024);
+        ByteBuffer inputByteBuffer = ByteBuffer.allocateDirect(1024);
+        CharBuffer inputCharBuffer = CharBuffer.allocate(1024);
         
         /* Create new instances of the UserData and ClientCommand objects */
         userData = new UserData();
         clientCommand = new ClientCommand(userData);
         
-        /* This is the main networking loop, it will continue looping forever
-         * continually accepting connections etc. */
+        /* 
+         * This is the main networking loop, it will continue looping forever
+         * continually accepting connections etc. 
+         */
         for(;;) {            
             
             /* Used for testing the select response */
             int selectResponse = 0;
             
+            /* Attempt a select */
             try {
                 /* Wait until network activity is detected on any attached sockets */
                 selectResponse = listenSelector.select(500);
-            } catch(Exception e) {
+            } catch(IOException e) {
                 /* Log problems to the terminal */
-                Main.consoleOutput("Problem with select: " + e);
+                Main.programExit("Problem with select: " + e);
             }
             
             /* If the selectResponse is greater than 0, than the selector has detected
@@ -96,36 +104,55 @@ public class ConnectionControl {
                         /* Altert the problem on the terminal
                          *
                          * I don't actually know what would generate this condition */
-                        Main.consoleOutput("Not valid!!!");
+                        Main.consoleOutput("This SelectionKey isn\'t valid. This is unexpected behaviour.");
                     } else if(key.isAcceptable()) { /* We have received a new connection */
                         /* Prepare and register new connection with the Selector */
-                        SocketChannel channel = readySocketChannel((ServerSocketChannel)key.channel());
+                        SocketChannel sc = readySocketChannel((ServerSocketChannel)key.channel());
 
                         /* Give GOB greeting */
                         try {
                             /* Send the message */
-                            channel.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
+                            sc.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
                             
                             /* Log new connection */
-                            Main.consoleOutput("New connection from: " + channel.socket().getInetAddress().toString());
-                        } catch(Exception e) {
-                            /* Send errors to the terminal */
-                            Main.consoleOutput("Error giving greeting: " + e);
+                            Main.consoleOutput("New connection from: " + sc.socket().getInetAddress().toString());
+                        } catch(IOException e) {
+                            /* Close the SocketChannel, if I can't write to it - then I don't want
+                             * to continue */
+                            try {
+                                sc.close();
+                                
+                                /* Send errors to the terminal */
+                                Main.consoleOutput("Error giving welcoming greeting to a socket, it has been closed: " + e);
+                            } catch(IOException ne) {
+                                /* Send error to console and exit, I should be able to close an invalid socket */
+                                Main.programExit("I am unable to close a socket that couldn\'t be written to in the first place: " + ne);
+                            }
                         }
 
                     } else if (key.isReadable()) {  /* Someone has sent a command */
                             
                         /* Reset all buffers */
-                        read_buffer.clear();                        
-                        read_charbuffer.clear();
+                        inputByteBuffer.clear();                        
+                        inputCharBuffer.clear();
                             
                         /* Get the SocketChannel assocaited with this Key */
-                        SocketChannel socketchannel = (SocketChannel)key.channel();
+                        SocketChannel sc = (SocketChannel)key.channel();
                                         
                         /* Check to make sure this SocketChannel is actually connected */
-                        if(!socketchannel.isConnected()) {
-                            /* Altert to the problem on the terminal */
-                            Main.consoleOutput("Its not connected!!!!");
+                        if(!sc.isConnected()) {
+                            /* Output the problem on the terminal */
+                            Main.consoleOutput("Received activity on a connected socket. However this socket isn\'t connected.");
+                            
+                            /* Close the socket, just in case */
+                            try {
+                                sc.close();
+                            } catch(IOException e) {
+                                Main.programExit("I\'ve attempted to close a socket, that was marked as not connected and it failed: " + e);
+                            }
+                            
+                            /* Next selected key (if any) */
+                            continue;
                         }
                             
                         // readResult used for socketchannel read.
@@ -133,60 +160,61 @@ public class ConnectionControl {
                         
                         /* Read any pending data into a buffer */
                         try {
-                            readResult = socketchannel.read(read_buffer);
-                        } catch(Exception e) {
+                            readResult = sc.read(inputByteBuffer);
+                        } catch(IOException e) {
                             /* Output any problems to the terminal */
                             Main.consoleOutput("Error receiving data on network: " + e);
+                            
+                            /* Close the channel */
+                            try {
+                                sc.close();
+                            } catch(IOException ne) {
+                                Main.programExit("I\'ve attempted to close a socket that I was having problems reading on: " + e);
+                            }
+                            
+                            /* Next SelectedKey */
+                            continue;
                         }
                             
                         /* See if we have received an end-of-stream */
                         if(readResult == -1) {
-                            if(userData.isRegistered(socketchannel)) {
-                                clientCommand.clientQuit("Client forcefully disconnected", socketchannel);
-                            }
-                        
-                            try {
-                                /* Close the channel */
-                                socketchannel.close();
-                            } catch(Exception e) {
-                                Main.consoleOutput("Error closing EOS socket: " + e);
-                            }
+                            clientCommand.clientQuit("Client forcefully disconnected", sc);
                                 
                             /* Go the next next pending SelectionKey */
                             continue;
                         }
 
                         /* Flip the buffer */
-                        read_buffer.flip();
+                        inputByteBuffer.flip();
                         
                         /* Decode the buffer using the character set specified above */
-                        decoder.decode(read_buffer, read_charbuffer, false);
+                        decoder.decode(inputByteBuffer, inputCharBuffer, false);
                         
                         /* Flip the buffer we have justed decoded */
-                        read_charbuffer.flip();
+                        inputCharBuffer.flip();
                                                
                         /* Now convert this buffer to a string */
-                        String read_string = read_charbuffer.toString();
+                        String inputString = inputCharBuffer.toString();
                             
                         /* Ensure strings are of reasonable length */
-                        if(read_string.length() < 6) {
+                        if(inputString.length() < 6) {
                             /* Return an error to the user */
-                            clientCommand.returnError("Invalid Command", socketchannel);
+                            clientCommand.returnError("Invalid Command", sc);
                             
                             /* Go to the next pending SelectionKey */
                             continue;
                         }
 
                         /* Remove line-break at the end of the String */
-                        read_string = read_string.substring(0, read_string.length() -1);
+                        inputString = inputString.substring(0, inputString.length() -1);
                         
                         /* Remove carriage-return if there is one from the String */
-                        if(read_string.substring(read_string.length() -1).equals("\r")) {
-                            read_string = read_string.substring(0, read_string.length() -1);
+                        if(inputString.substring(inputString.length() -1).equals("\r")) {
+                            inputString = inputString.substring(0, inputString.length() -1);
                         }
                         
                         /* Break up string into command and value */
-                        String command[] = read_string.split(":", 2);
+                        String command[] = inputString.split(":", 2);
 
                         /* All client commands should be have two parts */
                         if(command.length == 2) {
@@ -195,56 +223,44 @@ public class ConnectionControl {
                              * alphabetical and between 3 and 15 characters 
                              */
                             if(Pattern.matches("[a-z]{3,15}", command[0]) == false) {
-                                clientCommand.returnError("Command format incorrect", socketchannel);
+                                clientCommand.returnError("Command format incorrect", sc);
                                 continue;
                             }
                             
                             /* Deal with any command */
                             if(command[0].equals("signup")) { /* The command is a signup */
                                 /* Signup the user */
-                                clientCommand.clientSignup(command[1], socketchannel);
+                                clientCommand.clientSignup(command[1], sc);
                             } else if(command[0].equals("quit")) { /* The command is quit */
-                                /* If the user is signed in, inform all that the user
-                                 * has now quit */
-                                if(userData.isRegistered(socketchannel)) {     
-                                    clientCommand.clientQuit(command[1], socketchannel);
-                                }
-                                
-                                try {
-                                    /* Attempt to close the SocketChannel */
-                                    socketchannel.close();
-                                } catch(Exception e) {
-                                    /* Output errors to the terminal */
-                                    Main.consoleOutput("Problem closing socket: " + e);
-                                }
-                                
+                                /* Quit the user */
+                                clientCommand.clientQuit(command[1], sc);
                             } else if(command[0].equals("list")) { /* The command is list */
                                 /* If the user is signed in, return a list of users */
-                                if(userData.isRegistered(socketchannel)) {
-                                        clientCommand.clientList(command[1], socketchannel);
+                                if(userData.isRegistered(sc)) {
+                                    clientCommand.clientList(command[1], sc);
                                 } else { /* User isn't logged in */
                                     /* Return an error, informing the user he is not logged in */
-                                    clientCommand.returnError("Not logged in", socketchannel);
+                                    clientCommand.returnError("Not logged in", sc);
                                 }
                                 
                             } else if(command[0].equals("send")) { /* The command is send */
                                 /* If the user is signed in, send the user message */
-                                if(userData.isRegistered(socketchannel)) {
-                                    clientCommand.clientSend(command[1], socketchannel);
+                                if(userData.isRegistered(sc)) {
+                                    clientCommand.clientSend(command[1], sc);
                                 } else { /* User isn't logged in */
                                     /* Return an error, informing the user he is not logged in */
-                                    clientCommand.returnError("Not logged in", socketchannel);
+                                    clientCommand.returnError("Not logged in", sc);
                                 }
                                 
                             } else {
                                 /* Other commands are not recognised, so return an error */
-                                clientCommand.returnError("Unknown command", socketchannel);
+                                clientCommand.returnError("Unknown command", sc);
                                 
                             }
                                 
                         } else { /* The command did not have 2 parts */
                             /* Return an error */
-                            clientCommand.returnError("Command format incorrect", socketchannel);
+                            clientCommand.returnError("Command format incorrect", sc);
                                                                 
                         }
                     }                        
@@ -258,54 +274,56 @@ public class ConnectionControl {
      */
     private ServerSocketChannel readyServerSocketChannel() {
         /* Declare a new ServerSocketChannel pointer, currently null */
-        ServerSocketChannel channel = null;
+        ServerSocketChannel ssc = null;
         
         try {
             /* Open a new ServerSocketChannel */
-            channel = ServerSocketChannel.open();
+            ssc = ServerSocketChannel.open();
             
             /* Turn off blocking */
-            channel.configureBlocking(false);
+            ssc.configureBlocking(false);
             
             /* Now bind this ServerSocketChannel to the correct TCP port */
-            channel.socket().bind(new InetSocketAddress(serverPort));        
-        } catch(Exception e) {
-            /* Alert a problem on the terminal */
-            Main.consoleOutput("readyServerSocketChannel: " + e);
+            ssc.socket().bind(new InetSocketAddress(serverPort));        
+        } catch(IOException e) {
+            /* Alert a problem on the terminal and close the program */
+            Main.programExit("Unable to ready ServerSocketChannel: " + e);
         }
         
         /* Return the channel, which is now configured */
-        return channel;
+        return ssc;
     }
     
     /** 
      * Prepares and returns a socket channel. We register this with a selector. 
      */
-    private SocketChannel readySocketChannel(ServerSocketChannel sschannel) {
+    private SocketChannel readySocketChannel(ServerSocketChannel ssc) {
         /* Declare a new SocketChannel pointer, currently null */
-        SocketChannel channel = null;
+        SocketChannel sc = null;
         
         try {
             /* Accept and configure connection */
-            channel = sschannel.accept();
-            channel.configureBlocking(false);
+            sc = ssc.accept();
+
+            /* Turn off blocking */
+            sc.configureBlocking(false);
                         
             /* Register this SocketChannel with the selector, requesting that 
              * read operations will be the thing to look for */
-            channel.register(listenSelector, SelectionKey.OP_READ);
-        } catch (Exception e) {
+            sc.register(listenSelector, SelectionKey.OP_READ);
+        } catch (IOException e) {
             /* Alert a problem on the terminal */
-            Main.consoleOutput("readySocketChannel: " + e);
+            Main.consoleOutput("Unable to ready SocketChannel: " + e);
         }
         
         /* Return the channel, now accepted and registered to the selector */
-        return channel;
+        return sc;
     }
           
     /** 
      * Prepares and returns a selector. 
      */
-    private Selector readySelector(ServerSocketChannel channel) {
+    private Selector readySelector(ServerSocketChannel ssc) {
         
         /* Create a new Selector pointer */
         Selector selector = null;
@@ -313,10 +331,13 @@ public class ConnectionControl {
         try {
             /* Open a selector, and register the given ServerSocketChannel to it */
             selector = Selector.open();
-            channel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (Exception e) {
+            ssc.register(selector, SelectionKey.OP_ACCEPT);
+        } catch (ClosedChannelException e) {
+            /* For some reason the server socket channel has closed?? */
+            Main.programExit("ServerSocketChannel was closed before I could register: " + e);
+        } catch (IOException e) {
             /* Alert a problem on the terminal */
-            Main.consoleOutput("readySelector: " + e);
+            Main.programExit("Problem opening selector: " + e);
         }
         
         /* Return the selector, now with a registered ServerSocketChannel */

@@ -46,19 +46,28 @@ public class ClientCommand {
      * Responsible for the proper signup of new clients. 
      */
     public void clientSignup(String un, SocketChannel sc) {
-        /* See if the user registration is valid */
-        if(userData.insertData(un, sc)) {
-            /* Send a message to all users about the new user */
-            messageAll("signup", un);
-
-            /* Notify on the terminal that new user has signed up */
-            Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
+        /* Check that the username is valid */
+        if(Pattern.matches("[a-zA-Z0-9_+-]{3,15}", un) == false) {
+            /* Name is invalid, give error */
+            returnError("I\'m sorry, usernames must be between 3 and 15 characters and only alphanumeric", sc);
+            
+            /* Notify on terminal */
+            Main.consoleOutput("Attempt to sign-in with invalid username (not shown)");
         } else {
-            /* Let the user know that there was an error with signup. */
-            returnError("Already registered, or username taken", sc);
+            /* See if the user registration is valid */
+            if(userData.insertData(un, sc)) {
+                /* Send a message to all users about the new user */
+                messageAll("signup", un);
 
-            /* Notify on the terminal about the new user */
-            Main.consoleOutput("Attempt to sign in with duplicate username: " + un);            
+                /* Notify on the terminal that new user has signed up */
+                Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
+            } else {
+                /* Let the user know that there was an error with signup. */
+                returnError("Already registered, or username taken", sc);
+
+                /* Notify on the terminal about the new user */
+                Main.consoleOutput("Attempt to sign in with duplicate username: " + un);            
+            }
         }
     }
 
@@ -67,44 +76,77 @@ public class ClientCommand {
      * when a quit command is submitted.
      */
     public void clientQuit(String pa, SocketChannel sc) {
-        /* Get the username using the given SocketChannel */
-        String userName = userData.getName(sc);
-
-        /* Remove the users entry from the UserData object */
-        userData.deleteEntry(sc);
         
-        /* Let everyone know that the user has quit */
-        messageAll("quit", userName + "," + pa);
+        /* Make sure the quit reason is ... err ... reasonable */
+        if(Pattern.matches("[ \ta-zA-Z0-9!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,64}", pa) == false) {
+            /* Reason doesn't match correct criteria, just clear it */
+            pa = "";
+        }
+        
+        if(userData.isRegistered(sc)) {
+            /* Get the username using the given SocketChannel */
+            String userName = userData.getName(sc);
+
+            /* Remove the users entry from the UserData object */
+            userData.deleteEntry(sc);
+        
+            /* Let everyone know that the user has quit */
+            messageAll("quit", userName + "," + pa);
+        
+            /* Notify on the terminal that the user has quit */
+            Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
             
-        /* Notify on the terminal that the user has quit */
-        Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+        } else {
+            /*The user never logged in, just log to console */
+            Main.consoleOutput("An unknown user quit because " + pa);
+        }
+
+        try {
+            /* Close the channel */
+            sc.close();
+        } catch(IOException e) {
+            Main.programExit("Error closing socket: " + e);
+        }
+
     }
     
     /**
      * Deal with a request to see the list of users.
      */
     public void clientList(String se, SocketChannel sc) {
-        /* Obtain an array which contains a list of the currently
-         * logged in users */
-        Object[] users = userData.listNames();
-
-        /* Parse the array of users, and create a single comma delimited
-         * string */
-        String list = new String();
-        for(int loop = 0; loop <= (users.length -1); loop++) {
-            list = list + users[loop] + ",";
-        }           
         
-        /* Return the list of users to the user who requested it */
-        message("list", list, sc);
+        if(se.equals("*")) {
+        
+            /* Obtain an array which contains a list of the currently
+             * logged in users */
+            Object[] users = userData.listNames();
+
+            /* Parse the array of users, and create a single comma delimited
+             * string */
+            String list = new String();
+            for(int loop = 0; loop <= (users.length -1); loop++) {
+                list = list + users[loop] + ",";
+            }           
+        
+            /* Return the list of users to the user who requested it */
+            message("list", list, sc);
+        } else {
+            returnError("List parameter not supported", sc);
+        }
     }
     
     /**
      * Deal with requests for a user message to be sent.
      */
     public void clientSend(String se, SocketChannel sc) {
-        /* Send the message to all users */
-        messageAll("send", userData.getName(sc) + "," + se);
+        /* Make sure the message to send is using good characters */
+        if(Pattern.matches("[ \ta-zA-Z0-9!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", se) == false) {
+            /* Reason doesn't match correct criteria, just clear it */
+            returnError("The message you have sent has invalid characters or is too long.", sc);
+        } else {
+            /* Send the message to all users */
+            messageAll("send", userData.getName(sc) + "," + se);
+        }
     }
     
     /**
@@ -123,19 +165,10 @@ public class ClientCommand {
         try {
             /* Write the message to the SocketChannel */
             sc.write(encoder.encode(CharBuffer.wrap("GOB:" + type + ":" + msg + "\n")));
-        } catch (ClosedChannelException e) {    /* Is the SocketChannel closed? */
-            /* Get the users name, based on the SocketChannel */
-            String un = userData.getName(sc);
-            
-            /* Delete the user entry */
-            userData.deleteEntry(sc);
-            
-            /* Let everyone logged in know the user has quit */
-            messageAll("quit", un + "," + "Socket failed");
-        } catch (Exception e) {
-            /* Alert a different failure on the terminal */
-            Main.consoleOutput("Error messaging socket: " + e);
-        }
+        } catch (IOException e) {    /* Is the SocketChannel closed? */
+            /* Force a client quit */
+            clientQuit("Error messaging users socket.", sc);
+        } 
     }
 
     /**
