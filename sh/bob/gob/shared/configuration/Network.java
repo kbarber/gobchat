@@ -39,9 +39,6 @@ public class Network extends Object implements java.io.Serializable {
     /** Holds value of property maxBufferSize. */
     private int maxBufferSize;
     
-    /** Holds value of property splitBufferTimeout. */
-    private long splitBufferTimeout;
-    
     /** Holds value of property maxObjectSize. */
     private int maxObjectSize;
     
@@ -54,11 +51,13 @@ public class Network extends Object implements java.io.Serializable {
     /** Holds value of property idleDisconnectTimeout. */
     private long idleDisconnectTimeout;
     
+    /** Holds value of property splitBufferTimeout. */
+    private long splitBufferTimeout;
+    
     /** Creates new Logging */
     public Network() {
         propertySupport = new PropertyChangeSupport( this );
     }
-    
     
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(listener);
