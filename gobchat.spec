@@ -18,6 +18,16 @@ Gob is a simple Java based client/server chat program.
 ant
 
 %install
+rm -rf $RPM_BUILD_ROOT
+
+mkdir -p $RPM_BUILD_ROOT/usr/share/java/gob
+mkdir -p $RPM_BUILD_ROOT/var/www/html/gob
+mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
+mkdir -p $RPM_BUILD_ROOT/usr/sbin
+mkdir -p $RPM_BUILD_ROOT/usr/share/doc/%{name}-${version}
+mkdir -p $RPM_BUILD_ROOT/var/run/gobd
+mkdir -p $RPM_BUILD_ROOT/var/log/gobd
+
 
 %clean
 
