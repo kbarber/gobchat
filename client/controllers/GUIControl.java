@@ -35,6 +35,7 @@ public class GUIControl {
     private GroupChatPanel pLobby;
     private RoomListPanel pRoomList;
     private ClientConnectionControl conControl;
+    private GroupTabControl groupTabControl;
     
     private int connectionStatus;
     
@@ -82,6 +83,9 @@ public class GUIControl {
         //ulControl = new ListControl(pLobby.lUsers);
         roomListControl = new ListControl(pRoomList.lRooms);
         
+        /* Create a new GroupTabControl for creation of groups */
+        groupTabControl = new GroupTabControl(this,  conControl, tbMain);
+        
     }
     
     /**
@@ -123,8 +127,6 @@ public class GUIControl {
                 /* Now open the lobby tab */
                 tbMain.setSelectedIndex(2);
                 
-                /* And focus on the roomlist area */
-                //pLobby.tfSendPrep.requestFocusInWindow();
                 break;
             case 3: // Disconnecting   
                 pControl.bConnect.setEnabled(true);
@@ -186,38 +188,6 @@ public class GUIControl {
     }
     
     /**
-     * Clear the chosen message text area
-     */
-    public void clearTextArea() {
-        saControl.clearTextArea();
-    }
-    
-    /**
-     * Add a new user to the chat area's user list control.
-     *
-     * @param un Username to add
-     */
-    public void addUser(String un) {
-        ulControl.addUser(un);
-    }
-    
-    /**
-     * Delete a user from the chat area's user list control.
-     *
-     * @param un Username to remove
-     */
-    public void deleteUser(String un) {
-        ulControl.deleteUser(un);
-    }
-    
-    /**
-     * Clear the user list in the chat area.
-     */
-    public void clearList() {
-        ulControl.clearList();
-    }
-    
-    /**
      * Clear the rooms list in the room list panel.
      */
     public void setRoomList(String[] rooms) {
@@ -225,5 +195,12 @@ public class GUIControl {
         /* grab pRoomList */
         roomListControl.replaceList(rooms);
     }
-
+    
+    /**
+     * Return the GroupTabControl
+     */
+    public GroupTabControl getGroupTabControl() {
+        return groupTabControl;
+    }
+    
 }
