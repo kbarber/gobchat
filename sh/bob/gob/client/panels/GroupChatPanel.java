@@ -93,14 +93,16 @@ public class GroupChatPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
+        setBorder(new javax.swing.border.TitledBorder("ROOM"));
         spMsgUsers.setBackground(new java.awt.Color(204, 204, 255));
-        spMsgUsers.setBorder(null);
+        spMsgUsers.setBorder(new javax.swing.border.EtchedBorder());
         spMsgUsers.setDividerLocation(400);
         spMsgUsers.setDividerSize(1);
         spMsgUsers.setResizeWeight(1.0);
         spMsgUsers.setContinuousLayout(true);
         spMsgUsers.setDoubleBuffered(true);
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
+        spMsgHistory.setBorder(null);
         taMsgHistory.setBackground(new java.awt.Color(250, 250, 255));
         taMsgHistory.setEditable(false);
         taMsgHistory.setFont(new java.awt.Font("SansSerif", 0, 12));
@@ -114,6 +116,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spMsgUsers.setLeftComponent(spMsgHistory);
 
         spUsers.setBackground(new java.awt.Color(204, 204, 255));
+        spUsers.setBorder(null);
         spUsers.setMaximumSize(new java.awt.Dimension(40, 32767));
         lUsers.setBackground(new java.awt.Color(250, 250, 250));
         lUsers.setFont(new java.awt.Font("SansSerif", 1, 12));

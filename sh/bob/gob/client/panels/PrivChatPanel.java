@@ -79,7 +79,9 @@ public class PrivChatPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
+        setBorder(new javax.swing.border.TitledBorder("PRIVATE CHAT"));
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
+        spMsgHistory.setBorder(new javax.swing.border.EtchedBorder());
         taMsgHistory.setBackground(new java.awt.Color(255, 255, 252));
         taMsgHistory.setEditable(false);
         taMsgHistory.setFont(new java.awt.Font("SansSerif", 0, 12));

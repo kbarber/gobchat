@@ -16,7 +16,7 @@
     <Container class="javax.swing.JPanel" name="pLogon">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-          <CardConstraints cardName="card3"/>
+          <CardConstraints cardName="Logon"/>
         </Constraint>
       </Constraints>
 
@@ -389,7 +389,7 @@
                 <Component class="javax.swing.JButton" name="bDisconnect">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="SansSerif" size="14" style="1"/>
+                      <Font name="SansSerif" size="12" style="1"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="LOGOFF"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
