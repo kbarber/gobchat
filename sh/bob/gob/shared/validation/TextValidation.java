@@ -55,6 +55,9 @@ public class TextValidation {
         /* Must allow for usernames of one letter */
         
         /* Null Validation */
+        if(name == null) {
+            throw new TextInvalidException("That name string is null");
+        }
         if(name.equals(null)) {
             throw new TextInvalidException("That name string is null");
         }
@@ -73,9 +76,6 @@ public class TextValidation {
 
         if(Pattern.matches("[ \t\n\r]{1,30}", name))
             throw new TextInvalidException("User name cannot only contain whitespace");            
-        
-//        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
-//            throw new TextInvalidException("Invalid characters");
     }
 
     /**
@@ -108,9 +108,6 @@ public class TextValidation {
 
         if(Pattern.matches("[ \t\n\r]{1,30}", name))
             throw new TextInvalidException("Room name cannot only contain whitespace");        
-        
-//        if(Pattern.matches("[ \\a-zA-Z0-9\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{1,30}", name) == false)
-//            throw new TextInvalidException("Invalid characters");
     }
     
     /**
