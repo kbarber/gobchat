@@ -138,7 +138,7 @@ public class ClientConnectionControl extends Thread {
             guiControl.printError("Problem connecting: " + e);
             
             /* Update the control tab, we are disconnected */
-            guiControl.setConnected(guiControl.DISCONNECTED);
+            guiControl.setConnected(guiControl.DISCONNECTED, "Problem connecting");
             
             return;
         }
@@ -150,7 +150,7 @@ public class ClientConnectionControl extends Thread {
             guiControl.printError("Problem with signup: " + e);
             
             /* Update the control tab, we are disconnected */
-            guiControl.setConnected(guiControl.DISCONNECTED);
+            guiControl.setConnected(guiControl.DISCONNECTED, "Problem signing up");
             
             return;
         }
@@ -163,7 +163,7 @@ public class ClientConnectionControl extends Thread {
             guiControl.printError("Problem with registering selector: " + e);
             
             /* Update the control tab, we are disconnected */
-            guiControl.setConnected(guiControl.DISCONNECTED);
+            guiControl.setConnected(guiControl.DISCONNECTED, "Selector error");
             
             return;
         }
@@ -353,7 +353,7 @@ public class ClientConnectionControl extends Thread {
         guiControl.statusMessage("Disconnected");
         
         /* Update the control tab, we are disconnected */
-        guiControl.setConnected(guiControl.DISCONNECTED);
+        guiControl.setConnected(guiControl.DISCONNECTED, "User disconnected");
     
     } /* End of run() */
 }

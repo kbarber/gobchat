@@ -49,7 +49,7 @@ public class GUIControl {
     }
     
     public void setConnected(int status) {
-        setConnected(status, "");
+        setConnected(status, "No reason");
     }
     
     public void setConnected(int status, String reason) {
