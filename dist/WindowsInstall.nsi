@@ -98,6 +98,8 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\Gob Online Chat"
   CreateShortCut "$SMPROGRAMS\Gob Online Chat\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  SetOutPath "$SMPROGRAMS\Gob Online Chat"
+  File "../dist/Gob Online Chat.url"
   ; CreateShortCut "$SMPROGRAMS\Example2\Example2 (MakeNSISW).lnk" "$INSTDIR\makensisw.exe" "" "$INSTDIR\makensisw.exe" 0
   
 SectionEnd
