@@ -8,6 +8,8 @@ Date:
 
 Features
 
+* Added full UniCode support (see sf #872999)
+
 Bug Fixes
 
 * Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
