@@ -80,6 +80,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
         tfSendPrep.setBounds(0, 300, 465, 24);
 
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
+        taMsgHistory.setBackground(new java.awt.Color(255, 255, 252));
         taMsgHistory.setEditable(false);
         taMsgHistory.setLineWrap(true);
         taMsgHistory.setWrapStyleWord(true);

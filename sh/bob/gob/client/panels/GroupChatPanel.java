@@ -80,7 +80,6 @@ public class GroupChatPanel extends javax.swing.JPanel {
         add(bSendText);
         bSendText.setBounds(465, 300, 40, 23);
 
-        tfSendPrep.setBackground(new java.awt.Color(204, 255, 204));
         tfSendPrep.setToolTipText("Type your message here");
         tfSendPrep.setFocusCycleRoot(true);
         tfSendPrep.setAutoscrolls(false);
@@ -100,6 +99,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spMsgUsers.setContinuousLayout(true);
         spMsgUsers.setDoubleBuffered(true);
         spMsgHistory.setBackground(new java.awt.Color(204, 204, 255));
+        taMsgHistory.setBackground(new java.awt.Color(250, 250, 255));
         taMsgHistory.setEditable(false);
         taMsgHistory.setLineWrap(true);
         taMsgHistory.setWrapStyleWord(true);
@@ -111,6 +111,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spMsgUsers.setLeftComponent(spMsgHistory);
 
         spUsers.setBackground(new java.awt.Color(204, 204, 255));
+        lUsers.setBackground(new java.awt.Color(250, 250, 250));
         lUsers.setToolTipText("List of users");
         spUsers.setViewportView(lUsers);
 

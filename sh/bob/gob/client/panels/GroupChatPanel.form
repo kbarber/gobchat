@@ -37,9 +37,6 @@
     </Component>
     <Component class="javax.swing.JTextField" name="tfSendPrep">
       <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="cc" green="ff" red="cc" type="rgb"/>
-        </Property>
         <Property name="toolTipText" type="java.lang.String" value="Type your message here"/>
         <Property name="focusCycleRoot" type="boolean" value="true"/>
         <Property name="autoscrolls" type="boolean" value="false"/>
@@ -93,6 +90,9 @@
           <SubComponents>
             <Component class="javax.swing.JTextArea" name="taMsgHistory">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="fa" red="fa" type="rgb"/>
+                </Property>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="lineWrap" type="boolean" value="true"/>
                 <Property name="wrapStyleWord" type="boolean" value="true"/>
@@ -124,6 +124,9 @@
           <SubComponents>
             <Component class="javax.swing.JList" name="lUsers">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="fa" green="fa" red="fa" type="rgb"/>
+                </Property>
                 <Property name="toolTipText" type="java.lang.String" value="List of users"/>
               </Properties>
               <AuxValues>

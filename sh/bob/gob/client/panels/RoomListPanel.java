@@ -50,6 +50,7 @@ public class RoomListPanel extends javax.swing.JPanel {
 
         spRooms.setBackground(new java.awt.Color(204, 204, 255));
         spRooms.setBorder(null);
+        lRooms.setBackground(new java.awt.Color(255, 255, 252));
         lRooms.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lRooms.setToolTipText("List of rooms");
         lRooms.addMouseListener(new java.awt.event.MouseAdapter() {

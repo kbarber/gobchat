@@ -69,6 +69,9 @@
       <SubComponents>
         <Component class="javax.swing.JTextArea" name="taMsgHistory">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="fc" green="ff" red="ff" type="rgb"/>
+            </Property>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>

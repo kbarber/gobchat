@@ -36,6 +36,7 @@ public class StatusPanel extends javax.swing.JPanel {
 
         spErrorOutput.setBackground(new java.awt.Color(204, 204, 255));
         spErrorOutput.setBorder(null);
+        taErrorOutput.setBackground(new java.awt.Color(252, 255, 252));
         taErrorOutput.setEditable(false);
         taErrorOutput.setLineWrap(true);
         taErrorOutput.setBorder(null);
