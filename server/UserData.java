@@ -10,6 +10,7 @@ import java.util.*;
 import java.nio.channels.*;
 
 /**
+ * This class keeps the information regarding users currently logged in
  *
  * @author  Ken Barber
  */
