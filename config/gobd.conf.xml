@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.4.2" class="java.beans.XMLDecoder"> 
+<java version="1.4.2_05" class="java.beans.XMLDecoder"> 
  <object class="sh.bob.gob.shared.configuration.ServerConfiguration"> 
   <void property="TCPPort"> 
    <short>6666</short> 
@@ -7,7 +7,7 @@
   <void property="logging"> 
    <object class="sh.bob.gob.shared.configuration.Logging"> 
     <void property="logFile"> 
-     <string>/var/log/gob/gobchat.log</string> 
+     <string>C:\Program Files\Gob Online Chat\log\gobchat.log</string> 
     </void> 
     <void property="logLevel"> 
      <string>FINEST</string> 
@@ -16,6 +16,12 @@
   </void> 
   <void property="network"> 
    <object class="sh.bob.gob.shared.configuration.Network"> 
+    <void property="idleDisconnectTimeout"> 
+     <long>60000</long> 
+    </void> 
+    <void property="idlePingTimeout"> 
+     <long>10000</long> 
+    </void> 
     <void property="maxBufferSize"> 
      <int>8192</int> 
     </void> 
@@ -31,7 +37,7 @@
    </object> 
   </void> 
   <void property="version"> 
-   <string>0.3</string> 
+   <string>0.4</string> 
   </void> 
  </object> 
 </java> 
