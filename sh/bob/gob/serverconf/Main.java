@@ -26,12 +26,14 @@
 
 package sh.bob.gob.serverconf;
 
+import java.util.HashMap;
+
 import sh.bob.gob.shared.configuration.*;
 
 /**
  *
- * @author  ken
- */
+ * @author  Ken Barber
+  */
 public class Main {
     
     /** Creates a new instance of MakeConfig */
@@ -42,6 +44,69 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        /* Handle parameters from the command line 
+         *
+         * [ --factorydefaults <option> --outputfile <file> ]
+         * | [ --inputfile <file> ]
+         *
+         * 
+         * 
+         * All inputs to switches that contain spaces, must be double quoted (")
+         *
+         */
+        
+        /* Can you say, I love HashMap's? */
+        HashMap hmParameters = new HashMap();
+        
+        boolean switchnext = true;
+        for(int i = 0; i < args.length; i++) {
+            /* Confirm that it is a switch */
+            if(args[i].matches("^[-]{1,2}(factorydefaults|outputfile|inputfile)$")) {
+                /* Cool, it is a valid switch */
+            } else {
+                /* Invalid switch, goodbye */
+                System.out.println("Invalid switch");
+            }
+            
+            if((args.length) >= (i+1)) {
+                /* No more options, bail */
+                continue;
+            }
+            
+            if(args[i+1].matches("^-{1,2}")) {
+                /* This is another switch, store and then next loop */
+                hmParameters.put(args[i],  "");
+                
+                continue;
+            } else {
+                /* This is an option */
+                hmParameters.put(args[i], args[i+1]);
+                i++;
+            }
+          
+        }
+        
+        /* Wicked, now lets scroll through the keysets, and setup the system */
+        String sInputFile = (String)hmParameters.get("--inputfile");
+        String sOutputFile = (String)hmParameters.get("--outputfile");
+        String sFactoryDefaults = (String)hmParameters.get("--factorydefaults");
+
+        if(!sFactoryDefaults.equals(null) || !sFactoryDefaults.equals("")) {
+            if(!sOutputFile.equals(null) || !sOutputFile.equals("")) {
+                if(!sFactoryDefaults.equals("windowsxp")) {
+                } else if(!sFactoryDefaults.equals("rhlinux")) {
+                } else {
+                    /* Invalid Factory */
+                    System.out.println("Invalid factory");
+                }
+            }
+        }
+        
+        if(!sInputFile.equals(null) || !sInputFile.equals("")) {
+            new ConfigurationApp().show();
+        }
+        
         Network network = new Network();
         network.setMaxBufferSize(8192);
         network.setMaxObjectSize(1024);
