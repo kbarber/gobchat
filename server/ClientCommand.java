@@ -139,8 +139,7 @@ public class ClientCommand {
             /* Obtain an array which contains a list of the current
              * users in the room */
             
-            if(userData.isRoomRegistered(se)) {
-            } else {
+            if(!userData.isRoomRegistered(se)) {
                 returnError("Room name not valid", sc);
                 return;
             }
