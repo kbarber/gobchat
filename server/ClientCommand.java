@@ -57,7 +57,7 @@ public class ClientCommand {
             returnError("Already registered, or username taken", sc);
 
             /* Notify on the terminal about the new user */
-            System.out.println(new Date().toString() + ": Attempt to sign in with duplicate username: " + un);
+            Main.consoleOutput("Attempt to sign in with duplicate username: " + un);            
         }
     }
 
@@ -76,7 +76,7 @@ public class ClientCommand {
         userData.deleteEntry(sc);
             
         /* Notify on the terminal that the user has quit */
-        System.out.println(new Date().toString() + ": User quit: \"" + userName + "\" because \"" + pa + "\"");
+        Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
     }
     
     /**
@@ -133,7 +133,7 @@ public class ClientCommand {
             messageAll("quit", un + "," + "Socket failed");
         } catch (Exception e) {
             /* Alert a different failure on the terminal */
-            System.out.println("Error messaging socket: " + e);
+            Main.consoleOutput("Error messaging socket: " + e);
         }
     }
 

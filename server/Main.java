@@ -32,6 +32,13 @@ public final class Main {
     }
     
     /**
+     * Output time-stamped text to the console
+     */
+    public static void consoleOutput(String message) {
+        System.out.println(new Date().toString() + ": " + message);
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {

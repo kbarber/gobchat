@@ -65,7 +65,7 @@ public class ConnectionControl {
                 selectResponse = listen_selector.select(500);
             } catch(Exception e) {
                 /* Log problems to the terminal */
-                System.out.println("Problem with select: " + e);
+                Main.consoleOutput("Problem with select: " + e);
             }
             
             /* If the selectResponse is greater than 0, than the selector has detected
@@ -89,7 +89,7 @@ public class ConnectionControl {
                         /* Altert the problem on the terminal
                          *
                          * I don't actually know what would generate this condition */
-                        System.out.println("Not valid!!!");
+                        Main.consoleOutput("Not valid!!!");
                     } else if(key.isAcceptable()) { /* We have received a new connection */
                         /* Prepare and register new connection with the Selector */
                         SocketChannel channel = readySocketChannel((ServerSocketChannel)key.channel());
@@ -100,7 +100,7 @@ public class ConnectionControl {
                             channel.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
                         } catch(Exception e) {
                             /* Send errors to the terminal */
-                            System.out.println("Error giving greeting: " + e);
+                            Main.consoleOutput("Error giving greeting: " + e);
                         }
 
                     } else if (key.isReadable()) {  /* Someone has sent a command */
@@ -115,7 +115,7 @@ public class ConnectionControl {
                         /* Check to make sure this SocketChannel is actually connected */
                         if(!socketchannel.isConnected()) {
                             /* Altert to the problem on the terminal */
-                            System.out.println("Its not connected!!!!");
+                            Main.consoleOutput("Its not connected!!!!");
                         }
                             
                         /* Read any pending data into a buffer */
@@ -133,7 +133,7 @@ public class ConnectionControl {
                             }
                         } catch(Exception e) {
                             /* Output any problems to the terminal */
-                            System.out.println("Error receiving data on network: " + e);
+                            Main.consoleOutput("Error receiving data on network: " + e);
                         }
 
                         /* Flip the buffer */
@@ -187,7 +187,7 @@ public class ConnectionControl {
                                     socketchannel.close();
                                 } catch(Exception e) {
                                     /* Output errors to the terminal */
-                                    System.out.println("Problem closing socket: " + e);
+                                    Main.consoleOutput("Problem closing socket: " + e);
                                 }
                                 
                             } else if(command[0].equals("list")) { /* The command is list */
@@ -243,7 +243,7 @@ public class ConnectionControl {
             channel.socket().bind(new InetSocketAddress(serverPort));        
         } catch(Exception e) {
             /* Alert a problem on the terminal */
-            System.out.println("readyServerSocketChannel: " + e);
+            Main.consoleOutput("readyServerSocketChannel: " + e);
         }
         
         /* Return the channel, which is now configured */
@@ -267,7 +267,7 @@ public class ConnectionControl {
             channel.register(listen_selector, SelectionKey.OP_READ);
         } catch (Exception e) {
             /* Alert a problem on the terminal */
-            System.out.println("readySocketChannel: " + e);
+            Main.consoleOutput("readySocketChannel: " + e);
         }
         
         /* Return the channel, now accepted and registered to the selector */
@@ -288,7 +288,7 @@ public class ConnectionControl {
             channel.register(selector, SelectionKey.OP_ACCEPT);
         } catch (Exception e) {
             /* Alert a problem on the terminal */
-            System.out.println("readySelector: " + e);
+            Main.consoleOutput("readySelector: " + e);
         }
         
         /* Return the selector, now with a registered ServerSocketChannel */
