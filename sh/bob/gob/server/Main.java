@@ -66,9 +66,18 @@ public final class Main {
         prepareLogging(sc.getLogging());
         
         /* Server configuration */
-        Logger.getLogger("sh.bob.gob.server").config("TCP port: " + sc.getTCPPort());
-        Logger.getLogger("sh.bob.gob.server").config("Log level: " + sc.getLogging().getLogLevel());
-        Logger.getLogger("sh.bob.gob.server").config("Log file: " + sc.getLogging().getLogFile());
+        Logger.getLogger("sh.bob.gob.server").config(
+            "\n\tConfiguration File: " + configfile +
+            "\n\tConfiguration Version: " + sc.getVersion() +
+            "\n\tTCP port: " + sc.getTCPPort() +
+            "\n\tLog level: " + sc.getLogging().getLogLevel() +
+            "\n\tLog file: " + sc.getLogging().getLogFile() +
+            "\n\tIdle Ping Timeout: " + sc.getNetwork().getIdlePingTimeout() +
+            "\n\tIdle Disconnect Timeout: " + sc.getNetwork().getIdleDisconnectTimeout() +
+            "\n\tMax Buffer Size: " + sc.getNetwork().getMaxBufferSize() +
+            "\n\tMax Object Size: " + sc.getNetwork().getMaxObjectSize() +
+            "\n\tMax Objects in Buffer: " + sc.getNetwork().getMaxObjectsInBuffer() +
+            "\n\tSplit Buffer Timeout: " + sc.getNetwork().getSplitBufferTimeout());
         
         /* Startup message log */
         Logger.getLogger("sh.bob.gob.server").info("Connection control: Starting");
@@ -168,10 +177,12 @@ public final class Main {
         /* Create the loggers and add the FileHandler.
          */
         Logger serverlogger = Logger.getLogger("sh.bob.gob.server");
+        serverlogger.getParent().setLevel(Level.parse(logconf.getLogLevel()));
         serverlogger.setLevel(Level.parse(logconf.getLogLevel()));
         serverlogger.addHandler(fh);
         
         Logger sharedlogger = Logger.getLogger("sh.bob.gob.shared");
+        sharedlogger.getParent().setLevel(Level.parse(logconf.getLogLevel()));
         sharedlogger.setLevel(Level.parse(logconf.getLogLevel()));
         sharedlogger.addHandler(fh);
     }
