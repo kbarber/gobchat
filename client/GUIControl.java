@@ -90,6 +90,10 @@ public class GUIControl {
         caControl.userMessage(un, output);
     }
     
+    public void clearTextArea() {
+        caControl.clearTextArea();
+    }
+    
     public void addUser(String un) {
         ulControl.addUser(un);
     }
