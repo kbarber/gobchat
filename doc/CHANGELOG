@@ -21,6 +21,7 @@ Features
 - Room list helpers, including auto focusing on primary text fields (see sf 
 #831685)
 - Auto-restart upon exception (see sf #889516)
+- Increased robustness of MessageBox communication
 
 Bug Fixes
 
