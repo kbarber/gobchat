@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<project name="Gob Online Chat" basedir="." default="all">
+
+    <target name="init">
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="." destdir="." debug="true" deprecation="true">
+        </javac>
+    </target>
+
+    <target name="jar" depends="init,compile">
+        <jar jarfile="server.jar" compress="true" basedir="." manifest="manifests/server.mf">
+            <include name="server/*.class"/>
+        </jar>
+        <jar jarfile="website/client.jar" compress="true" basedir="." manifest="manifests/client.mf">
+            <include name="client/*.class"/>
+        </jar>        
+    </target>
+
+    <target name="all" depends="init,jar,javadoc" description="Build everything.">
+        <echo message="Built server and client, and packaged. Created javadoc."/>
+    </target>
+
+    <target name="test" depends="init,all" description="Try running it.">
+        <!-- Nothing yet-->
+    </target>
+
+    <target name="javadoc" depends="init" description="Javadoc for my API.">
+        <mkdir dir="apidoc"/>
+        <javadoc packagenames="server.*,client.*" destdir="apidoc">
+            <sourcepath>
+                <pathelement location="."/>
+            </sourcepath>
+        </javadoc>
+    </target>
+
+    <target name="clean" depends="init" description="Clean all build products.">
+        <delete>
+            <fileset dir=".">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+        <delete file="website/client.jar"/>
+        <delete file="server.jar"/>
+        <delete dir="apidoc"/>
+    </target>
+
+</project>
