@@ -1,7 +1,7 @@
 Summary: A simple java based client/server chat program
 Name: gobchat
 Version: 0.4
-Release: 1
+Release: 0
 License: GNU
 Group: Application/Internet
 Source: gobchat-0.4.tar.gz
@@ -38,6 +38,8 @@ install -m644 website/client.jar website/index.html website/gobapplet.html $RPM_
 install -m644 doc/* $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 install -m644 logrotate/gob $RPM_BUILD_ROOT/etc/logrotate.d/gob
 install -m644 config/gobd.conf.xml $RPM_BUILD_ROOT/etc/gobd/gobd.conf.xml
+install -m644 config/serverconf.jar $RPM_BUILD_ROOT/usr/share/java/gob
+install -m644 client/app.jar $RPM_BUILD/usr/share/java/gob
 cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 
 %clean
