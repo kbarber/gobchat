@@ -54,8 +54,6 @@ chgrp gob /var/log/gob
 %preun
 
 %postun
-/usr/sbin/userdel gob
-
 
 %files
 %defattr(-,root,root)
