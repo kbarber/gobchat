@@ -68,6 +68,22 @@ Section "Gob Online Chat Core"
 
 SectionEnd
 
+Section "Configuration"
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  
+  File "..\config\gobd.conf.xml"
+  File "..\config\serverconf.jar"
+
+  ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$R1" "JavaHome"
+  StrCpy $R0 "$R0\bin\javaw.exe"
+
+  CreateShortCut "$SMPROGRAMS\Gob Online Chat\Gob Server Configuration.lnk" "$R0" '-jar "C:\Program Files\Gob Online Chat\serverconf.jar"'
+
+SectionEnd
+
 Section "Client"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
@@ -87,7 +103,6 @@ Section "Server"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
-  File "..\config\gobd.conf.xml"
   File "..\daemon\GobServerWin.exe"
   File "..\daemon\server.jar"
 
