@@ -57,8 +57,11 @@ public class ClientCommand {
             /* See if the user registration is valid */
             if(userData.insertData(un, sc)) {
                 /* Send a message to all users about the new user */
-                messageAll("signup", un);
+                messageAllExcept("signup", un, sc);
 
+                /* List all users currently logged in */
+                clientList("*", sc);
+                
                 /* Notify on the terminal that new user has signed up */
                 Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
             } else {
@@ -185,6 +188,25 @@ public class ClientCommand {
         /* Cycle through each SocketChannel, and message each one in turn */
         for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
             message(type, msg, (SocketChannel)socketchannels[loop]);
+        }
+    }
+    
+    /**
+     * This methods is the same as a messageAll, yet it skips the specified
+     * exception.
+     */
+    private void messageAllExcept(String type, String msg, SocketChannel exception) {
+        /* Obtain a list of all SocketChannels */
+        Object[] socketchannels = userData.listSockets();
+
+        /* Cycle through each SocketChannel, and message each one in turn */
+        for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
+            /* Make sure we don't message the exception. Simple */
+            if(socketchannels[loop].equals(exception)) {
+                continue;
+            } else {
+                message(type, msg, (SocketChannel)socketchannels[loop]);
+            }
         }
     }
 }

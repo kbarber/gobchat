@@ -21,6 +21,9 @@ public class GUIControl {
     private JButton bDisconnect;
     private JLabel lConnectionStatus;
     private JTextArea taErrorOutput;
+    private JTabbedPane tbMain;
+    private JTextField tfUserName;
+    private JTextField tfSendPrep;
     
     private int connectionStatus;
     
@@ -33,13 +36,16 @@ public class GUIControl {
     public static int DISCONNECTED = 4;
     
     /** Creates a new instance of GUIControl */
-    public GUIControl(UserListControl ul, ChatAreaControl ca, JButton con, JButton dis, JLabel constat, JTextArea erroroutput) {
+    public GUIControl(UserListControl ul, ChatAreaControl ca, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep) {
         ulControl = ul;
         caControl = ca;
         bConnect = con;
         bDisconnect = dis;
         lConnectionStatus = constat;
         taErrorOutput = erroroutput;
+        tbMain = tabbedpane;
+        tfUserName = username;
+        tfSendPrep = sendprep;
     }
     
     public void setConnected(int status) {
@@ -55,11 +61,20 @@ public class GUIControl {
                 bConnect.setEnabled(false);
                 bDisconnect.setEnabled(true);                
                 lConnectionStatus.setText("Connecting ...");
+                
+                /* And disable changing the username field */
+                tfUserName.setEditable(false);
                 break;
             case 2: // Connected
                 bConnect.setEnabled(false);
                 bDisconnect.setEnabled(true);     
                 lConnectionStatus.setText("Connected");
+                
+                /* Now open the lobby tab */
+                tbMain.setSelectedIndex(1);
+                
+                /* And focus on the sendprep area */
+                tfSendPrep.requestFocusInWindow();
                 break;
             case 3: // Disconnecting   
                 bConnect.setEnabled(true);
@@ -70,6 +85,12 @@ public class GUIControl {
                 bConnect.setEnabled(true);
                 bDisconnect.setEnabled(false);
                 lConnectionStatus.setText("Disconnected: " + reason);
+                
+                /* And enable the username field */
+                tfUserName.setEditable(true);
+                
+                /* And now request focus if this tab is open */
+                tfUserName.requestFocusInWindow();
                 break;
         }
     }

@@ -128,7 +128,7 @@ public class ClientConnectionControl extends Thread {
                 if(channel.finishConnect()) {
                     break;
                 } else {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 }
             }
             
@@ -139,13 +139,9 @@ public class ClientConnectionControl extends Thread {
         /* Now signup */
         try {
             channel.write(encoder.encode(CharBuffer.wrap("signup:" + conInfo.getUsername() + "\n")));
-            channel.write(encoder.encode(CharBuffer.wrap("list:*\n")));
         } catch (Exception e) {
             guiControl.printError("Problem with signup: " + e);
         }
-
-        /* Inform the user we are connected */
-        guiControl.setConnected(guiControl.CONNECTED);
         
         /* Now register this channel with a selector */
         try {
@@ -154,6 +150,11 @@ public class ClientConnectionControl extends Thread {
         } catch (Exception e) {
             guiControl.printError("Problem with registering selector: " + e);
         }
+
+        /* Inform the user we are connected */
+        guiControl.setConnected(guiControl.CONNECTED);
+            
+        /* Todo: Need to have a better means of interrupting, or at least clean up this one */
         
         /* 
          * This loop is responsible for receiving the server messages
@@ -165,7 +166,7 @@ public class ClientConnectionControl extends Thread {
             
             try {
                 /* Wait until there is something to read */
-                selectResponse = selector.select(500);
+                selectResponse = selector.select(1000);
             } catch (Exception e) {
                 guiControl.printError("Problem with select: " + e);
             }
@@ -280,6 +281,9 @@ public class ClientConnectionControl extends Thread {
                                     
                                     /* Display the user message in the GUI */
                                     guiControl.userMessage(param[0], param[1]);
+                                } else if(command[1].equals("fail")) {
+                                    /* Send the error */
+                                    guiControl.statusMessage("Server: " + command[2]);
                                 } else {
                                     /* Just send any received messages to the textarea for now */
                                     guiControl.statusMessage(serverMsg[loop]);
@@ -300,11 +304,13 @@ public class ClientConnectionControl extends Thread {
          * I need to have a closer look at the way we do this, because this seems
          * ugly.
          */
+        /*
         try {
             sleep(30000);
         } catch(Exception e) {
             guiControl.printError("Problem with sleep: " + e);
         }
+         */
         
         /* Attempt to close the connection, wait till it is closed */
         try {
@@ -325,11 +331,11 @@ public class ClientConnectionControl extends Thread {
             guiControl.printError("Problem disconnecting: " + e);
         }
         
-        /* Update the control tab, we are disconnected */
-        guiControl.setConnected(guiControl.DISCONNECTED);
-        
         /* Put a message in the text area, stating we have disconnected */
         guiControl.statusMessage("Disconnected");
+        
+        /* Update the control tab, we are disconnected */
+        guiControl.setConnected(guiControl.DISCONNECTED);
     
     } /* End of run() */
 }
