@@ -6,25 +6,30 @@
 
 package server;
 
-import java.io.*;
-import java.net.*;
-import java.nio.*;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.*;
-import java.nio.charset.*;
-import java.util.*;
-import java.util.regex.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
- * This is the object responsible for accepting user connections and accepting all user commands.
+ * This is the object responsible for accepting user connections and accepting 
+ * all user commands.
  *
  * @author  Ken Barber
  */
 public class ConnectionControl {
     
     /**
-     * The port for the server to listen on - this will eventually be dynamic. 
+     * The port for the server to listen on - this will eventually be set at runtime instead of static. 
      */
-    private static final int serverPort = 6666;
+    private int serverPort;
     
     /** 
      * These are the pointers used for the server networking 
@@ -41,12 +46,14 @@ public class ConnectionControl {
     /** 
      * Creates a new instance of ConnectionControl.
      */
-    public ConnectionControl() {
+    public ConnectionControl(int serverport) {
         
         /* 
          * The following code prepares all the necessary objects for 
          * network programming
          */
+        
+        serverPort = serverport;
         
         /* Prepare a ServerSocketChannel, and register it with a selector */
         listenServerSC = readyServerSocketChannel();
