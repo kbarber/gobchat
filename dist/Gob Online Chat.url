@@ -1,0 +1,5 @@
+[DEFAULT]
+BASEURL=http://localhost/gob/index.html
+[InternetShortcut]
+URL=http://localhost/gob/index.html
+Modified=406624B612E8C3013E
