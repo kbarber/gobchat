@@ -6,13 +6,13 @@
 
 package server;
 
-import java.io.*;
-import java.net.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.nio.charset.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.util.regex.Pattern;
 
 /**
  * This object deals with all client commands.
@@ -31,10 +31,12 @@ public class ClientCommand {
     
     /** 
      * Creates a new instance of ClientCommand.
+     *
+     * @param userdata UserData to use for instantiation.
      */
-    public ClientCommand(UserData ud) {
+    public ClientCommand(UserData userdata) {
         /* Keep a local pointer to the user data object */
-        userData = ud;
+        userData = userdata;
 
         /* Setup charset,decoder and encoder for use by networking commands*/
         charset = Charset.forName("ISO-8859-1");
@@ -44,32 +46,40 @@ public class ClientCommand {
 
     /** 
      * Responsible for the proper signup of new clients. 
+     *
+     * @param username Username of client
+     * @param socketchannel SocketChannel of client
      */
-    public void clientSignup(String un, SocketChannel sc) {
+    public void clientSignup(String username, SocketChannel socketchannel) {
         /* Check that the username is valid */
-        if(Pattern.matches("[a-zA-Z0-9_+-]{3,15}", un) == false) {
+        if(Pattern.matches("[a-zA-Z0-9_+-]{3,15}", username) == false) {
             /* Name is invalid, give error */
-            returnError("I\'m sorry, usernames must be between 3 and 15 characters and only alphanumeric", sc);
+            returnError("I\'m sorry, usernames must be between 3 and 15 " +
+                "characters and only alphanumeric", socketchannel);
             
             /* Notify on terminal */
-            Main.consoleOutput("Attempt to sign-in with invalid username (not shown)");
+            Main.consoleOutput("Attempt to sign-in with invalid username " +
+                "(not shown)");
         } else {
             /* See if the user registration is valid */
-            if(userData.insertName(un, sc)) {
+            if(userData.insertName(username, socketchannel)) {
                 /* Send a message to all users about the new user */
                 /* messageAllExcept("signup", un, sc); */
 
                 /* List all users currently logged in */
-                clientRoomlist("*", sc);
+                clientRoomlist("*", socketchannel);
                 
                 /* Notify on the terminal that new user has signed up */
-                Main.consoleOutput("New user signed in: \"" + un + "\"" + " from " + userData.getHostIP(sc));
+                Main.consoleOutput("New user signed in: \"" + username + "\"" + 
+                    " from " + userData.getHostIP(socketchannel));
             } else {
                 /* Let the user know that there was an error with signup. */
-                returnError("Already registered, or username taken", sc);
+                returnError("Already registered, or username taken", 
+                    socketchannel);
 
                 /* Notify on the terminal about the new user */
-                Main.consoleOutput("Attempt to sign in with duplicate username: " + un);            
+                Main.consoleOutput("Attempt to sign in with duplicate " +
+                    "username: " + username);            
             }
         }
     }
@@ -90,10 +100,13 @@ public class ClientCommand {
             /* Get the username using the given SocketChannel */
             String userName = userData.getName(sc);
 
-            Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+            //Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
         
             /* Let every room know that the user has quit */
             messageUserRooms("quit", userName, userName + "," + pa);
+            
+            /* We need to part every room */
+            partAllRooms(userName);
             
             /* Remove the users entry from the UserData object */
             userData.deleteName(sc);
@@ -342,6 +355,31 @@ public class ClientCommand {
             } else {
                 message(type, msg, (SocketChannel)socketchannels[loop]);
             }
+        }
+    }
+    
+    /**
+     * This method will part each room a user belongs to.
+     */
+    private void partAllRooms(String username) {
+        /* Obtain a list of all rooms for username */
+        Object[] rooms = userData.listRooms(username);
+        
+        Main.consoleOutput("The user: " + username + " is parting all rooms");
+        
+        /* Cycle through each room, and part each in turn */
+        for(int loop = 0; loop <= (rooms.length -1); loop++) {
+            
+            /* Update the userdata bit */
+            userData.partRoom(username, (String)rooms[loop]);            
+            
+            Main.consoleOutput("Check if the room: " + rooms[loop] + " needs to be closed, with users: " + userData.listNames((String)rooms[loop]).length);
+            
+            /* If last in room, remove room */
+            if((userData.listNames((String)rooms[loop])).length == 0) {
+                Main.consoleOutput("Now parting: " + rooms[loop]);
+                userData.deleteRoom((String)rooms[loop]);
+            }            
         }
     }
 }
