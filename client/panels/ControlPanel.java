@@ -15,6 +15,7 @@ import client.*;
 
 
 /**
+ * This panel holds widgets which allow you to connect, disconnect, change your username etc.
  *
  * @author  ken
  */
@@ -24,15 +25,17 @@ public class ControlPanel extends javax.swing.JPanel {
     private ClientConnectionControl conControl;
     private String hostname;
     
-    /** Creates new form ChatPanel */
+    /** 
+     * Creates new form ChatPanel 
+     *
+     * @param gui The GUIControl interface to utilise
+     * @param ccc The ClientConnectionControl interface
+     * @param host The hostname of the gob server
+     */
     public ControlPanel(GUIControl gui, ClientConnectionControl ccc, String host) {
         guiControl = gui;
         conControl = ccc;
         hostname = host;
-        
-        if(conControl == null) {
-            System.out.println("conControl is null! (ControlPanel constructor)");
-        }   
         
         if(hostname.length() > 0) {
         } else {

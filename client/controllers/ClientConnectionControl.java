@@ -1,5 +1,5 @@
 /*
- * ConnectionControl.java
+ * ClientConnectionControl.java
  *
  * Created on 11 January 2003, 21:39
  */
@@ -8,7 +8,6 @@ package client.controllers;
 
 import client.network.*;
 import client.controllers.*;
-import client.*;
 
 import javax.swing.*;
 import java.io.*;
@@ -37,21 +36,19 @@ public class ClientConnectionControl {
     /* The interrupt state */
     private boolean interruptState;
     
+    /* Thread vars */
     private ServerConnectionThread scThread;
     private Thread threadInstance;
         
     /** 
      * Creates a new instance of ConnectionControl.
      *
-     * @param ci ConnectionInfo object
-     * @param ca ClientApplet object
+     * @param gc GUIControl object for interfacing with the GUI
+     * @param ci ConnectionInfo object to work with
      */
-    public ClientConnectionControl(ClientApplet ca, ConnectionInfo ci) {
+    public ClientConnectionControl(GUIControl gc, ConnectionInfo ci) {
         conInfo = ci;
-        guiControl = ca.guiControl;
-        if(guiControl == null) {
-            System.out.println("guiControl is null!");
-        }
+        guiControl = gc;
     }
     
     /**
@@ -64,7 +61,11 @@ public class ClientConnectionControl {
     }
     
     /**
-     * Code to spawn a new connect thread, and connect to the server.
+     * Code to spawn a new connect thread, and connect to the server as the username
+     * chosen.
+     *
+     * @param username The username to connect as
+     * @param gobserver The host to connect to
      */
     public void serverConnect(String username, String gobserver) {
         
@@ -90,7 +91,5 @@ public class ClientConnectionControl {
         scThread.setInterrupt();
         threadInstance.interrupt();
     }
-
-        
 
 }

@@ -23,12 +23,9 @@ import client.*;
  */
 public class ClientApplet extends javax.swing.JApplet {
     
-    //private MsgAreaControl maControl;
-    //private UserListControl ulControl;
     private ConnectionInfo conInfo;
-    public ClientConnectionControl conControl;
-    public GUIControl guiControl;
-    
+    private ClientConnectionControl conControl;
+    private GUIControl guiControl;
     private String Hostname;
     
     /** 
@@ -50,26 +47,6 @@ public class ClientApplet extends javax.swing.JApplet {
         /* Build all Forte generated components */
         initComponents();
         
-        /* Initialise the connection info object */
-        //conInfo = new ConnectionInfo();
-        
-        /* Create a new concontrol object */
-        //conControl = new ClientConnectionControl(conInfo, guiControl);
-        
-        /* Obtain the "host" parameter from the web page hosting the
-         * applet */
-        //if(getParameter("host").length() > 0) {
-            /* Set the host parameter as the host to connect to */
-        
-        //    Hostname = getParameter("host");
-        //} else {
-          /* Else just default to localhost */
-        //    Hostname = "localhost";
-        //}
-        
-        /* Initialise guicontrol for the conncetion thread to use */
-        //guiControl = new GUIControl(tbMain, conControl, Hostname);        
-                            
     }
     
     /** This method is called from within the constructor to
@@ -92,30 +69,6 @@ public class ClientApplet extends javax.swing.JApplet {
 
     }//GEN-END:initComponents
 
-    /** 
-     * Deal with someone hitting the enter key in the SendPrep area.
-     */
-    /**
-     * Deal with someone pushing the send button.
-     */
-    /**
-     * Deal with someone hitting the disconnect button.
-     */
-    /**
-     * Deal with someone hitting the connect button.
-     */
-    /**
-     * Send the message typed into the PrepArea.
-     */
-    private void sendPreppedMessage() {
-        /*
-        if(pLobby.tfSendPrep.getText().length() != 0) {
-            conControl.sendMessage(pLobby.tfSendPrep.getText());
-            pLobby.tfSendPrep.setText("");
-        }
-         */
-    }
-    
     /**
      * The method first executed after the object has been initiated.
      */
@@ -127,30 +80,9 @@ public class ClientApplet extends javax.swing.JApplet {
         guiControl = new GUIControl(tbMain, this.getParameter("host"));
         
         /* Create a new concontrol object */
-        conControl = new ClientConnectionControl(this, conInfo);
+        conControl = new ClientConnectionControl(guiControl, conInfo);
         
         guiControl.displayGUI(conControl);
-        
-        System.out.println("End of stuff!");
-        
-        /* Obtain the "host" parameter from the web page hosting the
-         * applet */
-        //if(this.getParameter("host").length() > 0) {
-            /* Set the host parameter as the host to connect to */
-        
-        //    pControl.tfGobServer.setText(getParameter("host"));
-            //Hostname = this.getParameter("host");
-        //} else {
-            /* Else just default to localhost */
-        //    pControl.tfGobServer.setText("localhost");
-        //    Hostname = "localhost";
-        //}
-        
-        /* Initialise guicontrol for the conncetion thread to use */
-        
-        
-        /* Focus on the username textfield */
-        //pControl.tfUserName.requestFocusInWindow();
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables

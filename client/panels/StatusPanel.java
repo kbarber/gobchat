@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
+ * This panel is used for outputting debugging and server messages, that don't
+ * belong to a particular panel.
  *
  * @author  ken
  */

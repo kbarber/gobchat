@@ -14,6 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
+ * This panel is the group chat panel, for areas of chat that have multiple people
+ * involved.
  *
  * @author  ken
  */
@@ -22,7 +24,12 @@ public class GroupChatPanel extends javax.swing.JPanel {
     private GUIControl guiControl;
     private ClientConnectionControl ccControl;    
     
-    /** Creates new form ChatPanel */
+    /** 
+     * Creates new form ChatPanel 
+     *
+     * @param gui The GUIControl interface
+     * @param ccc The ClientConnectionControl interface
+     */
     public GroupChatPanel(GUIControl gui, ClientConnectionControl ccc) {
         guiControl = gui;
         ccControl = ccc;

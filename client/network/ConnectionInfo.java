@@ -23,30 +23,54 @@ public class ConnectionInfo {
     private String username;
     private String server;
     
-    /** Creates a new instance of ConnectionInfo */
+    /** 
+     * Creates a new instance of ConnectionInfo 
+     */
     public ConnectionInfo() {
     }
     
+    /**
+     * Returns the socket channel we are currently using.
+     */
     public SocketChannel getSocketChannel() {
         return socketChannel;
     }
     
+    /**
+     * Sets the socket channel we are currently using.
+     */
     public void setSocketChannel(SocketChannel sc) {
         socketChannel = sc;
     }
     
+    /**
+     * Return the current username.
+     */
     public String getUsername() {
         return username;
     }
     
+    /**
+     * Sets the current username.
+     *
+     * @param un Username to set
+     */
     public void setUsername(String un) {
         username = un;
     }
     
+    /**
+     * Gets the current server.
+     */
     public String getServer() {
         return server;
     }
     
+    /**
+     * Sets the current server
+     *
+     * @param hostname Hostname of server
+     */
     public void setServer(String hostname) {
         server = hostname;
     }

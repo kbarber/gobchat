@@ -11,7 +11,10 @@ import java.util.*;
 
 
 /**
- * This object is responsible for the maintenance of the user list in the GUI.
+ * This object controls a user list in a chat panel.
+ *
+ * This class takes an existing JList during construction, and allows you to
+ * add, delete and remove users.
  *
  * @author  Ken Barber
  */
@@ -26,7 +29,6 @@ public class UserListControl {
      */
     public UserListControl(JList jl) {
         UserList = jl;
-        
     }
     
     /**
@@ -57,7 +59,7 @@ public class UserListControl {
     }
     
     /**
-     * Empty the list of users.
+     * Empty the list of users. Thread safe.
      */
     public synchronized void clearList() {
         Vector blank = new Vector();

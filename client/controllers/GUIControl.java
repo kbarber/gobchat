@@ -6,14 +6,14 @@
 
 package client.controllers;
 
+import client.components.*;
+import client.panels.*;
+
 import javax.swing.*;
 import java.util.*;
 
-import client.components.*;
-import client.panels.*;
-import client.*;
-
 /**
+ * This class builds the GUI and provides an interface for control.
  *
  * @author  Ken Barber
  */
@@ -44,13 +44,23 @@ public class GUIControl {
     
     public static int DISCONNECTED = 4;
     
-    /** Creates a new instance of GUIControl */
-    public GUIControl(javax.swing.JTabbedPane tbm, String hn) {
+    /** 
+     * Creates a new instance of GUIControl 
+     *
+     * @param tbm Main tabbed pane provided in the applet
+     * @param hn Hostname to connect to
+     */
+    public GUIControl(JTabbedPane tbm, String hn) {
         tbMain = tbm;
         hostname = hn;
         
     }
     
+    /**
+     * This method will start the display of the GUI
+     *
+     * @param cc Control interface for networking and connection
+     */
     public void displayGUI(ClientConnectionControl cc) {
         conControl = cc;
         
@@ -69,10 +79,21 @@ public class GUIControl {
         
     }
     
+    /**
+     * Set connection status
+     *
+     * @param status Status (from GUIControl static methods) to change to
+     */
     public void setConnected(int status) {
         setConnected(status, "No reason");
     }
     
+    /**
+     * Set connection status
+     *
+     * @param status Status (from GUIControl static methods) to change to
+     * @param reason Reason for status change
+     */
     public void setConnected(int status, String reason) {
         
         connectionStatus = status;
@@ -124,36 +145,70 @@ public class GUIControl {
         }
     }
     
+    /**
+     * Obtain the connection status
+     */
     public int getConnected() {
         return connectionStatus;
     }
     
+    /**
+     * Print an error to the status panel
+     *
+     * @param output Error to output to the status panel text area
+     */
     public void printError(String output) {
         pStatus.taErrorOutput.append(new Date().toString() + ": " + output + "\n");
     }
     
+    /**
+     * Send a status message 
+     *
+     * @param output Message to send
+     */
     public void statusMessage(String output) {
         maControl.statusMessage(output);
     }
     
+    /**
+     * Send a usermessage to the chosen chat panel
+     *
+     * @param un Username to send from
+     * @param output Message contents
+     */
     public void userMessage(String un, String output) {
         maControl.userMessage(un, output);
     }
     
+    /**
+     * Clear the chosen message text area
+     */
     public void clearTextArea() {
         maControl.clearTextArea();
     }
     
+    /**
+     * Add a new user to the chat area's user list control.
+     *
+     * @param un Username to add
+     */
     public void addUser(String un) {
         ulControl.addUser(un);
     }
     
+    /**
+     * Delete a user from the chat area's user list control.
+     *
+     * @param un Username to remove
+     */
     public void deleteUser(String un) {
         ulControl.deleteUser(un);
     }
     
+    /**
+     * Clear the user list in the chat area.
+     */
     public void clearList() {
         ulControl.clearList();
     }
-    
 }

@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
+ * This panel is used to list the available chat rooms.
  *
  * @author  ken
  */

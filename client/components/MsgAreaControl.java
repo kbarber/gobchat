@@ -10,8 +10,11 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * This object controls the main lobby JTextArea, provides mechanisms for outputting
- * messagse and status updates.
+ * This object controls a chat JTextArea, provides mechanisms for outputting
+ * messages and status updates.
+ *
+ * This object does not extend a JTextArea, it accepts an already available
+ * JTextArea during construction.
  *
  * @author  Ken Barber
  */
@@ -22,17 +25,17 @@ public class MsgAreaControl {
     /** 
      * Creates a new instance of ChatAreaControl 
      *
-     * @param ta The JTextArea this object will control
+     * @param ta The JTextArea this MsgAreaControl will take control of
      */
     public MsgAreaControl(JTextArea ta) {
         chatArea = ta;
     }
     
     /**
-     * This is a thread safe means to add a user message to the lobby
+     * This is a thread safe means to output a user message to the JTextArea
      * 
      * @param user The username of the message sender
-     * @param msg The message sent
+     * @param msg The message to send to the JTextArea
      */
     public synchronized void userMessage(String user, String msg) {
         if(chatArea.getText().length() != 0) {
@@ -45,7 +48,7 @@ public class MsgAreaControl {
     }
     
     /**
-     * This is a thread safe means to output a status message to the lobby.
+     * This is a thread safe means to output a status message to the text area.
      *
      * @param msg The status message to output
      */
@@ -60,7 +63,7 @@ public class MsgAreaControl {
     }
     
     /**
-     * Clear the text area.
+     * Clear the text area. Thread safe.
      */
     public synchronized void clearTextArea() {
         chatArea.setText(null);

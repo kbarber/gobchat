@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
+ * The PrivChatPanel is for individual one-on-one chat.
  *
  * @author  ken
  */

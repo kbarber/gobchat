@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
+ * This class is a thread class intended to connect to the Gob server and 
+ * manage all communication.
  *
  * @author  ken
  */
@@ -37,7 +39,6 @@ public class ServerConnectionThread implements Runnable {
     public ServerConnectionThread(GUIControl gc, ConnectionInfo ci) {
         guiControl = gc;
         connectionInfo = ci;
-        
     }
     
     /** 
