@@ -67,10 +67,10 @@ public class ClientConnectionControl extends Thread {
     }
         
           
-    // The main part of the thread
+    /* The main part of the thread */
     public void run() {
         
-        // Thread is not to be interrupted
+        /* Thread is not to be interrupted. */
         interruptState = false;
         
         // This is the character encoding parts required
@@ -246,28 +246,28 @@ public class ClientConnectionControl extends Thread {
                 }
             }
         }
-        
-        // This is a fix for a race condition. Because setting the interrupt
-        // will make the script fall through, sending a Thread interrupt needs to have 
-        // something it interrupts. Otherwise, it will interrupt the disconnction
-        // below.
-        //
-        // I need to have a closer look at the way we do this, because this seems
-        // ugly.
+
+        /*
+         * This is a fix for a race condition. Because setting the interrupt
+         * will make the script fall through, sending a Thread interrupt needs to have 
+         * something it interrupts. Otherwise, it will interrupt the disconnction
+         * below.
+         *
+         * I need to have a closer look at the way we do this, because this seems
+         * ugly.
+         */
         try {
             sleep(30000);
         } catch(Exception e) {
             guiControl.printError("Problem with sleep: " + e);
         }
         
-        guiControl.printError("Good, I got here");
-        
-        // Attempt to close the connection, wait till it is closed
+        /* Attempt to close the connection, wait till it is closed */
         try {
             selector.close();
             channel.close();
             
-            // Inform the user we are disconnecting
+            /* Inform the user we are disconnecting */
             guiControl.setConnected(guiControl.DISCONNECTING);
             
             for(int loop = 0; loop < 120; loop++) {
@@ -281,8 +281,11 @@ public class ClientConnectionControl extends Thread {
             guiControl.printError("Problem disconnecting: " + e);
         }
         
-        // guiControl.setConnected(guiControl.DISCONNECTING);
+        /* Update the control tab, we are disconnected */
         guiControl.setConnected(guiControl.DISCONNECTED);
+        
+        /* Put a message in the text area, stating we have disconnected */
+        guiControl.statusMessage("Disconnected");
     
-    }
+    } /* End of run() */
 }
