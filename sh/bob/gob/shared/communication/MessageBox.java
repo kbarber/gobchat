@@ -14,14 +14,13 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.zip.*;
 
 /**
  *
  * @author  ken
  */
 public class MessageBox {
-    
-    
     
     private XMLDecoder xmlDecoder;
     private ByteBuffer readBuffer;
@@ -95,7 +94,7 @@ public class MessageBox {
         Logger.getLogger("sh.bob.gob.shared").finest("Now encoding data");
         ByteBuffer bb = encodeBean(obj);
         Logger.getLogger("sh.bob.gob.shared").finest("Now sending data");
-
+        
         try {
             channel.write(bb);
         } catch (Exception ex) {
@@ -129,33 +128,54 @@ public class MessageBox {
         
         buffer.get(bytespace);
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Contents of buffer: " + new String(bytespace));
+        Logger.getLogger("sh.bob.gob.shared").finest("Contents of data just received: \n" + new String(bytespace));
         
         /* Take the SplitBuffer and prepend this to the downloaded buffer */
         if(sb.getSplitBuffer() != null) {
+            Logger.getLogger("sh.bob.gob.shared").finest("Prepending split buffer: \n" + new String(sb.getSplitBuffer()));
+            System.out.println("Prepending split buffer (" + sb.getSplitBuffer().length + "): \n" + new String(sb.getSplitBuffer()));
             bytespace = (new String(sb.getSplitBuffer()) + new String(bytespace)).getBytes();
+            bufferlength = bytespace.length;
         }
-        
-        /* Now lets find the nulls. Cycle through each byte, keep a Vector where
-         * we record where each null is. */
-        Vector nullLocations = new Vector();
-        int lastNullLocation = -1;
-        
-        for(int i = 0; i < bufferlength; i++) {
-            if(bytespace[i] == 0) {
-                lastNullLocation = i;
-                Logger.getLogger("sh.bob.gob.shared").finest("Found a null at location: " + lastNullLocation);
-                nullLocations.add(new Integer(lastNullLocation));
-            }
-        }
-        
-        Logger.getLogger("sh.bob.gob.shared").finest("Number of nulls: " + nullLocations.size());
         
         Logger.getLogger("sh.bob.gob.shared").finest("Buffer contains: \n" + new String(bytespace));
         
+        /* Now lets find the double nulls. Cycle through each byte, keep a Vector where
+         * we record where each double null is. */
+        Vector nullLocations = new Vector();
+        int lastNullLocation = -1;
+        
+        if(bufferlength > 1) { // If the buffer length is 1 or less, then there can't be a double null!
+            Logger.getLogger("sh.bob.gob.shared").finest("Buffer length is greater than 1 (" + bufferlength + ")");
+            
+            String rawvalue = "";
+            
+            for(int i = 0; i < (bufferlength - 1); i++) {
+                rawvalue = rawvalue + bytespace[i] + ",";
+                if(bytespace[i] == 0) {
+                    Logger.getLogger("sh.bob.gob.shared").finest("Found a single null at location: " + i);
+                }
+                if((bytespace[i] == 0) && (bytespace[i+1] == 0)) {
+                    lastNullLocation = i;
+                    Logger.getLogger("sh.bob.gob.shared").finest("Found a double null at location: " + lastNullLocation);
+                    nullLocations.add(new Integer(lastNullLocation));
+                }
+            }
+            rawvalue = rawvalue + bytespace[bufferlength - 1];
+            
+            Logger.getLogger("sh.bob.gob.shared").finest("Received compressed packet (" + bufferlength + "): " + rawvalue);
+            System.out.println("Received compressed packet (" + bufferlength + "): " + rawvalue);
+        }
+        
+        Logger.getLogger("sh.bob.gob.shared").finest("Number of double nulls: " + nullLocations.size());
+        
         /* Okay, if there is no nulls - then just return the bufferdata (if there is any) */
         if(nullLocations.size() == 0) {
-            sb.setSplitBuffer(bytespace);
+            if(bytespace.length > 0) {
+                sb.setSplitBuffer(bytespace);
+            } else {
+                sb.setSplitBuffer(null);
+            }
             return new Object[] {sb};
         }
 
@@ -163,18 +183,19 @@ public class MessageBox {
          * set the splitbuffer to null and add the split buffer to the return 
          * Vector */
         Vector returnArrayVector = new Vector();
-        if((lastNullLocation + 1) == bytespace.length) {
-            /* The last null is at the end of the buffer, so there is no split */
+        if(lastNullLocation == (bytespace.length - 2)) {
+            /* The last double null is at the end of the buffer, so there is no split */
             sb.setSplitBuffer(null);
             returnArrayVector.add(sb);
         } else {
             /* The last null is not at the end, so we need to grab the end and
              * save it in the splitbuffer */
             
-            int startSplit = lastNullLocation + 1;
+            int startSplit = lastNullLocation + 2;
             int endSplit = bytespace.length - 1;
 
             sb.setSplitBuffer(extractByteArray(bytespace, startSplit, endSplit));
+            returnArrayVector.add(sb);
         }
          
         /* Now we need to parse through each block of data with the XMLDecoder
@@ -187,9 +208,27 @@ public class MessageBox {
             
             byte[] objectdata = extractByteArray(bytespace, startinglocation, nulllocation - 1);
             
-            startinglocation = nulllocation + 1;
             
-            ByteArrayInputStream is = new ByteArrayInputStream(objectdata);
+            /* Now decompress */
+            Inflater decompresser = new Inflater();
+            decompresser.setInput(objectdata);
+            byte[] tempbarray = new byte[8192];
+            int tempblength = 0;
+            try {
+                tempblength = decompresser.inflate(tempbarray);
+            } catch(Exception ex) {
+            }
+            decompresser.end();
+            byte decompbarray[] = extractByteArray(tempbarray, 0, tempblength - 1);
+            
+            Logger.getLogger("sh.bob.gob.shared").finest("Length of decompressed array: " + tempblength);
+            Logger.getLogger("sh.bob.gob.shared").finest("Decompressed data: " + new String(decompbarray));
+            System.out.println("Decompressed data: " + new String(decompbarray));
+            
+            startinglocation = nulllocation + 2;
+            
+//            ByteArrayInputStream is = new ByteArrayInputStream(objectdata);
+            ByteArrayInputStream is = new ByteArrayInputStream(decompbarray);
             
             xmlDecoder = new XMLDecoder(is, null, new exceptionListener());
             
@@ -257,23 +296,50 @@ public class MessageBox {
         int bblength = readBuffer.position();
         readBuffer.flip();
         
-        byte barray[] = new byte[bblength + 1];
+        byte barray[] = new byte[bblength];
         
         Logger.getLogger("sh.bob.gob.shared").finest("Pulling in data from readBuffer");
         readBuffer.get(barray, 0, bblength);
         
-        /* Append a null */
-        barray[barray.length - 1] = (byte)0;
+        /* Now compress */
+        Deflater compresser = new Deflater(Deflater.FILTERED);
+        compresser.setInput(barray);
+        compresser.finish();
+        byte tempbarray[] = new byte[bblength];
+        int tempblength = compresser.deflate(tempbarray);
+        byte compbarray[] = extractByteArray(tempbarray, 0, tempblength - 1, 2);
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Encoded XML output: " + new String(barray));
+        /* Append a double null */
+//        barray[barray.length - 1] = (byte)0;
+        compbarray[compbarray.length - 1] = (byte)0;
+        compbarray[compbarray.length - 2] = (byte)0;
         
-        return ByteBuffer.wrap(barray);
+        /* Lets pull out the rawvalue for debugging */
+        String rawvalue = "";
+        for(int i = 0; i < compbarray.length - 1; i++) {
+            rawvalue += compbarray[i] + ",";
+        }
+        rawvalue += compbarray[compbarray.length - 1];
+        
+        /* Print out the raw packet */
+        Logger.getLogger("sh.bob.gob.shared").finest("Sending compressed packet (" + compbarray.length + "): " + rawvalue); 
+        System.out.println("Sending compressed packet (" + compbarray.length + "): " + rawvalue);
+        
+        Logger.getLogger("sh.bob.gob.shared").finest("Encoded XML output (" + barray.length + "): \n" + new String(barray));
+        Logger.getLogger("sh.bob.gob.shared").finest("Encoded/Compressed XML output (" + compbarray.length + "): \n" + new String(compbarray));
+        
+//        return ByteBuffer.wrap(barray);
+        return ByteBuffer.wrap(compbarray);
     }
     
     private byte[] extractByteArray(byte[] ba, int start, int end) {
+        return extractByteArray(ba, start,  end, 0);
+    }
+    
+    private byte[] extractByteArray(byte[] ba, int start, int end, int buffer) {
             int lengthBA = (end - start) + 1;
             
-            byte[] newbuffer = new byte[lengthBA];
+            byte[] newbuffer = new byte[lengthBA + buffer];
             
             for(int i = start; i <= end; i++) {
                 newbuffer[i-start] = ba[i];
