@@ -1,1 +1,0 @@
-To display your license agreement, replace the license.txt file in your Install's directory.

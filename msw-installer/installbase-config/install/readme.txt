@@ -1,1 +1,0 @@
-To display your readme file, replace the readme.txt file in your Install's directory.
