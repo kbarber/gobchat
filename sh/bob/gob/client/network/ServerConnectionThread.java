@@ -39,6 +39,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.logging.*;
 import java.beans.*;
 
 /**
@@ -271,8 +272,11 @@ public class ServerConnectionThread implements Runnable {
                         try {
                             databean = mbox.receiveData(socketchannel, splitBuffer);
                         } catch(IOException ex) {
-                            guiControl.statusMessage("Exception when receiving data: " + ex);
-                            continue;
+                            Logger.getLogger("sh.bob.gob.client").severe("Exception when receiving data, channel has been closed: " + ex);
+                            guiControl.statusMessage("Exception when receiving data, channel has been closed: " + ex);
+                            /* Need to shutdown */
+                            setInterrupt();
+                            break;
                         }
 
                         if(databean == null) {
@@ -331,6 +335,7 @@ public class ServerConnectionThread implements Runnable {
                                 }
                             } else if(objectShortName.equals("RoomUserList")) {
                                 UserItem ui[] = ((RoomUserList)dataBean).getUsers();
+
                                 String userlist[] = new String[ui.length];
                                 for(int i2 = 0; i2 < ui.length; i2++) {
                                     userlist[i2] = ui[i2].getUserName();
