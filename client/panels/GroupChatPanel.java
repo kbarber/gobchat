@@ -60,6 +60,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
         spUsers = new javax.swing.JScrollPane();
         lUsers = new javax.swing.JList();
         bClose = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setLayout(null);
 
@@ -124,7 +125,22 @@ public class GroupChatPanel extends javax.swing.JPanel {
         add(bClose);
         bClose.setBounds(6, 4, 12, 12);
 
+        jLabel1.setText("Priv");
+        jLabel1.setToolTipText("Click here for a private chat");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
+
+        add(jLabel1);
+        jLabel1.setBounds(476, 2, 26, 15);
+
     }//GEN-END:initComponents
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        // Add your handling code here:
+    }//GEN-LAST:event_jLabel1MouseClicked
 
     private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
         // Add your handling code here:
@@ -184,6 +200,7 @@ public class GroupChatPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClose;
     public javax.swing.JButton bSendText;
+    private javax.swing.JLabel jLabel1;
     public javax.swing.JList lUsers;
     private javax.swing.JScrollPane spMsgHistory;
     private javax.swing.JSplitPane spMsgUsers;

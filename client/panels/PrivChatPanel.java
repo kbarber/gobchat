@@ -32,6 +32,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
         tfSendPrep = new javax.swing.JTextField();
         spMsgHistory = new javax.swing.JScrollPane();
         taMsgHistory = new javax.swing.JTextArea();
+        bClose = new javax.swing.JButton();
 
         setLayout(null);
 
@@ -71,9 +72,22 @@ public class PrivChatPanel extends javax.swing.JPanel {
         spMsgHistory.setViewportView(taMsgHistory);
 
         add(spMsgHistory);
-        spMsgHistory.setBounds(0, 0, 506, 300);
+        spMsgHistory.setBounds(0, 20, 506, 280);
+
+        bClose.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bCloseMouseClicked(evt);
+            }
+        });
+
+        add(bClose);
+        bClose.setBounds(6, 4, 12, 12);
 
     }//GEN-END:initComponents
+
+    private void bCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bCloseMouseClicked
+        // Add your handling code here:
+    }//GEN-LAST:event_bCloseMouseClicked
 
     private void tfSendPrepKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfSendPrepKeyPressed
         // Add your handling code here:
@@ -85,6 +99,7 @@ public class PrivChatPanel extends javax.swing.JPanel {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bClose;
     public javax.swing.JButton bSendText;
     private javax.swing.JScrollPane spMsgHistory;
     public javax.swing.JTextArea taMsgHistory;
