@@ -90,12 +90,14 @@ public class ClientCommand {
             /* Get the username using the given SocketChannel */
             String userName = userData.getName(sc);
 
+            Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+        
+            /* Let every room know that the user has quit */
+            messageUserRooms("quit", userName, userName + "," + pa);
+            
             /* Remove the users entry from the UserData object */
             userData.deleteName(sc);
-        
-            /* Let everyone know that the user has quit */
-            messageAll("quit", userName + "," + pa);
-        
+            
             /* Notify on the terminal that the user has quit */
             Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
             
@@ -281,6 +283,9 @@ public class ClientCommand {
         } 
     }
 
+    /**
+     * This method will message everyone in a room.
+     */
     private void messageRoom(String type, String room, String msg) {
         /* Obtain a list of all socketChannels in specified room */
         Object[] socketchannels = userData.listSockets(room);
@@ -291,6 +296,21 @@ public class ClientCommand {
             Main.consoleOutput("Type: " + type + " Room: " + room + " Msg: " + msg);
         }
     }
+    
+    /**
+     * This method will message each room a user belongs to.
+     */
+    private void messageUserRooms(String type, String username, String msg) {
+        /* Obtain a list of all rooms for username */
+        Object[] rooms = userData.listRooms(username);
+        
+        /* Cycle through each room, and message each on in turn */
+        for(int loop = 0; loop <= (rooms.length -1); loop++) {
+            messageRoom(type, (String)rooms[loop], msg);
+            //Main.consoleOutput("MessageUserRoom - Type: " + type + " Room: " + room + " Msg: " + msg);
+        }
+    }
+
     
     /**
      * This method is an extended form of message. It will notify _all_ signed in
