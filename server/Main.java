@@ -37,6 +37,7 @@ public final class Main {
         } catch (Exception ex) {
             /* Catch all exceptions */
             consoleOutput("Connection control: Exception: " + ex);
+            ex.printStackTrace();
         }
     }
     
