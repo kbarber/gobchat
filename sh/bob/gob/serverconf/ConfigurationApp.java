@@ -26,6 +26,12 @@
 
 package sh.bob.gob.serverconf;
 
+import sh.bob.gob.shared.configuration.*;
+
+import java.io.*;
+import javax.swing.*;
+import java.util.logging.*;
+
 /**
  * Server Configuration
  *
@@ -35,6 +41,17 @@ public class ConfigurationApp extends javax.swing.JFrame {
     
     /** Creates new form ConfigurationApp */
     public ConfigurationApp() {
+        /* Set the look and feel of the GUI */
+        try {
+            /* Update the look and feel with the local look and feel */
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+            /* Update any components */
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception e) { /* There are that many exceptions that may occur, I have defaulted */
+            Logger.getLogger("sh.bob.gob.serverconf").warning("Inability to set look and feel: " + e);
+        } 
+        
         initComponents();
     }
     
@@ -45,10 +62,36 @@ public class ConfigurationApp extends javax.swing.JFrame {
      */
     private void initComponents() {//GEN-BEGIN:initComponents
         pConfiguration = new javax.swing.JPanel();
+        tfTCPPort = new javax.swing.JTextField();
+        lTCPPort = new javax.swing.JLabel();
+        lLogFile = new javax.swing.JLabel();
+        tfLogFile = new javax.swing.JTextField();
+        cbLogLevel = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        tfIdlePingTimeout = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        tfIdleDisconnectTimeout = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        tfMaxBufferSize = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        tfMaxObjectSize = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        tfMaxObjectsInBuffer = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        tfSplitBufferTimeout = new javax.swing.JTextField();
         mbMain = new javax.swing.JMenuBar();
         mFile = new javax.swing.JMenu();
+        miNew = new javax.swing.JMenuItem();
+        miOpen = new javax.swing.JMenuItem();
+        miSave = new javax.swing.JMenuItem();
+        miSaveAs = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        miExit = new javax.swing.JMenuItem();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Server Configuration");
+        setName("Main");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -57,51 +100,332 @@ public class ConfigurationApp extends javax.swing.JFrame {
 
         pConfiguration.setLayout(null);
 
+        pConfiguration.setPreferredSize(new java.awt.Dimension(400, 300));
+        tfTCPPort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfTCPPortActionPerformed(evt);
+            }
+        });
+
+        pConfiguration.add(tfTCPPort);
+        tfTCPPort.setBounds(190, 10, 60, 21);
+
+        lTCPPort.setText("TCP Listener Port");
+        pConfiguration.add(lTCPPort);
+        lTCPPort.setBounds(20, 10, 110, 15);
+
+        lLogFile.setText("Log File");
+        pConfiguration.add(lLogFile);
+        lLogFile.setBounds(20, 40, 70, 15);
+
+        pConfiguration.add(tfLogFile);
+        tfLogFile.setBounds(190, 40, 180, 21);
+
+        cbLogLevel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST", "ALL" }));
+        pConfiguration.add(cbLogLevel);
+        cbLogLevel.setBounds(190, 70, 130, 20);
+
+        jLabel1.setText("Log Level");
+        pConfiguration.add(jLabel1);
+        jLabel1.setBounds(20, 70, 90, 15);
+
+        jLabel2.setText("Idle Ping Timeout");
+        pConfiguration.add(jLabel2);
+        jLabel2.setBounds(20, 100, 120, 15);
+
+        pConfiguration.add(tfIdlePingTimeout);
+        tfIdlePingTimeout.setBounds(190, 100, 60, 21);
+
+        jLabel3.setText("Idle Disconnect Timeout");
+        pConfiguration.add(jLabel3);
+        jLabel3.setBounds(20, 130, 150, 15);
+
+        pConfiguration.add(tfIdleDisconnectTimeout);
+        tfIdleDisconnectTimeout.setBounds(190, 130, 60, 21);
+
+        jLabel4.setText("Max Buffer Size");
+        pConfiguration.add(jLabel4);
+        jLabel4.setBounds(20, 160, 120, 15);
+
+        pConfiguration.add(tfMaxBufferSize);
+        tfMaxBufferSize.setBounds(190, 160, 60, 21);
+
+        jLabel5.setText("Max Object Size");
+        pConfiguration.add(jLabel5);
+        jLabel5.setBounds(20, 190, 110, 15);
+
+        tfMaxObjectSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfMaxObjectSizeActionPerformed(evt);
+            }
+        });
+
+        pConfiguration.add(tfMaxObjectSize);
+        tfMaxObjectSize.setBounds(190, 190, 60, 21);
+
+        jLabel6.setText("Max Objects in Buffer");
+        pConfiguration.add(jLabel6);
+        jLabel6.setBounds(20, 220, 140, 15);
+
+        tfMaxObjectsInBuffer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfMaxObjectsInBufferActionPerformed(evt);
+            }
+        });
+
+        pConfiguration.add(tfMaxObjectsInBuffer);
+        tfMaxObjectsInBuffer.setBounds(190, 220, 60, 21);
+
+        jLabel7.setText("Split Buffer Timeout");
+        pConfiguration.add(jLabel7);
+        jLabel7.setBounds(20, 250, 130, 15);
+
+        pConfiguration.add(tfSplitBufferTimeout);
+        tfSplitBufferTimeout.setBounds(190, 250, 60, 21);
+
         getContentPane().add(pConfiguration, java.awt.BorderLayout.CENTER);
 
         mFile.setText("File");
+        miNew.setText("New");
+        miNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miNewActionPerformed(evt);
+            }
+        });
+
+        mFile.add(miNew);
+
+        miOpen.setText("Open ...");
+        miOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miOpenActionPerformed(evt);
+            }
+        });
+
+        mFile.add(miOpen);
+
+        miSave.setText("Save");
+        miSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveActionPerformed(evt);
+            }
+        });
+
+        mFile.add(miSave);
+
+        miSaveAs.setText("Save As ...");
+        miSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveAsActionPerformed(evt);
+            }
+        });
+
+        mFile.add(miSaveAs);
+
+        mFile.add(jSeparator1);
+
+        miExit.setText("Exit");
+        miExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miExitActionPerformed(evt);
+            }
+        });
+
+        mFile.add(miExit);
+
         mbMain.add(mFile);
 
         setJMenuBar(mbMain);
 
         pack();
     }//GEN-END:initComponents
+
+    private void miSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveAsActionPerformed
+        saveAsDialog();
+        saveConfiguration();
+    }//GEN-LAST:event_miSaveAsActionPerformed
+
+    private void miSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveActionPerformed
+        if(getFileName().equals("")) {
+            saveAsDialog();
+            saveConfiguration();
+        } else {
+            saveConfiguration();
+        }
+    }//GEN-LAST:event_miSaveActionPerformed
+
+    private void miOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenActionPerformed
+        openConfiguration();
+    }//GEN-LAST:event_miOpenActionPerformed
+
+    private void miNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewActionPerformed
+        newConfiguration();
+    }//GEN-LAST:event_miNewActionPerformed
+
+    private void tfMaxObjectsInBufferActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfMaxObjectsInBufferActionPerformed
+        // Add your handling code here:
+    }//GEN-LAST:event_tfMaxObjectsInBufferActionPerformed
+
+    private void tfMaxObjectSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfMaxObjectSizeActionPerformed
+        // Add your handling code here:
+    }//GEN-LAST:event_tfMaxObjectSizeActionPerformed
+
+    private void tfTCPPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfTCPPortActionPerformed
+        // Add your handling code here:
+    }//GEN-LAST:event_tfTCPPortActionPerformed
+
+    private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
+        appClose();
+    }//GEN-LAST:event_miExitActionPerformed
     
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        System.exit(0);
+        appClose();
     }//GEN-LAST:event_exitForm
-    
-    /**
-     * 
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Handle parameters from the command line 
-         *
-         * [ --factorydefaults <option>
-         * [ --quiet ]
-         * [ --outputfile <file> ] ]
-         * | <file>
-         * 
-         * All inputs to switches that contain spaces, must be quoted (")
-         *
-         */
-        // Arg 1: If it starts with a --factorydefaults then the next thing 
-        // should be an option. Else it is an input file name, start the GUI
-        // with the file.
-        // 
         
-        /* Run the GUI */
-        new ConfigurationApp().show();
+    private void appClose() {
+        System.exit(0);
     }
     
+    /**
+     * Load the file specified by the FileName field.
+     */
+    public void load() {        
+        ServerConfiguration sc = ServerConfigurationDAO.read(fileName);
+        tfTCPPort.setText(sc.getTCPPort() + "");
+        tfLogFile.setText(sc.getLogging().getLogFile());
+        cbLogLevel.setSelectedItem(sc.getLogging().getLogLevel());
+        tfIdlePingTimeout.setText(sc.getNetwork().getIdlePingTimeout() + "");
+        tfIdleDisconnectTimeout.setText(sc.getNetwork().getIdleDisconnectTimeout() + "");
+        tfMaxBufferSize.setText(sc.getNetwork().getMaxBufferSize() + "");
+        tfMaxObjectSize.setText(sc.getNetwork().getMaxObjectSize() + "");
+        tfMaxObjectsInBuffer.setText(sc.getNetwork().getMaxObjectsInBuffer() + "");
+        tfSplitBufferTimeout.setText(sc.getNetwork().getSplitBufferTimeout() + "");
+        
+        setTitle("Gob Configuration Editor - " + new File(fileName).getName());
+    }
+    
+    public void newConfiguration() {
+        ServerConfiguration sc = new ServerConfiguration();
+        
+        tfTCPPort.setText("");
+        tfLogFile.setText("");
+        cbLogLevel.setSelectedItem("OFF");
+        tfIdlePingTimeout.setText("");
+        tfIdleDisconnectTimeout.setText("");
+        tfMaxBufferSize.setText("");
+        tfMaxObjectSize.setText("");
+        tfMaxObjectsInBuffer.setText("");
+        tfSplitBufferTimeout.setText("");
+        
+        setTitle("Gob Configuration Editor - Untitled");
+        
+        setFileName("");
+    }
+    
+    public void openConfiguration() {
+        JFileChooser chooser = new JFileChooser();
+        //ExampleFileFilter filter = new ExampleFileFilter();
+        //filter.addExtension("jpg");
+        //filter.addExtension("gif");
+        //filter.setDescription("JPG & GIF Images");
+        //chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            setFileName(chooser.getSelectedFile().getAbsolutePath());
+            load();
+        }
+    }
+    
+    public void saveConfiguration() {
+        ServerConfiguration sc = new ServerConfiguration();
+        
+        sc.setVersion("0.4");
+        
+        sc.setTCPPort(Integer.decode(tfTCPPort.getText()).shortValue());
+        sc.setLogging(new Logging());
+        sc.getLogging().setLogFile(tfLogFile.getText());
+        sc.getLogging().setLogLevel((String)cbLogLevel.getSelectedItem());
+        sc.setNetwork(new Network());
+        sc.getNetwork().setIdlePingTimeout(Integer.decode(tfIdlePingTimeout.getText()).longValue());
+        sc.getNetwork().setIdleDisconnectTimeout(Integer.decode(tfIdleDisconnectTimeout.getText()).longValue());
+        sc.getNetwork().setMaxBufferSize(Integer.decode(tfMaxBufferSize.getText()).shortValue());
+        sc.getNetwork().setMaxObjectSize(Integer.decode(tfMaxObjectSize.getText()).shortValue());
+        sc.getNetwork().setMaxObjectsInBuffer(Integer.decode(tfMaxObjectsInBuffer.getText()).shortValue());
+        sc.getNetwork().setSplitBufferTimeout(Integer.decode(tfSplitBufferTimeout.getText()).longValue());
+                
+        ServerConfigurationDAO.write(getFileName(), sc);
+    }
+    
+    public void saveAsDialog() {
+        JFileChooser chooser = new JFileChooser();
+        //ExampleFileFilter filter = new ExampleFileFilter();
+        //filter.addExtension("jpg");
+        //filter.addExtension("gif");
+        //filter.setDescription("JPG & GIF Images");
+        //chooser.setFileFilter(filter);
+        
+        chooser.setDialogType(JFileChooser.CUSTOM_DIALOG);
+        chooser.setDialogTitle("Save As ...");
+        chooser.setApproveButtonText("Save");
+        chooser.setApproveButtonToolTipText("Save selected file");
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            setFileName(chooser.getSelectedFile().getAbsolutePath());
+        }
+        
+        setTitle("Gob Configuration Editor - " + new File(fileName).getName());
+    }
+    
+    /** Getter for property fileName.
+     * @return Value of property fileName.
+     *
+     */
+    public String getFileName() {
+        return this.fileName;
+    }
+    
+    /** Setter for property fileName.
+     * @param fileName New value of property fileName.
+     *
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox cbLogLevel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lLogFile;
+    private javax.swing.JLabel lTCPPort;
     private javax.swing.JMenu mFile;
     private javax.swing.JMenuBar mbMain;
+    private javax.swing.JMenuItem miExit;
+    private javax.swing.JMenuItem miNew;
+    private javax.swing.JMenuItem miOpen;
+    private javax.swing.JMenuItem miSave;
+    private javax.swing.JMenuItem miSaveAs;
     private javax.swing.JPanel pConfiguration;
+    private javax.swing.JTextField tfIdleDisconnectTimeout;
+    private javax.swing.JTextField tfIdlePingTimeout;
+    private javax.swing.JTextField tfLogFile;
+    private javax.swing.JTextField tfMaxBufferSize;
+    private javax.swing.JTextField tfMaxObjectSize;
+    private javax.swing.JTextField tfMaxObjectsInBuffer;
+    private javax.swing.JTextField tfSplitBufferTimeout;
+    private javax.swing.JTextField tfTCPPort;
     // End of variables declaration//GEN-END:variables
+
+    /** Holds value of property fileName. */
+    private String fileName;    
+    
+    private ServerConfiguration scServerConf;
     
 }
