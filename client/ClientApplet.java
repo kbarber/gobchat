@@ -82,7 +82,6 @@ public class ClientApplet extends javax.swing.JApplet {
 
         setBackground(new java.awt.Color(204, 204, 255));
         setName("mainapplet");
-        tbMain.setBackground(new java.awt.Color(204, 204, 255));
         tbMain.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         tbMain.setFont(new java.awt.Font("Dialog", 0, 12));
         tbMain.setOpaque(true);
