@@ -35,7 +35,7 @@ install -m644 daemon/server.jar $RPM_BUILD_ROOT/usr/share/java/gob
 install -m755 daemon/gobd $RPM_BUILD_ROOT/usr/sbin
 install -m755 daemon/linux-sysv.sh $RPM_BUILD_ROOT/etc/rc.d/init.d/gobd
 install -m644 website/client.jar website/index.html website/gobapplet.html $RPM_BUILD_ROOT/var/www/html/gob
-install -m644 INSTALL README $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
+install -m644 doc/* $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 install -m644 logrotate/gob $RPM_BUILD_ROOT/etc/logrotate.d/gob
 install -m644 config/gobd.conf.xml $RPM_BUILD_ROOT/etc/gobd/gobd.conf.xml
 cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
