@@ -14,9 +14,8 @@
         <jar jarfile="daemon/server.jar" compress="true" basedir="." manifest="manifests/server.mf">
             <include name="server/*.class"/>
         </jar>
-        <jar jarfile="website/client.jar" compress="true" basedir="." manifest="manifests/client.mf">
-            <include name="client/*.class"/>
-        </jar>        
+        <jar jarfile="website/client.jar" compress="true" 
+            basedir="." manifest="manifests/client.mf" includes="client/**/*.class"/>
     </target>
 
     <target name="all" depends="init,jar,javadoc" description="Build everything.">
