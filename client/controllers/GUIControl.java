@@ -121,6 +121,10 @@ public class GUIControl {
                 pControl.bDisconnect.setEnabled(true);     
                 pControl.lConnectionStatus.setText("Connected");
                 
+                /* Allow renaming of user */
+                pControl.bRename.setEnabled(true);
+                pControl.tfNewUserName.setEditable(true);
+                
                 /* Add the lobby tab to the tabbed pain */
                 tbMain.addTab("Room List", null, pRoomList, "A list of all open rooms");
                 
@@ -136,6 +140,10 @@ public class GUIControl {
             case 4: // Disconnected
                 pControl.bConnect.setEnabled(true);
                 pControl.bDisconnect.setEnabled(false);
+                
+                /* Disallow renaming of user */
+                pControl.bRename.setEnabled(false);
+                pControl.tfNewUserName.setEditable(false);
                 
                 /* Set a reason for disconnection */
                 pControl.lConnectionStatus.setText("Disconnected: " + reason);
@@ -201,6 +209,15 @@ public class GUIControl {
      */
     public GroupTabControl getGroupTabControl() {
         return groupTabControl;
+    }
+    
+    /**
+     * Set the username of the user in the ControlPanel.
+     *
+     * @param username The username to change to
+     */
+    public void setUsername(String username) {
+        pControl.tfUserName.setText(username);
     }
     
 }

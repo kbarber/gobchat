@@ -180,12 +180,12 @@ public class ControlPanel extends javax.swing.JPanel {
 
     private void tfNewUserNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNewUserNameKeyPressed
         if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            serverConnect();
+            renameUser();
         }
     }//GEN-LAST:event_tfNewUserNameKeyPressed
 
     private void bRenameMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bRenameMouseClicked
-        
+        renameUser();
     }//GEN-LAST:event_bRenameMouseClicked
 
     private void bConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bConnectMouseClicked
@@ -219,6 +219,16 @@ public class ControlPanel extends javax.swing.JPanel {
      */
     private void serverDisconnect(String message) {
         conControl.serverDisconnect(message);
+    }
+    
+    /** 
+     * Rename user
+     *
+     * @param name New username
+     */
+    private void renameUser() {
+        conControl.sendCommand("rename:" + tfNewUserName.getText());
+        tfNewUserName.setText("");
     }
     
     /**

@@ -169,6 +169,10 @@ public class GroupChatPanel extends javax.swing.JPanel {
         listControl.deleteUser(name);
     }
     
+    public boolean checkUser(String name) {
+        return listControl.checkUser(name);
+    }
+    
     public void writeUserMessage(String name, String message) {
         msgAreaControl.userMessage(name, message);
     }

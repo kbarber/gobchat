@@ -294,6 +294,48 @@ public class ClientCommand {
     }
     
     /**
+     * Rename a user
+     *
+     */
+    public void clientRename(String se, SocketChannel sc) {
+        /* Check that the username is valid */
+        if(Pattern.matches("[a-zA-Z0-9_+-]{3,15}", se) == false) {
+            /* Name is invalid, give error */
+            returnError("I\'m sorry, usernames must be between 3 and 15 " +
+                "characters and only alphanumeric", sc);
+            
+            /* Notify on terminal */
+            Main.consoleOutput("Attempt to rename user to invalid username " +
+                "(not shown) from \"" + sc.socket().getInetAddress().toString() + 
+                "\" by user \"" + userData.getName(sc));
+        } else {
+            String oldname = userData.getName(sc);
+            
+            /* See if the user rename is valid */
+            if(userData.renameName(oldname, se)) {
+                /* Send a message to all users that can see this user about the rename */
+                messageUsersInUserRooms("rename", userData.getName(sc), oldname + ":" + se);
+                //messageUserRooms("rename", userData.getName(sc), oldname + ":" + se);
+                
+                /* Now message the original user */
+                message("rename", oldname + ":" + se, sc);
+
+                /* Notify on the terminal that new user has renamed */
+                Main.consoleOutput("User renamed from \"" + oldname + "\"" + 
+                    " to \"" + se + "\"");
+            } else {
+                /* Let the user know that there was an error with rename. */
+                returnError("Username taken", sc);
+
+                /* Notify on the terminal about the new user */
+                Main.consoleOutput("Attempt to rename to existing username \"" + se + "\" by \"" +
+                    userData.getName(sc) + "\"");
+            }
+        }
+        
+    }
+    
+    /**
      * This method is generic and will return an error to a user.
      */
     public void returnError(String err, SocketChannel sc) {
@@ -329,6 +371,33 @@ public class ClientCommand {
         /* Cycle through each SocketChannel, and message each on in turn */
         for(int loop = 0; loop <= (socketchannels.length -1); loop++) {
             message(type + ":" + room, msg, (SocketChannel)socketchannels[loop]);
+        }
+    }
+    
+    /** 
+     * The method will message each user in each room, that a particular user belongs to.
+     *
+     * This will not send a message to the original user.
+     *
+     * @param type Type of the message
+     * @param username The username in particular
+     * @param msg Message to send
+     */
+    private void messageUsersInUserRooms(String type, String username, String msg) {
+        /* Obtain a list of users rooms */
+        Object[] rooms = userData.listRooms(username);
+        
+        /* Obtain list of users from rooms */
+        Object[] users = userData.listNames(rooms);
+        
+        /* Go through each user and send each a message */
+        for(int i = 0; i < users.length; i++) {
+            if(username.equals((String)users[i])) {
+                /* Don't send a message to the original user */
+                continue;
+            } else {
+                message(type, msg, userData.getSocket((String)users[i]));
+            }
         }
     }
     

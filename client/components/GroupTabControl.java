@@ -72,6 +72,36 @@ public class GroupTabControl {
         ((GroupChatPanel)grouptabs.get(room)).addUser(name);
     }
     
+    /** 
+     * Check to see if the user exists in the group.
+     *
+     * @param room 
+     * @param username
+     * @return Returns a boolean, true if the user exists, false if not.
+     */
+    public boolean checkUser(String room, String username) {
+        return ((GroupChatPanel)grouptabs.get(room)).checkUser(username);
+    }
+    
+    public void renameUser(String oldname, String newname) {
+        Object[] rooms = getGroupList();
+        
+        /* Check the user in each room */
+        for(int i = 0; i < rooms.length; i++) {
+            String room = (String)rooms[i];
+            
+            if(checkUser(room, oldname)) {
+                /* Rename the user in the room */
+                ((GroupChatPanel)grouptabs.get(room)).deleteUser(oldname);
+                ((GroupChatPanel)grouptabs.get(room)).addUser(newname);
+                
+                /* Write a message to the room */
+                ((GroupChatPanel)grouptabs.get(room)).writeStatusMessage("User \"" 
+                    + oldname + "\" is now named \"" + newname + "\"");
+            }
+        }
+    }
+    
     /**
      * Remove the group chat tab from the main tabbed pane.
      *
@@ -157,5 +187,14 @@ public class GroupTabControl {
      */
     public void writeStatusMessage(String room, String message) {
         ((GroupChatPanel)grouptabs.get(room)).writeStatusMessage(message);
+    }
+    
+    /** 
+     * Return a list of groups.
+     *
+     * @return An array of objects (strings) representing a list of all groups.
+     */
+    public Object[] getGroupList() {
+        return grouptabs.keySet().toArray();
     }
 }

@@ -262,6 +262,9 @@ public class ConnectionControl {
                                 } else if(command[0].equals("quit")) {
                                     /* Quit the server */
                                     clientCommand.clientQuit(command[1], sc);
+                                } else if(command[0].equals("rename")) {
+                                    /* Rename the user */
+                                    clientCommand.clientRename(command[1], sc);
                                 } else {
                                     /* Other commands are not recognised, so return an error */
                                     clientCommand.returnError("Unknown command in this mode", sc);

@@ -59,6 +59,17 @@ public class ListControl {
     }
     
     /**
+     * Check if the user exists.
+     *
+     * @param user The username of the user
+     */
+    public boolean checkUser(String user) {
+        ArrayList userlist = buildAL();
+        
+        return userlist.contains(user);
+    }
+    
+    /**
      * Empty the list of users. Thread safe.
      */
     public synchronized void clearList() {

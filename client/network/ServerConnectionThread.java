@@ -333,6 +333,19 @@ public class ServerConnectionThread implements Runnable {
                                         guiControl.getGroupTabControl().deleteUser(params[0], params[1]);
                                         guiControl.getGroupTabControl().writeStatusMessage(params[0], "User \"" + params[1] + "\" has left the room.");
                                     }
+                                } else if(command[1].equals("rename")) {
+                                    /* Split the params oldName:newName */
+                                    String params[] = command[2].split(":", 2);
+                                    
+                                    /* Check if the user is me */
+                                    if(connectionInfo.getUsername().equals(params[0])) {
+                                        guiControl.setUsername(params[1]);
+                                        connectionInfo.setUsername(params[1]);
+                                    }
+                                    
+                                    /* Now change the username in every room */
+                                    guiControl.getGroupTabControl().renameUser(params[0], params[1]);
+                                    
                                 } else {
                                     /* Just send any received messages to the textarea for now */
 //                                    guiControl.statusMessage(serverMsg[loop]);
