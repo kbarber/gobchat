@@ -12,7 +12,7 @@ Features
 * The lobby is now removed while disconnected (see sf #686540)
 * 686542
 * 688367
-* 688363
+* Added support for rooms (see sf #688363)
 * Gob now loads "panels" for each tab, allowing a more modular configuration.
 * There is a seperate Runnable class for the thread. 
 * Documentation Updated.
