@@ -146,7 +146,7 @@ public class ClientCommand {
      */
     public void clientSend(String se, SocketChannel sc) {
         /* Make sure the message to send is using good characters */
-        if(Pattern.matches("[ \ta-zA-Z0-9!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", se) == false) {
+        if(Pattern.matches("[ \\a-zA-Z0-9\t\\[\\]!\"#$%&'()*+,-./:;<=>?@\\^_`{|}~]{0,512}", se) == false) {
             /* Reason doesn't match correct criteria, just clear it */
             returnError("The message you have sent has invalid characters or is too long.", sc);
         } else {
