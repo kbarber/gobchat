@@ -84,6 +84,9 @@ public class ClientFrameApp extends javax.swing.JFrame {
 
         getContentPane().setLayout(new java.awt.CardLayout());
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gob Online Chat Client");
+        setName("ClientFrameApp");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -109,6 +112,13 @@ public class ClientFrameApp extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        /* Configure logging to stdout */
+        Logger logger = Logger.getLogger("sh.bob.gob.shared");
+        logger.getParent().setLevel(Level.ALL);
+        
+        logger = Logger.getLogger("sh.bob.gob.client");
+        logger.getParent().setLevel(Level.ALL);
+               
         new ClientFrameApp().show();
     }
     
