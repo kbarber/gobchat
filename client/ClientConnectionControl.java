@@ -102,14 +102,12 @@ public class ClientConnectionControl extends Thread {
             for(int loop = 0; loop < 30; loop++) {
                 
                 // Wait if the channel is connected
-                if(channel.isConnected()) {
-                    Thread.sleep(500);
-                } else {
+                if(channel.finishConnect()) {
                     break;
+                } else {
+                    Thread.sleep(500);
                 }
             }
-            
-            channel.finishConnect();
             
         } catch (Exception e) {
             guiControl.printError("Problem connecting: " + e);
