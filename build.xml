@@ -19,6 +19,10 @@
             <include name="sh/bob/gob/client/**/*.class"/>
             <include name="sh/bob/gob/shared/**/*.class"/>
         </jar>
+        <jar jarfile="client/app.jar" compress="true" basedir="." manifest="manifests/app.mf">
+            <include name="sh/bob/gob/client/**/*.class"/>
+            <include name="sh/bob/gob/shared/**/*.class"/>
+        </jar>
         <jar jarfile="config/serverconf.jar" compress="true" basedir="." manifest="manifests/serverconf.mf">
             <include name="sh/bob/gob/serverconf/**/*.class"/>
             <include name="sh/bob/gob/shared/**/*.class"/>
@@ -42,14 +46,23 @@
         </javadoc>
     </target>
     
-    <target name="windowsinstaller" depends="init,all" description="Build a Windows Installer for the built application.">
+    <target name="windowspackage" depends="init,all" description="Build a Windows Installer for the built application.">
         <delete file="dist/Install Gob.exe"/>
         <exec dir="dist/" executable="C:\Program Files\NSIS\makensis.exe">
             <arg line="WindowsInstall.nsi"/>
         </exec>
     </target>
     
-    <target name="redhatpackage" depends="init,all" description="Build a RedHat RPM file for the built application."/>
+    <target name="tarballpackage" depends="clean,init,all" description="Build a tar.gz file for the built application.">
+        <delete file="dist/gobchat-0.4.tar.gz"/>
+	<delete dir="../gobchat-0.4/"/>
+	<copy todir="../gobchat-0.4/">
+	    <fileset dir="../gobchat/"/>
+	</copy>
+	<tar destfile="../gobchat-0.4.tar.gz" basedir="../" includes="gobchat-0.4/" compression="gzip"/>
+	<move file="../gobchat-0.4.tar.gz" todir="dist/"/>
+        <delete dir="../gobchat-0.4/"/>
+    </target>
     
     <target name="clean" depends="init" description="Clean all build products.">
         <delete>
@@ -59,7 +72,10 @@
         </delete>
         <delete file="website/client.jar"/>
         <delete file="daemon/server.jar"/>
+        <delete file="client/app.jar"/>
         <delete dir="apidoc"/>
+        <delete file="dist/Install Gob.exe"/>
+        <delete file="dist/gobchat-0.4.tar.gz"/>
     </target>
 
 </project>
