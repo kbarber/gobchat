@@ -1,5 +1,5 @@
 /*
- * MakeConfig.java
+ * Main.java
  *
  * Created on 29 October 2003, 21:55
  */
@@ -47,10 +47,7 @@ public class Main {
         
         /* Handle parameters from the command line 
          *
-         * [ --factorydefaults <option> --outputfile <file> ]
-         * | [ --inputfile <file> ]
-         *
-         * 
+         * [ --inputfile <file> ]
          * 
          * All inputs to switches that contain spaces, must be double quoted (")
          *
@@ -62,16 +59,18 @@ public class Main {
         boolean switchnext = true;
         for(int i = 0; i < args.length; i++) {
             /* Confirm that it is a switch */
-            if(args[i].matches("^[-]{1,2}(factorydefaults|outputfile|inputfile)$")) {
+            if(args[i].matches("^[-]{1,2}(inputfile)$")) {
                 /* Cool, it is a valid switch */
             } else {
                 /* Invalid switch, goodbye */
-                System.out.println("Invalid switch");
+                System.out.println("Invalid switch: " + args[i]);
+                System.exit(1);
             }
             
-            if((args.length) >= (i+1)) {
+            if((args.length) <= (i+1)) {
                 /* No more options, bail */
-                continue;
+                hmParameters.put(args[i],  "");
+                break;
             }
             
             if(args[i+1].matches("^-{1,2}")) {
@@ -88,48 +87,21 @@ public class Main {
         }
         
         /* Wicked, now lets scroll through the keysets, and setup the system */
-        String sInputFile = (String)hmParameters.get("--inputfile");
-        String sOutputFile = (String)hmParameters.get("--outputfile");
-        String sFactoryDefaults = (String)hmParameters.get("--factorydefaults");
-
-        if(!sFactoryDefaults.equals(null) || !sFactoryDefaults.equals("")) {
-            if(!sOutputFile.equals(null) || !sOutputFile.equals("")) {
-                if(!sFactoryDefaults.equals("windowsxp")) {
-                } else if(!sFactoryDefaults.equals("rhlinux")) {
-                } else {
-                    /* Invalid Factory */
-                    System.out.println("Invalid factory");
-                }
-            }
+        String sInputFile = (String)hmParameters.get("--file");
+        
+        ConfigurationApp ca;
+        
+        if(sInputFile == null) {
+            ca = new ConfigurationApp();
+            ca.show();
+        } else if (sInputFile.equals("")) {
+            System.out.println("No option for --file");
+            System.exit(1);
+        } else {
+            ca = new ConfigurationApp();
+            ca.setFileName(sInputFile);
+            ca.load();
+            ca.show();
         }
-        
-        if(!sInputFile.equals(null) || !sInputFile.equals("")) {
-            new ConfigurationApp().show();
-        }
-        
-        Network network = new Network();
-        network.setMaxBufferSize(8192);
-        network.setMaxObjectSize(1024);
-        network.setMaxObjectsInBuffer(8);
-        network.setSplitBufferTimeout(300L); // 5 Minutes
-//        network.setIdleDisconnectTimeout(300000L); // 5 Minutes
-        network.setIdleDisconnectTimeout(60000L); // One minute
-//        network.setIdlePingTimeout(100000L); // 1 minute 20 seconds for every Ping to a user
-        network.setIdlePingTimeout(10000L); // 10 seconds
-        
-        Logging log = new Logging();
-//        log.setLogFile("/var/log/gob/gobchat.log");
-        log.setLogFile("C:\\Program Files\\Gob Online Chat\\log\\gobchat.log");
-        log.setLogLevel("FINEST");
-        
-        ServerConfiguration sc = new ServerConfiguration();
-        sc.setVersion("0.4");
-        sc.setTCPPort((short)6666);
-        sc.setNetwork(network);
-        sc.setLogging(log);
-        
-        
-        ServerConfigurationDAO.write(args[0], sc);
-    }
-    
+    }    
 }
