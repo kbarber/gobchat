@@ -178,7 +178,7 @@ public class ConnectionControl {
                             mbox.sendData(sc, sm);
                             
                             /* Log new connection */
-                            Logger.getLogger("sh.bob.gob.server").fine("New connection from: " + sc.socket().getInetAddress().toString());
+                            Logger.getLogger("sh.bob.gob.server").info("New connection from: " + sc.socket().getInetAddress().toString());
                         } catch(IOException e) {
                             /* Close the SocketChannel, if I can't write to it - then I don't want
                              * to continue */
@@ -195,7 +195,6 @@ public class ConnectionControl {
                         
                         userData.setSplitBuffer(sc, new SplitBuffer());
                         
-                        System.out.print("Finished acceptable\n");
                     } else if (key.isReadable()) {  /* Someone has sent a command */
                             
                         /* Get the SocketChannel assocaited with this Key */
@@ -345,7 +344,7 @@ public class ConnectionControl {
                     /* Now disconnect this socket */
                     SocketChannel sctoclose = (SocketChannel)disconnectsockets[i];
                     
-                    Logger.getLogger("sh.bob.gob.server").finest("User: " + userData.getName(sctoclose) + " has timed out, will disconnect.");
+                    Logger.getLogger("sh.bob.gob.server").info("User: " + userData.getName(sctoclose) + " has timed out, will disconnect.");
                     SignOff so = new SignOff();
                     try {
                         so.setMessage("Client has timed out");
