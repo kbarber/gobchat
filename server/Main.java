@@ -6,25 +6,24 @@
 
 package server;
 
-import java.io.*;
-import java.net.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.nio.charset.*;
-import java.util.*;
-import java.util.regex.*;
-
 /**
- * Primary class for the Gob server
+ * Primary class for the Gob server. This class spawns the ConnectionControl
+ * class and is only used as a starting point.
+ *
+ * The class also contains some simple high-level methods.
  *
  * @author  Ken Barber
  */
 public final class Main {
         
+    /**
+     * Instance of ConnectionControl.
+     */
     private ConnectionControl cc;
     
     /** 
-     * Creates a new instance of Main.
+     * Creates a new instance of Main. This creates a new instance of ConnectionControl
+     * which contains the main body of code.
      */
     public Main() {
         /* Create a new ConnectionControl */
@@ -33,21 +32,21 @@ public final class Main {
     }
     
     /**
-     * Output time-stamped text to the console
+     * Output time-stamped text to the console.
+     *
+     * @param message Output string
      */
-    public static void consoleOutput(String message) {
-        System.out.println(new Date().toString() + ": " + message);
+    protected static void consoleOutput(String message) {
+        System.out.println(new java.util.Date().toString() + ": " + message);
     }
     
     /**
+     * Where it all starts.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
-            new Main();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        new Main();
     }
     
 }
