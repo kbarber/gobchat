@@ -20,21 +20,14 @@ import java.util.*;
 public class GUIControl {
     
     private String hostname;
-    private ListControl ulControl;
     private ListControl roomListControl;
     private MsgAreaControl saControl;
-    private JButton bConnect;
-    private JButton bDisconnect;
-    private JLabel lConnectionStatus;
-    private JTextArea taErrorOutput;
     private JTabbedPane tbMain;
-    private JTextField tfUserName;
-    private JTextField tfSendPrep;
     private ControlPanel pControl;
     private StatusPanel pStatus;
     private GroupChatPanel pLobby;
     private RoomListPanel pRoomList;
-    private ClientConnectionControl conControl;
+    private ClientConnectionControl clientConnectionControl;
     private GroupTabControl groupTabControl;
     private PrivTabControl privTabControl;
     
@@ -63,34 +56,26 @@ public class GUIControl {
     
     /**
      * This method will start the display of the GUI
-     *
-     * @param cc Control interface for networking and connection
      */
-    public void displayGUI(ClientConnectionControl cc) {
-        conControl = cc;
+    public void displayGUI() {
         
         /* Add a control and status panel */
-        
-        
-        pControl = new ControlPanel(this, conControl, hostname);
+        pControl = new ControlPanel(this, clientConnectionControl, hostname);
         pStatus = new StatusPanel();
-        //pLobby = new GroupChatPanel(this, conControl);
-        pRoomList = new RoomListPanel(this, conControl);
+        pRoomList = new RoomListPanel(this, clientConnectionControl);
         
         tbMain.addTab("Control", null, pControl, "For connecting and changing username");
         tbMain.addTab("Status", null, pStatus, "A log of any server or client error messages");
-        //tbMain.addTab("Room List", null, pRoomList, "A list of all open rooms");
                 
         /* Setup both controls for the ChatArea and UserList */
         saControl = new MsgAreaControl(pStatus.taErrorOutput);
-        //ulControl = new ListControl(pLobby.lUsers);
         roomListControl = new ListControl(pRoomList.lRooms);
         
         /* Create a new GroupTabControl for creation of groups */
-        groupTabControl = new GroupTabControl(this,  conControl, tbMain);
+        groupTabControl = new GroupTabControl(this,  clientConnectionControl, tbMain);
         
         /* Create a new PrivTabControl for creation of users */
-        privTabControl = new PrivTabControl(this, conControl, tbMain);
+        privTabControl = new PrivTabControl(this, clientConnectionControl, tbMain);
         
     }
     
@@ -174,31 +159,12 @@ public class GUIControl {
     }
     
     /**
-     * Print an error to the status panel
-     *
-     * @param output Error to output to the status panel text area
-     */
-    public void printError(String output) {
-        pStatus.taErrorOutput.append(new Date().toString() + ": " + output + "\n");
-    }
-    
-    /**
      * Send a status message 
      *
      * @param output Message to send
      */
     public void statusMessage(String output) {
         saControl.statusMessage(output);
-    }
-    
-    /**
-     * Send a usermessage to the chosen chat panel
-     *
-     * @param un Username to send from
-     * @param output Message contents
-     */
-    public void userMessage(String un, String output) {
-        saControl.userMessage(un, output);
     }
     
     /**
@@ -231,6 +197,22 @@ public class GUIControl {
      */
     public void setUsername(String username) {
         pControl.tfUserName.setText(username);
+    }
+    
+    /** Getter for property clientConnectionControl.
+     * @return Value of property clientConnectionControl.
+     *
+     */
+    public ClientConnectionControl getClientConnectionControl() {
+        return this.clientConnectionControl;
+    }
+    
+    /** Setter for property clientConnectionControl.
+     * @param clientConnectionControl New value of property clientConnectionControl.
+     *
+     */
+    public void setClientConnectionControl(ClientConnectionControl clientConnectionControl) {
+        this.clientConnectionControl = clientConnectionControl;
     }
     
 }

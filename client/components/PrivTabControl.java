@@ -115,7 +115,8 @@ public class PrivTabControl {
     /**
      * Write a user message to the user panel
      *
-     * @param name Name of the user
+     * @param namesrc Source user
+     * @param namedst Destination user
      * @param message Message to be sent
      */
     public void writeUserMessage(String namesrc, String namedst, String message) {

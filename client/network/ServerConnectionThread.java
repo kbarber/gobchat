@@ -74,9 +74,9 @@ public class ServerConnectionThread implements Runnable {
         
         try {
             channel.write(encoder.encode(CharBuffer.wrap(command + "\n")));
-            //guiControl.printError("sent command: " + command);
+            //guiControl.statusMessage("sent command: " + command);
         } catch(Exception e) {
-            guiControl.printError("Problem with sending command: " + e);
+            guiControl.statusMessage("Problem with sending command: " + e);
         }
     }
     
@@ -106,8 +106,26 @@ public class ServerConnectionThread implements Runnable {
         /* The selector for reception of server messages */
         Selector selector = null;
 
+        guiControl.statusMessage("About to create InetAddress");
+        
+        /* Create an InetAddress */
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(connectionInfo.getServer());
+        } catch (Exception e) {
+            guiControl.statusMessage("Problem resolving host: " + e);
+            
+            /* Update the control tab, we are disconnected */
+            guiControl.setConnected(guiControl.DISCONNECTED, "Problem resolving host");
+            
+            return;
+        }            
+            
+        
+        guiControl.statusMessage("Created InetSocketAddress");
+        
         /* Set the IP and port to connect to */
-        InetSocketAddress sockAddress = new InetSocketAddress(connectionInfo.getServer(), 6666);
+        InetSocketAddress sockAddress = new InetSocketAddress(inetAddress, 6666);
         
         /*
          * Now open a connection, signup and register it with a selector.
@@ -132,7 +150,7 @@ public class ServerConnectionThread implements Runnable {
             }
             
         } catch (Exception e) {
-            guiControl.printError("Problem connecting: " + e);
+            guiControl.statusMessage("Problem connecting: " + e);
             
             /* Update the control tab, we are disconnected */
             guiControl.setConnected(guiControl.DISCONNECTED, "Problem connecting");
@@ -144,7 +162,7 @@ public class ServerConnectionThread implements Runnable {
         try {
             channel.write(encoder.encode(CharBuffer.wrap("signup:" + connectionInfo.getUsername() + "\n")));
         } catch (Exception e) {
-            guiControl.printError("Problem with signup: " + e);
+            guiControl.statusMessage("Problem with signup: " + e);
             
             /* Update the control tab, we are disconnected */
             guiControl.setConnected(guiControl.DISCONNECTED, "Problem signing up");
@@ -157,7 +175,7 @@ public class ServerConnectionThread implements Runnable {
             selector = Selector.open();
             channel.register(selector, SelectionKey.OP_READ);
         } catch (Exception e) {
-            guiControl.printError("Problem with registering selector: " + e);
+            guiControl.statusMessage("Problem with registering selector: " + e);
             
             /* Update the control tab, we are disconnected */
             guiControl.setConnected(guiControl.DISCONNECTED, "Selector error");
@@ -183,7 +201,7 @@ public class ServerConnectionThread implements Runnable {
                 /* Wait until there is something to read */
                 selectResponse = selector.select(1000);
             } catch (Exception e) {
-                guiControl.printError("Problem with select: " + e);
+                guiControl.statusMessage("Problem with select: " + e);
             }
             
             if(selectResponse > 0) {
@@ -210,7 +228,7 @@ public class ServerConnectionThread implements Runnable {
                         SocketChannel socketchannel = (SocketChannel)key.channel();
                                         
                         if(!socketchannel.isConnected()) {
-                            guiControl.printError("Socket not connected");
+                            guiControl.statusMessage("Socket not connected");
                         }
                             
                         /* Read in the buffer */
@@ -224,7 +242,7 @@ public class ServerConnectionThread implements Runnable {
                                 continue;
                             }
                         } catch(Exception e) {
-                            guiControl.printError("Error receiving data on network: " + e);
+                            guiControl.statusMessage("Error receiving data on network: " + e);
                         }
 
                         readBuffer.flip();
@@ -389,7 +407,7 @@ public class ServerConnectionThread implements Runnable {
                 }
             }
         } catch(Exception e) {
-            guiControl.printError("Problem disconnecting: " + e);
+            guiControl.statusMessage("Problem disconnecting: " + e);
         }
         
         /* Put a message in the text area, stating we have disconnected */

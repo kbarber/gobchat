@@ -12,7 +12,7 @@ import java.util.Date;
  * Primary class for the Gob server. This class spawns the ConnectionControl
  * class only and catches any exceptions.
  *
- * A standard message output is also provided by this class.
+ * <p>A standard message output is also provided by this class.
  *
  * @author  Ken Barber
  */

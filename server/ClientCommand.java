@@ -352,7 +352,8 @@ public class ClientCommand {
      * format.
      */
     private void message(String type, String msg, SocketChannel sc) {
-        Main.consoleOutput("ClientMessage Type: " + type + " Msg: " + msg);
+        //DEBUG
+        //Main.consoleOutput("ClientMessage Type: " + type + " Msg: " + msg);
         try {
             /* Write the message to the SocketChannel */
             sc.write(encoder.encode(CharBuffer.wrap("GOB:" + type + ":" + msg + "\n")));
@@ -473,7 +474,8 @@ public class ClientCommand {
             /* Update the userdata bit */
             userData.partRoom(username, (String)rooms[loop]);            
             
-            Main.consoleOutput("Check if the room: " + rooms[loop] + " needs to be closed, with users: " + userData.listNames((String)rooms[loop]).length);
+            //DEBUG
+            //Main.consoleOutput("Check if the room: " + rooms[loop] + " needs to be closed, with users: " + userData.listNames((String)rooms[loop]).length);
             
             /* If last in room, remove room */
             if((userData.listNames((String)rooms[loop])).length == 0) {

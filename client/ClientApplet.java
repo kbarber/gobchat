@@ -8,14 +8,24 @@ package client;
 import client.controllers.ClientConnectionControl;
 import client.controllers.GUIControl;
 import client.network.ConnectionInfo;
+
 import javax.swing.JApplet;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 
 /**
- * This is the main JApplet class. From this all other classes are initiated.
- * This class also contains all displayable content.
+ * 
+ * <p>This is the main JApplet class. From this all other classes are instantiated.
+ *
+ * <p>GUIControl is responsible for display control. ClientConnectionControl is
+ * a network control sub-process.
+ *
+ * <p>ClientApplet creates a JTabbedPain object, and gives control of this to
+ * GUIControl. From here, ClientConnectionControl and GUIControl will work 
+ * independently, updating the GUI by itself.
+ *
+ * <p>ConnectionInfo is a data object, used to hold shared data.
  *
  * @author  Ken Barber
  */
@@ -42,7 +52,7 @@ public class ClientApplet extends JApplet {
             System.out.println("Inability to set look and feel: " + e);
         } 
 
-        /* Build all Forte generated components */
+        /* Build all NetBeans generated components */
         initComponents();
         
     }
@@ -69,7 +79,10 @@ public class ClientApplet extends JApplet {
     }//GEN-END:initComponents
 
     /**
-     * The method first executed after the object has been initiated.
+     * <p>The method first executed after the object has been initiated.
+     *
+     * <p>It intantiates the main three objects, GUIControl and ClientConnectionControl
+     * references are passed to each other for co-operative control.
      */
     public void init() {
         
@@ -81,13 +94,20 @@ public class ClientApplet extends JApplet {
         /* Create a new concontrol object */
         conControl = new ClientConnectionControl(guiControl, conInfo);
         
-        guiControl.displayGUI(conControl);
+        guiControl.setClientConnectionControl(conControl);
+        guiControl.displayGUI();
         
 //        guiControl.statusMessage(this.getParameter("host"));
     }
     
     /**
-     * If the applet is closed, disconnect from the server.
+     * <p>This method is called by the browser when attempting to destroy the
+     * applet. 
+     *
+     * <p>This destruction is usually caused by the browser window holding the
+     * applet being close.
+     *
+     * <p>If the applet is destroyed in this manner, disconnect from the server.
      */
     public void destroy() {
         conControl.serverDisconnect("Applet closed");

@@ -45,6 +45,8 @@ public class ConnectionControl {
     
     /** 
      * Creates a new instance of ConnectionControl.
+     *
+     * @param serverport The local port to start listening on
      */
     public ConnectionControl(int serverport) {
         
@@ -298,6 +300,8 @@ public class ConnectionControl {
     
     /** 
      * Prepares and returns a server socket channel. We register this with a selector. 
+     *
+     * @return Returns a ServerSocketChannel to register
      */
     private ServerSocketChannel readyServerSocketChannel() {
         /* Declare a new ServerSocketChannel pointer, currently null */
@@ -323,6 +327,9 @@ public class ConnectionControl {
     
     /** 
      * Prepares and returns a socket channel. We register this with a selector. 
+     *
+     * @param ssc The ServerSocketChannel with the waiting connection
+     * @return Returns a SocketChannel after preparing and registration
      */
     private SocketChannel readySocketChannel(ServerSocketChannel ssc) {
         /* Declare a new SocketChannel pointer, currently null */
@@ -349,6 +356,12 @@ public class ConnectionControl {
           
     /** 
      * Prepares and returns a selector. 
+     *
+     * <p>We open a selector using the Selector.open() static method, and then
+     * register the selecter with the ServerSocketChannel.
+     *
+     * @param ssc The ServerSocketChannel to register with the selector
+     * @return A Selector after registration with the given ServerSocketChannel
      */
     private Selector readySelector(ServerSocketChannel ssc) {
         

@@ -6,25 +6,27 @@
 
 package client.components;
 
+import client.panels.GroupChatPanel;
+import client.controllers.GUIControl;
+import client.controllers.ClientConnectionControl;
+
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Iterator;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
-import client.panels.GroupChatPanel;
-import client.controllers.GUIControl;
-import client.controllers.ClientConnectionControl;
 
 /**
  * This object is responsible for keeping track of the open group chat tabs
- * in the GUI.
+ * in the main TabbedPain object.
  * 
- * This control is also responsible for opening and closing these tabs.
+ * This control is responsible for opening and closing these tabs, and querying
+ * them.
  *
- * Messages sent to the groups must also be sent through this interface.
+ * Messages sent to the groups are sent through this interface.
  *
- * @author  ken
+ * @author  Ken Barber
  */
 public class GroupTabControl {
     
@@ -34,7 +36,7 @@ public class GroupTabControl {
     private JTabbedPane tbMain;
     
     /** 
-     * Creates a new instance of GroupTabControl
+     * Creates a new instance of GroupTabControl.
      *
      * @param gui GUIControl
      * @param ccc ClientConnectionControl
