@@ -140,7 +140,7 @@ public class ClientCommand {
              * users in the room */
             
             if(!userData.isRoomRegistered(se)) {
-                returnError("Room name not valid", sc);
+                returnError("Room name not registered \"" + se + "\"", sc);
                 return;
             }
             
