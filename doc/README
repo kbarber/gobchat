@@ -5,14 +5,14 @@ Gob Online Chat - ReadMe
 Version: 0.4 (alpha)
 Author: Ken Barber (ken@bob.sh)
 
-1. Introduction
+1. INTRODUCTION
 
 This is the Beta release of Gob.
 
 Gob is a chat program that provides a Java chat server and chat client in the 
 form of a Java Applet.
 
-2. Licensing
+2. LICENSING
 
 Copyright (C) 2003,2004 Ken Barber
 
@@ -39,6 +39,6 @@ own. The developers of this software have worked hard to produce this program,
 to give to the public for free use - please do not abuse this trust we have 
 given you.
 
-3. Installation
+3. INSTALLATION
 
 For installation instructions, see the INSTALL document.

@@ -8,24 +8,24 @@ Date: 2004/02
 
 Features
 
-* Added full UniCode support (see sf #872999)
-* Added Windows Installation instructions (see sf #888024)
-* Added Windows Installation application (see sf #830899)
-* Windows Service support for server.jar (see sf #830890)
-* Applet Window Resizing (see sf #830892)
-* Put in new Ant targets for building Windows Packaging (.exe)
-* Put in new Ant targets for building Tarball packaging (.tar.gz)
-* Added a thick client for testing - still a little buggy
-* Keepalive support now provided with regular pings and timeouts (see sf 
+- Added full UniCode support (see sf #872999)
+- Added Windows Installation instructions (see sf #888024)
+- Added Windows Installation application (see sf #830899)
+- Windows Service support for server.jar (see sf #830890)
+- Applet Window Resizing (see sf #830892)
+- Put in new Ant targets for building Windows Packaging (.exe)
+- Put in new Ant targets for building Tarball packaging (.tar.gz)
+- Added a thick client for testing - still a little buggy
+- Keepalive support now provided with regular pings and timeouts (see sf 
 #831429)
-* Room list helpers, including auto focusing on primary text fields (see sf 
+- Room list helpers, including auto focusing on primary text fields (see sf 
 #831685)
-* Auto-restart upon exception (see sf #889516)
+- Auto-restart upon exception (see sf #889516)
 
 Bug Fixes
 
-* Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
-* Server Crash: ClassCastException. No handling of invalid XML objects (see sf #889512)
+- Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
+- Server Crash: ClassCastException. No handling of invalid XML objects (see sf #889512)
 
 ============
 Version: 0.3
@@ -33,18 +33,18 @@ Date: 2004/01/19
 
 Features
 
-* A progress bar is now presented while the applet is loading
-* Re-arranged Package Name under sh.bob.gob  (see sf #830410)
-* Created Common Regex Libs and utilised them in ClientCommand (see sf #830411)
-* Server Configuration File (see sf #830828)
-* Debugging and Logging Runtime Configuration (see sf #830832)
-* XML Protocol Sub-system (see sf #830375)
-* Compressed protocol for speed
-* I dabbled in some colour changes
+- A progress bar is now presented while the applet is loading
+- Re-arranged Package Name under sh.bob.gob  (see sf #830410)
+- Created Common Regex Libs and utilised them in ClientCommand (see sf #830411)
+- Server Configuration File (see sf #830828)
+- Debugging and Logging Runtime Configuration (see sf #830832)
+- XML Protocol Sub-system (see sf #830375)
+- Compressed protocol for speed
+- I dabbled in some colour changes
 
 Bug fixes
 
-* A UserList bug was fixed by the change to XML
+- A UserList bug was fixed by the change to XML
 
 ============
 Version: 0.2
@@ -52,20 +52,20 @@ Date: 2003/10/25
 
 Features
 
-* Java Applet is now started in its own HTML window (see sf #688359)
-* The lobby is now removed while disconnected (see sf #686540)
-* Added support for user renaming (see sf #686542)
-* Added support for private chat (see sf #688367)
-* Added support for rooms (see sf #688363)
-* Gob now loads "panels" for each tab, allowing a more modular configuration.
-* There is a seperate Runnable class for the thread. 
-* Documentation Updated.
-* Server port is now set on the command line.
+- Java Applet is now started in its own HTML window (see sf #688359)
+- The lobby is now removed while disconnected (see sf #686540)
+- Added support for user renaming (see sf #686542)
+- Added support for private chat (see sf #688367)
+- Added support for rooms (see sf #688363)
+- Gob now loads "panels" for each tab, allowing a more modular configuration.
+- There is a seperate Runnable class for the thread. 
+- Documentation Updated.
+- Server port is now set on the command line.
 
 Bug fixes
 
-* Fixed handling of failed connections, signups and selector registration. 
+- Fixed handling of failed connections, signups and selector registration. 
 Now you don't need to hit disconnect yourself (see sf #686534).
-* Will now handle the characters []\ in a message.
+- Will now handle the characters []\ in a message.
 
 ============

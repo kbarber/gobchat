@@ -6,160 +6,119 @@ Version: 0.4 (alpha)
 Author: Ken Barber (ken@bob.sh)
 
 
-1. System Requirements
+1. SYSTEM REQUIREMENTS
 
 The following platforms have been tested.
 
 Intel IA32:
 
-RedHat Linux 7.3, 8.0
-Windows 2000, XP
+- RedHat Linux 7.3, 8.0
+- Windows 2000, XP
 
 Sparc4u:
 
-Solaris 8, 9
+- Solaris 8, 9
 
 For all platforms, you will need the following packages:
 
-* Sun Java JRE 1.4.2 or greater (available from java.sun.com)
+- Sun Java JRE 1.4.2 or greater (available from java.sun.com)
 
 
-2. Installation
-2.1 Linux
+2. INSTALLATION
 
+2.1 LINUX
 
-Step 1:
+  1. Download and install Java JRE 1.4.1 or greater. It is available from:
 
-Download and install Java JRE 1.4.1 or greater. It is available from:
+     http://www.java.com/
 
-    http://www.java.com/
+     Follow the instructions provided.
 
-Follow the instructions provided.
+  2. Download the Gob RPM from http://sourceforge.net/projects/gob/.
 
+     Once you have obtained the Gob RPM, you can install it:
 
-Step 2:
+     rpm -Uvh gobchat-0.4-1.rpm
 
-Download the Gob RPM from http://sourceforge.net/projects/gob/.
+  3. Modify the HTML file index.html, and specify your server hostname.
 
-Once you have obtained the Gob RPM, you can install it:
+  4. Start the application using the system V script:
 
-    rpm -Uvh gobchat-0.4-1.rpm
+     /etc/init.d/gob start
 
+  5. Setup your OS to start Gob when the system starts. Its best to use a 
+     provided utility for this, on RedHat the utility:
 
-Step 3:
+     /usr/sbin/ntsysv
 
-Modify the HTML file index.html, and specify your server hostname.
+     Can be used.
 
+  6. Access the website using the proper hostname. The client should work, and
+     you should be able to connect to the server.
 
-Step 4: 
 
-Start the application using the system V script:
+2.2 UNIX
 
-    /etc/init.d/gob start
+  1. Download and install Java JRE 1.4.1 or greater. It is available from:
 
+     http://www.java.com/
 
-Step 5:
+     Follow the instructions provided.
 
-Setup your OS to start Gob when the system starts. Its best to use a provided 
-utility for this, on RedHat the utility:
+  2. Download the Gob tarball from http://sourceforge.net/projects/gob/.
 
-    /usr/sbin/ntsysv
+     Install the tarball into a safe place.
 
-Can be used.
+  3. Place the contents of the 'website' directory somewhere in the servers
+     web server content area.
 
+     You will need to configure the web server to point to this directory.
 
-Step 6:
+  4. Modify the HTML file index.html, and specify your server name.
 
-Access the website using the proper hostname. The client should work, and
-you should be able to connect to the server.
+  5. The server application can be run like this:
 
+     $JAVA_HOME/bin/java -jar server.jar
 
-2.2 Unix (and like flavours)
+     By default, the server dislays error messages on the console. This should 
+     probably be piped to a text file or some such.
 
-Step 1:
+     I suggest creating an init script for this.
 
-Download and install Java JRE 1.4.1 or greater. It is available from:
+  6. Access the website using the proper hostname. The client should work, and
+     you should be able to connect to the server.
 
-    http://www.java.com/
+2.3 WINDOWS
 
-Follow the instructions provided.
+  1. Download and install Java JRE 1.4.1 or greater. It is available from:
 
-Step 2:
+     http://www.java.com/
 
-Download the Gob tarball from http://sourceforge.net/projects/gob/.
+     Follow the instructions provided.
 
-Install the tarball into a safe place.
+  2. Download the Gob Online Chat windows installation file from:
+ 
+     http://sourceforge.net/projects/gob/
 
-Step 3:
+     Run the application to install the software. Choose defaults.
 
-Place the contents of the 'website' directory somewhere in the servers
-web server content area.
+  3. Ensure IIS is running, by checking the Services MMC application.
 
-You will need to configure the web server to point to this directory.
+  4. Modify the HTML file index.html, and specify your server name. This file will
+     probably be located:
 
-Step 4:
+     C:\Inetpub\wwwroot\gob\index.html
 
-Modify the HTML file index.html, and specify your server name.
+  5. Modify the file '%GobRoot%\config\gobd.conf.xml' to taste. Ensure the log file location
+     is valid and that all settings are correct, or else the daemon may not run.
 
-Step 5:
+     Restart the Gob Online Chat Server service to enact the changes.
 
-The server application can be run like this:
+  6. Access the website using the proper hostname. The client should work, and
+     you should be able to connect to the server.
 
-    $JAVA_HOME/bin/java -jar server.jar
+     You can also use the shortcut provided:
 
-By default, the server dislays error messages on the console. This should 
-probably be piped to a text file or some such.
+     Start -> All Programs -> Gob Online Chat -> Gob Online Chat
 
-I suggest creating an init script for this.
-
-Step 6:
-
-Access the website using the proper hostname. The client should work, and
-you should be able to connect to the server.
-
-2.3 Windows
-
-Step 1:
-
-Download and install Java JRE 1.4.1 or greater. It is available from:
-
-    http://www.java.com/
-
-Follow the instructions provided.
-
-Step 2:
-
-Download the Gob Online Chat windows installation file from http://sourceforge.net/projects/gob/.
-
-Run the application to install the software. Choose defaults.
-
-Step 3:
-
-Ensure IIS is running, by checking the Services MMC application.
-
-Step 4:
-
-Modify the HTML file index.html, and specify your server name. This file will
-probably be located:
-
-C:\Inetpub\wwwroot\gob\index.html
-
-Step 5:
-
-Modify the file '%GobRoot%\config\gobd.conf.xml' to taste. Ensure the log file location
-is valid and that all settings are correct, or else the daemon may not run.
-
-Restart the Gob Online Chat Server service to enact the changes.
-
-Step 6:
-
-Access the website using the proper hostname. The client should work, and
-you should be able to connect to the server.
-
-You can also use the shortcut provided:
-
-Start -> All Programs -> Gob Online Chat -> Gob Online Chat
-
-Step 7:
-
-Consult the log files to track any problems.
+  7. Consult the log files to track any problems.
