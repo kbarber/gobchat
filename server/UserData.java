@@ -60,6 +60,21 @@ public class UserData {
         return (SocketChannel)hashNameSocket.get(name);
     }
     
+    /**
+     * Return the hostname/IP associated with the socket parameter
+     */
+    public String getHostIP(SocketChannel socket) {
+        return socket.socket().getInetAddress().toString();
+    }
+
+    /**
+     * Return the hostname/IP associated with the name parameter
+     */
+    public String getHostIP(String name) {
+        return ((SocketChannel)hashNameSocket.get(name)).socket().getInetAddress().toString();
+    }
+    
+    
     /** 
      * Delete the entry with the username supplied.
      */
