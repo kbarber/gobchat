@@ -22,7 +22,7 @@ if [ ! -d $LOGDIR ] ; then
     exit 1
 fi
 
-LOGFILE=$LOGDIR/output.log
+LOGFILE=$LOGDIR/gobchat.log
 
 touch $LOGFILE
 
