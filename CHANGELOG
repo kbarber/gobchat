@@ -8,8 +8,8 @@ Date:
 
 Features
 
-* KB - 688359 
-* KB - 686540
+* KB - Java Applet is now started in its own HTML window (see sf #688359)
+* KB - The lobby is now removed while disconnected (see sf #686540)
 * KB - 686542
 * KB - 688367
 * KB - 688363
