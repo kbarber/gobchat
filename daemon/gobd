@@ -4,8 +4,8 @@
 #
 
 JAVACMD=$JAVA_HOME/bin/java
-SERVJAR=/home/ken/dev/gob-working/gobchat/daemon/server.jar
-LOGDIR=/tmp
+SERVJAR=/usr/share/java/gob/server.jar
+LOGDIR=/var/log/gob
 
 if [ ! -f $JAVACMD ] ; then
     echo "I cannot find java!"
@@ -22,7 +22,7 @@ if [ ! -d $LOGDIR ] ; then
     exit 1
 fi
 
-LOGFILE=$LOGDIR/gob.log
+LOGFILE=$LOGDIR/output.log
 
 touch $LOGFILE
 
