@@ -180,7 +180,7 @@ public class ControlPanel extends javax.swing.JPanel {
 
     private void tfNewUserNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNewUserNameKeyPressed
         if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-
+            serverConnect();
         }
     }//GEN-LAST:event_tfNewUserNameKeyPressed
 
