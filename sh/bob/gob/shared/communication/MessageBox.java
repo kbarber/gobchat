@@ -43,7 +43,6 @@ import java.util.zip.*;
 public class MessageBox {
     
     private XMLDecoder xmlDecoder;
-    private ByteBuffer readBuffer;
     private ByteBuffer writeBuffer;
     private int maxBufferSize;    
     private Network networkConf;
@@ -57,9 +56,7 @@ public class MessageBox {
         networkConf = netconf;
         
         /* Create buffers for the XML pipes */
-        readBuffer = ByteBuffer.allocate(networkConf.getMaxBufferSize());
         writeBuffer = ByteBuffer.allocate(networkConf.getMaxBufferSize());
-        
     }
     
     /**
@@ -110,13 +107,16 @@ public class MessageBox {
      * @param channel SocketChannel to send the object
      * @param obj A JavaBean, such as the ones from sh.bob.gob.shared.communication.*
      */
-    public void sendData(SocketChannel channel, Object obj) throws IOException {
+    public void sendData(SocketChannel channel, Object obj) throws ClosedChannelException, IOException {
         Logger.getLogger("sh.bob.gob.shared").finest("Now encoding data");
         ByteBuffer bb = encodeBean(obj);
         Logger.getLogger("sh.bob.gob.shared").finest("Now sending data");
         
         try {
             channel.write(bb);
+        } catch (ClosedChannelException ex) {
+            Logger.getLogger("sh.bob.gob.shared").warning("Channel has closed, cannot send data.");
+            throw ex;
         } catch (Exception ex) {
             Logger.getLogger("sh.bob.gob.shared").warning("Exception while writing bytebuffer to channel: " + ex);
             return;
@@ -141,24 +141,22 @@ public class MessageBox {
 
         int bufferlength = buffer.position();
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Flip buffer, now at position: " + bufferlength);
         buffer.flip();
         
         byte bytespace[] = new byte[bufferlength];
         
         buffer.get(bytespace);
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Contents of data just received: \n" + new String(bytespace));
+        Logger.getLogger("sh.bob.gob.shared").finest("\n\nCompressed Packet DEC   (" + 
+            bytespace.length + "): \n" + new String(bytespace) + "\n");
         
         /* Take the SplitBuffer and prepend this to the downloaded buffer */
         if(sb.getSplitBuffer() != null) {
-            Logger.getLogger("sh.bob.gob.shared").finest("Prepending split buffer: \n" + new String(sb.getSplitBuffer()));
-            System.out.println("Prepending split buffer (" + sb.getSplitBuffer().length + "): \n" + new String(sb.getSplitBuffer()));
+            Logger.getLogger("sh.bob.gob.shared").finest("Prepending split buffer (" + sb.getSplitBuffer().length + "): \n" + new String(sb.getSplitBuffer()));
             bytespace = (new String(sb.getSplitBuffer()) + new String(bytespace)).getBytes();
             bufferlength = bytespace.length;
+            Logger.getLogger("sh.bob.gob.shared").finest("\nBuffer now contains (" + bufferlength + "): \n" + new String(bytespace) + "\n");
         }
-        
-        Logger.getLogger("sh.bob.gob.shared").finest("Buffer contains: \n" + new String(bytespace));
         
         /* Now lets find the double nulls. Cycle through each byte, keep a Vector where
          * we record where each double null is. */
@@ -166,28 +164,28 @@ public class MessageBox {
         int lastNullLocation = -1;
         
         if(bufferlength > 1) { // If the buffer length is 1 or less, then there can't be a double null!
-            Logger.getLogger("sh.bob.gob.shared").finest("Buffer length is greater than 1 (" + bufferlength + ")");
-            
+                    
             String rawvalue = "";
+            String nullchecks = "";
             
             for(int i = 0; i < (bufferlength - 1); i++) {
                 rawvalue = rawvalue + bytespace[i] + ",";
                 if(bytespace[i] == 0) {
-                    Logger.getLogger("sh.bob.gob.shared").finest("Found a single null at location: " + i);
+                    nullchecks += "Found a single null at location: " + i + "\n";
                 }
                 if((bytespace[i] == 0) && (bytespace[i+1] == 0)) {
                     lastNullLocation = i;
-                    Logger.getLogger("sh.bob.gob.shared").finest("Found a double null at location: " + lastNullLocation);
+                    nullchecks += "Found a double null at location: " + lastNullLocation + "\n";
                     nullLocations.add(new Integer(lastNullLocation));
                 }
             }
             rawvalue = rawvalue + bytespace[bufferlength - 1];
             
-            Logger.getLogger("sh.bob.gob.shared").finest("Received compressed packet (" + bufferlength + "): " + rawvalue);
-            System.out.println("Received compressed packet (" + bufferlength + "): " + rawvalue);
+            Logger.getLogger("sh.bob.gob.shared").finest(
+                "\n\nCompressed Packet ASCII (" + bufferlength + "): " + rawvalue + 
+                "\n" + nullchecks +
+                "Double Nulls: " + nullLocations.size() + "\n");
         }
-        
-        Logger.getLogger("sh.bob.gob.shared").finest("Number of double nulls: " + nullLocations.size());
         
         /* Okay, if there is no nulls - then just return the bufferdata (if there is any) */
         if(nullLocations.size() == 0) {
@@ -233,6 +231,8 @@ public class MessageBox {
             
             byte[] objectdata = extractByteArray(bytespace, startinglocation, nulllocation - 1);
             
+            Logger.getLogger("sh.bob.gob.shared").finest("Compressed data block size: " + objectdata.length);
+            
             
             /* Now decompress */
             Inflater decompresser = new Inflater();
@@ -242,22 +242,30 @@ public class MessageBox {
             try {
                 tempblength = decompresser.inflate(tempbarray);
             } catch(Exception ex) {
+                Logger.getLogger("sh.bob.gob.share").warning("Caught exception during decompression: " + ex);
             }
             decompresser.end();
+            
+            if(tempblength == 0) {
+                Logger.getLogger("sh.bob.gob.shared").warning("The decompression returned nothing.");
+                continue;
+            }
+            
             byte decompbarray[] = extractByteArray(tempbarray, 0, tempblength - 1);
             
-            Logger.getLogger("sh.bob.gob.shared").finest("Length of decompressed array: " + tempblength);
-            Logger.getLogger("sh.bob.gob.shared").finest("Decompressed data: " + new String(decompbarray));
-            System.out.println("Decompressed data: " + new String(decompbarray));
+            if(decompbarray == null) {
+                Logger.getLogger("sh.bob.gob.shared").severe("The returned decompbarray is null");
+                continue;
+            }
+            
+            Logger.getLogger("sh.bob.gob.shared").finest("\n\nDecompressed data XML (" + tempblength + "): \n" + new String(decompbarray) + "\n");
             
             startinglocation = nulllocation + 2;
             
-//            ByteArrayInputStream is = new ByteArrayInputStream(objectdata);
             ByteArrayInputStream is = new ByteArrayInputStream(decompbarray);
             
             xmlDecoder = new XMLDecoder(is, null, new exceptionListener());
             
-            Logger.getLogger("sh.bob.gob.shared").finest("Read the object from XML");
             Object obj = new Object();
             
             try {
@@ -266,18 +274,16 @@ public class MessageBox {
                 Logger.getLogger("sh.bob.gob.shared").log(Level.WARNING, "No such element", ex);
             } catch (ArrayIndexOutOfBoundsException ex) {
                 /* If the XML JavaBean contains no objects */
-                Logger.getLogger("sh.bob.gob.shared").log(Level.WARNING, 
-                    "The protocol stream contains no more objects, was the XML packet malformed?", ex);
+                Logger.getLogger("sh.bob.gob.shared").warning("The protocol stream contains no more objects, was the XML packet malformed?");
             }
             
-            Logger.getLogger("sh.bob.gob.shared").finest("Close the XMLDecoder");
             xmlDecoder.close();
             
             returnArrayVector.add(obj);
 
         }
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Now return the array of objects");
+        Logger.getLogger("sh.bob.gob.shared").finest("Return array of objects");
         return returnArrayVector.toArray();
     }
     
@@ -294,53 +300,25 @@ public class MessageBox {
      */
     private ByteBuffer encodeBean(Object obj) {
 
-        XMLEncoder xmlEncoder;
-        Pipe xmlencpipe = null;
+        /* Output the XML output of the object to a ByteArrayOutputStream */
+        ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
         
-        readBuffer.clear();
-        
-        /* Setup the pipe */
-        try {
-            xmlencpipe = Pipe.open();
-        } catch(Exception ex) {
-            /* raise an error some where */
-            Logger.getLogger("sh.bob.gob.shared").log(Level.SEVERE, "Problem opening pipe", ex);
-            System.exit(1);
-        }
-        
-        xmlEncoder = new XMLEncoder(Channels.newOutputStream(xmlencpipe.sink()));
-        
-        Logger.getLogger("sh.bob.gob.shared").finest("Writing the object");
+        XMLEncoder xmlEncoder = new XMLEncoder(baOutputStream);
+        xmlEncoder.setExceptionListener(new exceptionListener());
         xmlEncoder.writeObject(obj);
-        Logger.getLogger("sh.bob.gob.shared").finest("Now close the XMLEncoder");
         xmlEncoder.close();
         
-        try {
-            Logger.getLogger("sh.bob.gob.shared").finest("Try reading from the xmlencpipe");
-            xmlencpipe.source().read(readBuffer);
-        } catch (Exception ex) {
-            Logger.getLogger("sh.bob.gob.shared").warning("Exception when reading buffer: " + ex);
-            return null;
-        }
-        
-        int bblength = readBuffer.position();
-        readBuffer.flip();
-        
-        byte barray[] = new byte[bblength];
-        
-        Logger.getLogger("sh.bob.gob.shared").finest("Pulling in data from readBuffer");
-        readBuffer.get(barray, 0, bblength);
+        byte barray[] = baOutputStream.toByteArray();
         
         /* Now compress */
-        Deflater compresser = new Deflater(Deflater.FILTERED);
-        compresser.setInput(barray);
-        compresser.finish();
-        byte tempbarray[] = new byte[bblength];
-        int tempblength = compresser.deflate(tempbarray);
+        Deflater compressor = new Deflater(Deflater.FILTERED);
+        compressor.setInput(barray);
+        compressor.finish();
+        byte tempbarray[] = new byte[barray.length];
+        int tempblength = compressor.deflate(tempbarray);
         byte compbarray[] = extractByteArray(tempbarray, 0, tempblength - 1, 2);
         
         /* Append a double null */
-//        barray[barray.length - 1] = (byte)0;
         compbarray[compbarray.length - 1] = (byte)0;
         compbarray[compbarray.length - 2] = (byte)0;
         
@@ -352,13 +330,12 @@ public class MessageBox {
         rawvalue += compbarray[compbarray.length - 1];
         
         /* Print out the raw packet */
-        Logger.getLogger("sh.bob.gob.shared").finest("Sending compressed packet (" + compbarray.length + "): " + rawvalue); 
-        System.out.println("Sending compressed packet (" + compbarray.length + "): " + rawvalue);
+        Logger.getLogger("sh.bob.gob.shared").finest(
+            "\n\nUncompressed Packet XML (" + barray.length + "): \n" + new String(barray) +    
+            "\n\nCompressed Packet ASCII (" + compbarray.length + "): \n" + new String(compbarray) +
+            "\n\nCompressed Packet DEC   (" + compbarray.length + "): \n" + rawvalue +
+            "\n");
         
-        Logger.getLogger("sh.bob.gob.shared").finest("Encoded XML output (" + barray.length + "): \n" + new String(barray));
-        Logger.getLogger("sh.bob.gob.shared").finest("Encoded/Compressed XML output (" + compbarray.length + "): \n" + new String(compbarray));
-        
-//        return ByteBuffer.wrap(barray);
         return ByteBuffer.wrap(compbarray);
     }
     
@@ -370,7 +347,7 @@ public class MessageBox {
             int lengthBA = (end - start) + 1;
             
             if((lengthBA + buffer) < 1) {
-                Logger.getLogger("sh.bob.gob.shared").warning("Array parameters to extract are invalid");
+                Logger.getLogger("sh.bob.gob.shared").warning("Array parameters to extract are invalid - " + start + "," + end + "," + buffer);
                 return null;
             }
             
@@ -391,7 +368,7 @@ class exceptionListener implements ExceptionListener {
     }
     
     public void exceptionThrown(Exception ex) {
-        Logger.getLogger("sh.bob.gob.shared").log(Level.WARNING, "Problem with decoding", ex);
+        Logger.getLogger("sh.bob.gob.shared").warning("Problem with decoding/encoding: " + ex);
     }
     
 }
