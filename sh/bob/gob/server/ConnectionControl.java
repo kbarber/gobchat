@@ -19,6 +19,7 @@ import java.nio.charset.CharsetEncoder;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.logging.*;
 
 /**
  * This is the object responsible for accepting user connections and accepting 
@@ -122,7 +123,7 @@ public class ConnectionControl {
                         /* Alert the problem on the terminal
                          *
                          * I don't actually know what would generate this condition */
-                        Main.consoleOutput("This SelectionKey isn\'t valid. This is unexpected behaviour.");
+                        Logger.getLogger("sh.bob.gob.server").warning("This SelectionKey isn\'t valid. This is unexpected behaviour.");
                     } else if(key.isAcceptable()) { /* We have received a new connection */
                         /* Prepare and register new connection with the Selector */
                         SocketChannel sc = readySocketChannel((ServerSocketChannel)key.channel());
@@ -133,7 +134,7 @@ public class ConnectionControl {
                             sc.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
                             
                             /* Log new connection */
-                            Main.consoleOutput("New connection from: " + sc.socket().getInetAddress().toString());
+                            Logger.getLogger("sh.bob.gob.server").fine("New connection from: " + sc.socket().getInetAddress().toString());
                         } catch(IOException e) {
                             /* Close the SocketChannel, if I can't write to it - then I don't want
                              * to continue */
@@ -141,7 +142,7 @@ public class ConnectionControl {
                                 sc.close();
                                 
                                 /* Send errors to the terminal */
-                                Main.consoleOutput("Error giving welcoming greeting to a socket, it has been closed: " + e);
+                                Logger.getLogger("sh.bob.gob.server").warning("Error giving welcoming greeting to a socket, it has been closed: " + e);
                             } catch(IOException ne) {
                                 /* Send error to console and exit, I should be able to close an invalid socket */
                                 Main.programExit("I am unable to close a socket that couldn\'t be written to in the first place: " + ne);
@@ -160,7 +161,7 @@ public class ConnectionControl {
                         /* Check to make sure this SocketChannel is actually connected */
                         if(!sc.isConnected()) {
                             /* Output the problem on the terminal */
-                            Main.consoleOutput("Received activity on a connected socket. However this socket isn\'t connected.");
+                            Logger.getLogger("sh.bob.gob.server").warning("Received activity on a connected socket. However this socket isn\'t connected.");
                             
                             /* Close the socket, just in case */
                             try {
@@ -181,7 +182,7 @@ public class ConnectionControl {
                             readResult = sc.read(inputByteBuffer);
                         } catch(IOException e) {
                             /* Output any problems to the terminal */
-                            Main.consoleOutput("Error receiving data on network: " + e);
+                            Logger.getLogger("sh.bob.gob.server").warning("Error receiving data on network: " + e);
                             
                             /* Close the channel */
                             try {
@@ -218,7 +219,7 @@ public class ConnectionControl {
                         String lineInputString[] = inputString.split("\n");
 
                         for(int i = 0; i < lineInputString.length; i++) {
-                            //Main.consoleOutput("Line index [" + lineInputString[i] + "]");
+                            Logger.getLogger("sh.bob.gob.server").finest("Line index [" + lineInputString[i] + "]");
                             
                             String line = lineInputString[i];
                         
@@ -362,7 +363,7 @@ public class ConnectionControl {
             sc.register(listenSelector, SelectionKey.OP_READ);
         } catch (IOException e) {
             /* Alert a problem on the terminal */
-            Main.consoleOutput("Unable to ready SocketChannel: " + e);
+            Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE,"Unable to ready SocketChannel", e);
         }
         
         /* Return the channel, now accepted and registered to the selector */

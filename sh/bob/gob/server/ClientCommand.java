@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.regex.Pattern;
+import java.util.logging.*;
 
 
 /**
@@ -63,9 +64,8 @@ public class ClientCommand {
             returnError("Username supplied: " + ex, socketchannel);
             
             /* Notify on terminal */
-            Main.consoleOutput("Attempt to sign-in with invalid username " +
-                "(not shown) from: " + socketchannel.socket().getInetAddress().toString() +
-                " problem is " + ex);
+            Logger.getLogger("sh.bob.gob.server").log(Level.WARNING, "Attempt to sign-in with invalid username " +
+                "(not shown) from: " + socketchannel.socket().getInetAddress().toString(), ex);
             return;
         }
         
@@ -78,7 +78,7 @@ public class ClientCommand {
             clientRoomlist("*", socketchannel);
                 
             /* Notify on the terminal that new user has signed up */
-            Main.consoleOutput("New user signed in: \"" + username + "\"" + 
+            Logger.getLogger("sh.bob.gob.server").fine("New user signed in: \"" + username + "\"" + 
                 " from " + userData.getHostIP(socketchannel));
         } else {
             /* Let the user know that there was an error with signup. */
@@ -86,7 +86,7 @@ public class ClientCommand {
                 socketchannel);
 
             /* Notify on the terminal about the new user */
-            Main.consoleOutput("Attempt to sign in with duplicate " +
+            Logger.getLogger("sh.bob.gob.server").fine("Attempt to sign in with duplicate " +
                 "username: " + username);            
         }
     }
@@ -107,15 +107,13 @@ public class ClientCommand {
         
         if(userData.isSocketRegistered(sc) == false) {
             /*The user never logged in, just log to console */
-            Main.consoleOutput("An unknown user from: " + sc.socket().getInetAddress().toString() + " quit: " + pa);            
+            Logger.getLogger("sh.bob.gob.server").warning("An unknown user from: " + sc.socket().getInetAddress().toString() + " quit: " + pa);            
             
         } else {
         
             /* Get the username using the given SocketChannel */
             String userName = userData.getName(sc);
 
-            //Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
-            
             /* Let every room know that the user has quit */
             messageUserRooms("quit", userName, userName + "," + pa);
            
@@ -126,7 +124,7 @@ public class ClientCommand {
             userData.deleteName(sc);
             
             /* Notify on the terminal that the user has quit */
-            Main.consoleOutput("User quit: \"" + userName + "\" because \"" + pa + "\"");
+            Logger.getLogger("sh.bob.gob.server").fine("User quit: \"" + userName + "\" because \"" + pa + "\"");
         }
             
         try {
@@ -156,9 +154,11 @@ public class ClientCommand {
             
         if(userData.isRoomRegistered(room) != true) {
             returnError("Room name not registered [" + room + "]", sc);
-            Main.consoleOutput("Userlist attempt on a non-registered room [" + room + "]");
+            Logger.getLogger("sh.bob.gob.server").warning("Userlist attempt on a non-registered room [" + room + "]");
             return;
         }
+        
+        Logger.getLogger("sh.bob.gob.server").finer("Userlist on room [" + room + "] by user [" + userData.getName(sc) + "]");
             
         Object[] users = userData.listNames(room);
 
@@ -202,6 +202,10 @@ public class ClientCommand {
             return;
         }
         
+        Logger.getLogger("sh.bob.gob.server").finer("Roomsend for room [" + 
+            Commands[0] + "] by user [" + userData.getName(sc) + "] message [" + 
+            Commands[1] + "]");
+        
         /* Send the message to all users */
         messageRoom("roomsend", Commands[0], userData.getName(sc) + ":" + Commands[1]);
     }
@@ -232,6 +236,10 @@ public class ClientCommand {
             return;
         };
         
+        Logger.getLogger("sh.bob.gob.server").finer ("Usersend from [" + 
+            userData.getName(sc) + "] to [" + Commands[0] + "] message [" + 
+            Commands[1] + "]");
+        
         /* Send the message to both the sender and originator */
         message("usersend", userData.getName(sc) + ":" + Commands[0] +
             ":" + Commands[1], userData.getSocket(Commands[0]));
@@ -259,7 +267,7 @@ public class ClientCommand {
         if(userData.isRoomRegistered(room) == false) {
             userData.insertRoom(room);
                 
-            Main.consoleOutput("New room created: " + room);
+            Logger.getLogger("sh.bob.gob.server").fine("New room created: " + room);
         };
             
         /* Is the user already a member ? */
@@ -269,7 +277,7 @@ public class ClientCommand {
         }
             
         /* If user isn't already a member, join it */
-        Main.consoleOutput("The user: " + userData.getName(sc) + " is trying to join the room: " + room);
+        Logger.getLogger("sh.bob.gob.server").finer("The user: " + userData.getName(sc) + " is trying to join the room: " + room);
         userData.joinRoom(userData.getName(sc), room);
             
         /* Send a message to everyone in the room */
@@ -297,6 +305,9 @@ public class ClientCommand {
             returnError("That room isn't registered: " + room, sc);
             return;
         }
+        
+        Logger.getLogger("sh.bob.gob.server").finer("Part from room [" + 
+            room + "] by user [" + userData.getName(sc) + "]");
             
         /* Send a message to everyone in the room */
         messageRoom("part", room, userData.getName(sc));
@@ -307,6 +318,7 @@ public class ClientCommand {
         /* If last in room, remove room */
         if(userData.listNames(room).length == 0) {
             userData.deleteRoom(room);
+            Logger.getLogger("sh.bob.gob.server").fine("Room deleted: " + room);
         }
     }
     
@@ -321,6 +333,9 @@ public class ClientCommand {
             returnError("Invalid search criteria.",  sc);
             return;
         }
+        
+        Logger.getLogger("sh.bob.gob.server").finer("Roomlist for [" + 
+            search + "] by user [" + userData.getName(sc) + "]");
 
         /* Obtain an array which contains a list of the currently
          * registered rooms */
@@ -355,7 +370,7 @@ public class ClientCommand {
                 "characters and only alphanumeric", sc);
             
             /* Notify on terminal */
-            Main.consoleOutput("Attempt to rename user to invalid username " +
+            Logger.getLogger("sh.bob.gob.server").warning("Attempt to rename user to invalid username " +
                 "(not shown) from \"" + sc.socket().getInetAddress().toString() + 
                 "\" by user \"" + userData.getName(sc));
 
@@ -374,14 +389,14 @@ public class ClientCommand {
             message("rename", oldname + ":" + name, sc);
 
             /* Notify on the terminal that new user has renamed */
-            Main.consoleOutput("User renamed from \"" + oldname + "\"" + 
+            Logger.getLogger("sh.bob.gob.server").fine("User renamed from \"" + oldname + "\"" + 
                 " to \"" + name + "\"");
         } else {
             /* Let the user know that there was an error with rename. */
             returnError("Username taken", sc);
 
             /* Notify on the terminal about the new user */
-            Main.consoleOutput("Attempt to rename to existing username \"" + name + "\" by \"" +
+            Logger.getLogger("sh.bob.gob.server").fine("Attempt to rename to existing username \"" + name + "\" by \"" +
                 userData.getName(sc) + "\"");
         }
         
@@ -401,13 +416,14 @@ public class ClientCommand {
      */
     private void message(String type, String msg, SocketChannel sc) {
         //DEBUG
-        //Main.consoleOutput("ClientMessage Type: " + type + " Msg: " + msg);
+        Logger.getLogger("sh.bob.gob.server").finest("ClientMessage Type: " + type + " Msg: " + msg);
+        
         try {
             /* Write the message to the SocketChannel */
             sc.write(encoder.encode(CharBuffer.wrap("GOB:" + type + ":" + msg + "\n")));
         } catch (IOException e) {    /* Is the SocketChannel closed? */
             /* Log it */
-            Main.consoleOutput("Error messaging users socket, type: " + type + " msg: " + msg);
+            Logger.getLogger("sh.bob.gob.server").warning("Error messaging users socket, type: " + type + " msg: " + msg);
             /* Commented out due to an infinite loop, because clientQuit calls this routine */
 //            clientQuit("Error messaging users socket.", sc);
             
@@ -460,7 +476,7 @@ public class ClientCommand {
     private void messageUserRooms(String type, String username, String msg) {
         /* Check if username exists */
         if(userData.isNameRegistered(username) != true) {
-            Main.consoleOutput("Attempt to message all userrooms for a username that doesn't exist");
+            Logger.getLogger("sh.bob.gob.server").warning("Attempt to message all userrooms for a username that doesn't exist");
             return;
         }
         
@@ -514,7 +530,7 @@ public class ClientCommand {
         /* Obtain a list of all rooms for username */
         Object[] rooms = userData.listRooms(username);
         
-        Main.consoleOutput("The user: " + username + " is parting all rooms");
+        Logger.getLogger("sh.bob.gob.server").finer("The user: " + username + " is parting all rooms");
         
         /* Cycle through each room, and part each in turn */
         for(int loop = 0; loop <= (rooms.length -1); loop++) {
@@ -523,13 +539,14 @@ public class ClientCommand {
             userData.partRoom(username, (String)rooms[loop]);            
             
             //DEBUG
-            //Main.consoleOutput("Check if the room: " + rooms[loop] + " needs to be closed, with users: " + userData.listNames((String)rooms[loop]).length);
+            Logger.getLogger("sh.bob.gob.server").finest("Check if the room: " + rooms[loop] + " needs to be closed, with users: " + userData.listNames((String)rooms[loop]).length);
             
             /* If last in room, remove room */
             if((userData.listNames((String)rooms[loop])).length == 0) {
-                Main.consoleOutput("Now parting: " + rooms[loop]);
+                Logger.getLogger("sh.bob.gob.server").finer("Now parting: " + rooms[loop]);
                 userData.deleteRoom((String)rooms[loop]);
             }            
         }
     }
+    
 }

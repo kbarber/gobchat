@@ -4,6 +4,16 @@
   <void property="TCPPort"> 
    <short>6666</short> 
   </void> 
+  <void property="logging"> 
+   <object class="sh.bob.gob.shared.configuration.Logging"> 
+    <void property="logFile"> 
+     <string>/var/log/gob/gobchat.log</string> 
+    </void> 
+    <void property="logLevel"> 
+     <string>FINER</string> 
+    </void> 
+   </object> 
+  </void> 
   <void property="version"> 
    <string>0.3</string> 
   </void> 

@@ -6,6 +6,8 @@
 
 package sh.bob.gob.server;
 
+import java.util.logging.*;
+
 /**
  *
  * @author  ken
@@ -17,7 +19,7 @@ public class ExitHandler extends Thread {
     }
     
     public void run() {
-        Main.consoleOutput("Exiting Gob Online Chat");
+        Logger.getLogger("sh.bob.gob.server").info("Exiting Gob Online Chat");
     }
     
 }

@@ -9,6 +9,8 @@ package sh.bob.gob.server;
 import sh.bob.gob.shared.configuration.*;
 
 import java.util.Date;
+import java.util.logging.*;
+
 
 /**
  * Primary class for the Gob server. This class spawns the ConnectionControl
@@ -30,17 +32,26 @@ public final class Main {
      * which contains the main body of code.
      */
     public Main(String configfile) {
-        /* Inform of startup on console */
-        consoleOutput("Connection control: Starting");
-        
+        /* First read the configuration file */
         ServerConfiguration sc = ServerConfigurationDAO.read(configfile);
+
+        /* Set up logging */
+        prepareLogging(sc.getLogging());
+        
+        /* Server configuration */
+        Logger.getLogger("sh.bob.gob.server").config("TCP port: " + sc.getTCPPort());
+        Logger.getLogger("sh.bob.gob.server").config("Log level: " + sc.getLogging().getLogLevel());
+        Logger.getLogger("sh.bob.gob.server").config("Log file: " + sc.getLogging().getLogFile());
+        
+        /* Startup message log */
+        Logger.getLogger("sh.bob.gob.server").info("Connection control: Starting");
         
         /* Create a new ConnectionControl */
         try {
             cc = new ConnectionControl(sc);
         } catch (Exception ex) {
             /* Catch all exceptions */
-            consoleOutput("Connection control: Exception: " + ex);
+            Logger.getLogger("sh.bob.gob.server").log(Level.SEVERE, "Connection control exception", ex);
             ex.printStackTrace();
         }
     }
@@ -64,7 +75,7 @@ public final class Main {
      * @param message Output string to display to standard output.
      */
     protected static void programExit(String message) {
-        consoleOutput("Clean Program Exit: " + message);
+        Logger.getLogger("sh.bob.gob.server").info("Clean Program Exit: " + message);
         
         /* Exit with a zero */
         System.exit(0);
@@ -76,8 +87,6 @@ public final class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        /* Inform of startup on console */
-        consoleOutput("Starting Gob Online Chat on port " + args[0]);
 
         /* Trace method calls or instructions - debugging */
 //        Runtime.getRuntime().traceMethodCalls(true);
@@ -89,6 +98,26 @@ public final class Main {
                 
         /* Start a new object */
         new Main(args[0]);
+    }
+    
+    private void prepareLogging(Logging logconf) {
+        
+        FileHandler fh = null;
+        try {
+            /* Create a FileHandler to the correct file */
+            fh = new FileHandler(logconf.getLogFile(), true);
+        } catch (Exception ex) {
+            consoleOutput("Failure to open log file, exiting: " + ex);
+            System.exit(1);
+        }
+        
+        /* Set the formatter */
+        fh.setFormatter(new SimpleFormatter());
+        
+        /* Create a logger and add the FileHandler */
+        Logger logger = Logger.getLogger("sh.bob.gob.server");
+        logger.setLevel(Level.parse(logconf.getLogLevel()));
+        logger.addHandler(fh);
     }
     
 }

@@ -9,6 +9,7 @@ package sh.bob.gob.server;
 import java.nio.channels.SocketChannel;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.logging.*;
 
 /**
  * This class keeps the information regarding users currently logged in
@@ -77,7 +78,7 @@ public class UserData {
      * @param room Room to join
      */
     public void joinRoom(String name, String room) {
-        Main.consoleOutput("Room: " + room + ", Name: " + name);
+        Logger.getLogger("sh.bob.gob.server").finest("Join Room: " + room + " Name: " + name);
         
         /* Add the user to the room */
         ((Hashtable)hashRoomNames.get(room)).put(name, "dummy");
@@ -169,7 +170,7 @@ public class UserData {
      */
     public void deleteName(String name) {
         /* Now remove the references to this user in each room */
-        Main.consoleOutput("Delete user: " + name);
+        Logger.getLogger("sh.bob.gob.server").finest("Delete user: " + name);
         
         Object[] Rooms = (Object[])listRooms(name);
         
@@ -348,7 +349,7 @@ public class UserData {
     public Object[] listRooms(String name) {
         /* Check if the user exists first */
         if(isNameRegistered(name) != true) {
-            Main.consoleOutput("Invalid listRooms for a name not registered: " + name);
+            Logger.getLogger("sh.bob.gob.server").warning("Invalid listRooms for a name not registered: " + name);
             return null;
         }
         

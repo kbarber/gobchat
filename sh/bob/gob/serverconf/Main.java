@@ -22,9 +22,14 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Logging log = new Logging();
+        log.setLogFile("/var/log/gob/gobchat.log");
+        log.setLogLevel("FINER");
+        
         ServerConfiguration sc = new ServerConfiguration();
         sc.setVersion("0.3");
         sc.setTCPPort((short)6666);
+        sc.setLogging(log);
         
         ServerConfigurationDAO.write(args[0], sc);
     }

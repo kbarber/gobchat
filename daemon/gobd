@@ -23,8 +23,4 @@ if [ ! -d $LOGDIR ] ; then
     exit 1
 fi
 
-LOGFILE=$LOGDIR/gobchat.log
-
-touch $LOGFILE
-
-( $JAVACMD -jar $SERVJAR $CONFIG >> $LOGFILE 2>&1 ) &
+( $JAVACMD -jar $SERVJAR $CONFIG >> /dev/null 2>&1 ) &

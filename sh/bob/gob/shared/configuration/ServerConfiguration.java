@@ -22,6 +22,9 @@ public class ServerConfiguration extends Object implements java.io.Serializable 
     /** Holds value of property version. */
     private String version;
     
+    /** Holds value of property logging. */
+    private Logging logging;
+    
     /** Creates new ServerConfiguration */
     public ServerConfiguration() {
         propertySupport = new PropertyChangeSupport( this );
@@ -66,6 +69,22 @@ public class ServerConfiguration extends Object implements java.io.Serializable 
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+    
+    /** Getter for property logging.
+     * @return Value of property logging.
+     *
+     */
+    public Logging getLogging() {
+        return this.logging;
+    }
+    
+    /** Setter for property logging.
+     * @param logging New value of property logging.
+     *
+     */
+    public void setLogging(Logging logging) {
+        this.logging = logging;
     }
     
 }
