@@ -17,6 +17,7 @@ Features
 Bug Fixes
 
 * Server Crash: ArrayIndexOutOfBounds exception (see sf #879745)
+* Server Crash: ClassCastException. No handling of invalid XML objects (see sf #889512)
 
 ============
 Version: 0.3

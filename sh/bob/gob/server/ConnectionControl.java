@@ -309,8 +309,14 @@ public class ConnectionControl {
                                 
                                 } else {
                                     /* Other commands are not recognised, so return an error */
-                                    clientCommand.returnError(sc, (DataBean)dataBean, "Unknown command in this mode");
-                                
+                                    
+                                    /* This may very well be a valid object, but not necessarily a databean */
+                                    try {
+                                        clientCommand.returnError(sc, (DataBean)dataBean, "Unknown command in this mode");
+                                        Logger.getLogger("sh.bob.gob.server").warning("Unknown command in disconnected mode: " + objectShortName);
+                                    } catch (ClassCastException ex) {
+                                        Logger.getLogger("sh.bob.gob.server").warning("Command received not a known DataBean: " + objectShortName);
+                                    }
                                 }
                             }
                         }
