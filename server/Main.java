@@ -6,11 +6,13 @@
 
 package server;
 
+import java.util.Date;
+
 /**
  * Primary class for the Gob server. This class spawns the ConnectionControl
- * class and is only used as a starting point.
+ * class only and catches any exceptions.
  *
- * The class also contains some simple high-level methods.
+ * A standard message output is also provided by this class.
  *
  * @author  Ken Barber
  */
@@ -25,41 +27,54 @@ public final class Main {
      * Creates a new instance of Main. This creates a new instance of ConnectionControl
      * which contains the main body of code.
      */
-    public Main() {
-        /* Inform of startup of console */
-        consoleOutput("Starting Gob Online Chat");
+    public Main(int serverport) {
+        /* Inform of startup on console */
+        consoleOutput("Connection control: Starting");
         
         /* Create a new ConnectionControl */
-        cc = new ConnectionControl();
- 
+        try {
+            cc = new ConnectionControl(serverport);
+        } catch (Exception ex) {
+            /* Catch all exceptions */
+            consoleOutput("Connection control: Exception: " + ex);
+        }
     }
     
     /**
-     * Output time-stamped text to the console.
+     * Output a time-stamped message to standard output. This is the standard method
+     * for output.
      *
-     * @param message Output string
+     * This output should be collected and piped to syslog, event viewer or
+     * perhaps a file.
+     *
+     * @param message Output string to display to standard output.
      */
     protected static void consoleOutput(String message) {
-        System.out.println(new java.util.Date().toString() + ": " + message);
+        System.out.println(new Date().toString() + ": " + message);
     }
     
     /**
-     * Close the program, and output reason to console.
+     * Close the program, and output the given reason to the console.
      *
-     * @param message Output Error
+     * @param message Output string to display to standard output.
      */
     protected static void programExit(String message) {
-        consoleOutput("Quitting: " + message);
+        consoleOutput("Clean Program Exit: " + message);
+        
+        /* Exit with a non zero */
         System.exit(1);
     }
     
     /**
-     * Where it all starts.
+     * Where it all starts. This is the first point of entry.
      *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Main();
+        /* Inform of startup on console */
+        consoleOutput("Starting Gob Online Chat on port " + args[0]);
+        
+        new Main(Integer.decode(args[0]).intValue());
     }
     
 }
