@@ -24,6 +24,7 @@ public class GUIControl {
     private JTabbedPane tbMain;
     private JTextField tfUserName;
     private JTextField tfSendPrep;
+    private JPanel pLobby;
     
     private int connectionStatus;
     
@@ -36,7 +37,7 @@ public class GUIControl {
     public static int DISCONNECTED = 4;
     
     /** Creates a new instance of GUIControl */
-    public GUIControl(UserListControl ul, ChatAreaControl ca, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep) {
+    public GUIControl(UserListControl ul, ChatAreaControl ca, JButton con, JButton dis, JLabel constat, JTextArea erroroutput, JTabbedPane tabbedpane, JTextField username, JTextField sendprep, JPanel lobby) {
         ulControl = ul;
         caControl = ca;
         bConnect = con;
@@ -46,6 +47,7 @@ public class GUIControl {
         tbMain = tabbedpane;
         tfUserName = username;
         tfSendPrep = sendprep;
+        pLobby = lobby;
     }
     
     public void setConnected(int status) {
@@ -70,6 +72,9 @@ public class GUIControl {
                 bDisconnect.setEnabled(true);     
                 lConnectionStatus.setText("Connected");
                 
+                /* Add the lobby tab to the tabbed pain */
+                tbMain.addTab("Lobby", pLobby);
+                
                 /* Now open the lobby tab */
                 tbMain.setSelectedIndex(1);
                 
@@ -84,6 +89,8 @@ public class GUIControl {
             case 4: // Disconnected
                 bConnect.setEnabled(true);
                 bDisconnect.setEnabled(false);
+                
+                /* Set a reason for disconnection */
                 lConnectionStatus.setText("Disconnected: " + reason);
                 
                 /* And enable the username field */
@@ -91,6 +98,9 @@ public class GUIControl {
                 
                 /* And now request focus if this tab is open */
                 tfUserName.requestFocusInWindow();
+                
+                /* Now remove the lobby */
+                tbMain.removeTabAt(1);
                 break;
         }
     }

@@ -51,7 +51,7 @@ public class ClientApp extends javax.swing.JApplet {
         conInfo = new ConnectionInfo();
         
         /* Initialise guicontrol for the conncetion thread to use */
-        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput, tbMain, tfUserName, tfSendPrep);
+        guiControl = new GUIControl(ulControl, caControl, bConnect, bDisconnect, lConnectionStatus, taErrorOutput, tbMain, tfUserName, tfSendPrep, pLobby);
                             
     }
     
@@ -83,6 +83,7 @@ public class ClientApp extends javax.swing.JApplet {
         getContentPane().setLayout(null);
 
         tbMain.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        tbMain.setOpaque(true);
         pControl.setLayout(null);
 
         tfUserName.setToolTipText("Type your username here");
@@ -154,8 +155,12 @@ public class ClientApp extends javax.swing.JApplet {
 
         tbMain.addTab("Control", pControl);
 
+        getContentPane().add(tbMain);
+        tbMain.setBounds(0, 0, 500, 350);
+
         pLobby.setLayout(null);
 
+        pLobby.setOpaque(false);
         bSendText.setText("Send");
         bSendText.setToolTipText("Click here to send");
         bSendText.setActionCommand("jButton1");
@@ -198,10 +203,8 @@ public class ClientApp extends javax.swing.JApplet {
         pLobby.add(spUsers);
         spUsers.setBounds(400, 10, 90, 270);
 
-        tbMain.addTab("Lobby", pLobby);
-
-        getContentPane().add(tbMain);
-        tbMain.setBounds(0, 0, 500, 350);
+        getContentPane().add(pLobby);
+        pLobby.setBounds(0, 0, 0, 0);
 
     }//GEN-END:initComponents
 
@@ -297,24 +300,24 @@ public class ClientApp extends javax.swing.JApplet {
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane spUsers;
-    private javax.swing.JButton bDisconnect;
-    private javax.swing.JTextField tfSendPrep;
-    private javax.swing.JLabel lConnectionStatus;
-    private javax.swing.JScrollPane spErrorOutput;
-    private javax.swing.JTextArea taMsgHistory;
-    private javax.swing.JScrollPane spMsgHistory;
-    private javax.swing.JLabel lUserName;
-    private javax.swing.JTabbedPane tbMain;
-    private javax.swing.JTextArea taErrorOutput;
-    private javax.swing.JButton bSendText;
-    private javax.swing.JPanel pLobby;
-    private javax.swing.JTextField tfGobServer;
-    private javax.swing.JPanel pControl;
-    private javax.swing.JList lUsers;
-    private javax.swing.JLabel lHost;
-    private javax.swing.JTextField tfUserName;
     private javax.swing.JButton bConnect;
+    private javax.swing.JButton bDisconnect;
+    private javax.swing.JButton bSendText;
+    private javax.swing.JLabel lConnectionStatus;
+    private javax.swing.JLabel lHost;
+    private javax.swing.JLabel lUserName;
+    private javax.swing.JList lUsers;
+    private javax.swing.JPanel pControl;
+    private javax.swing.JPanel pLobby;
+    private javax.swing.JScrollPane spErrorOutput;
+    private javax.swing.JScrollPane spMsgHistory;
+    private javax.swing.JScrollPane spUsers;
+    private javax.swing.JTextArea taErrorOutput;
+    private javax.swing.JTextArea taMsgHistory;
+    private javax.swing.JTabbedPane tbMain;
+    private javax.swing.JTextField tfGobServer;
+    private javax.swing.JTextField tfSendPrep;
+    private javax.swing.JTextField tfUserName;
     // End of variables declaration//GEN-END:variables
     
 }
