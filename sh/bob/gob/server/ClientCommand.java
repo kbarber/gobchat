@@ -6,8 +6,7 @@
 
 package sh.bob.gob.server;
 
-import sh.bob.gob.shared.TextValidation;
-import sh.bob.gob.shared.TextInvalidException;
+import sh.bob.gob.shared.validation.*;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
