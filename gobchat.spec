@@ -38,6 +38,7 @@ install -m644 README $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 
 %clean
+rm -rf $RPM_BUILD_ROOT
 
 %pre
 
@@ -48,6 +49,14 @@ cp -r apidoc $RPM_BUILD_ROOT/usr/share/doc/%{name}-%{version}
 %postun
 
 %files
+%defattr(-,root,root)
+%dir /var/run/gobd
+%dir /var/log/gobd
+/usr/share/java/gob
+/var/www/html/gob
+/usr/share/doc/%{name}-%{version}
+/etc/rc.d/init.d/gobd
+/usr/sbin/gobd
 
 %changelog
 
