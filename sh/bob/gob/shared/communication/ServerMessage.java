@@ -34,7 +34,7 @@ import java.beans.*;
  *
  * @author  ken
  */
-public class ServerMessage extends Object implements java.io.Serializable {
+public class ServerMessage extends DataBean implements java.io.Serializable {
     private PropertyChangeSupport propertySupport;
     
     /** Holds value of property message. */
