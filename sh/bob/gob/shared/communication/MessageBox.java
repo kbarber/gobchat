@@ -205,6 +205,11 @@ public class MessageBox {
         int startinglocation = 0; /* This is the first block to start extracting from */
         for(int i = 0; i < nullLocations.size(); i++) {
             int nulllocation = ((Integer)nullLocations.get(i)).intValue(); 
+
+            if((nulllocation - 1) < startinglocation) {
+                Logger.getLogger("sh.bob.gob.shared").warning("Cannot extract this data (" + startinglocation + "," + (nulllocation-1) + ")");
+                continue;
+            }
             
             byte[] objectdata = extractByteArray(bytespace, startinglocation, nulllocation - 1);
             
@@ -338,6 +343,11 @@ public class MessageBox {
     
     private byte[] extractByteArray(byte[] ba, int start, int end, int buffer) {
             int lengthBA = (end - start) + 1;
+            
+            if((lengthBA + buffer) < 1) {
+                Logger.getLogger("sh.bob.gob.shared").warning("Array parameters to extract are invalid");
+                return null;
+            }
             
             byte[] newbuffer = new byte[lengthBA + buffer];
             
