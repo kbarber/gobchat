@@ -99,6 +99,9 @@ public class ConnectionControl {
                         try {
                             /* Send the message */
                             channel.write(encoder.encode(CharBuffer.wrap("GOB:greeting:Welcome to the server!\n")));
+                            
+                            /* Log new connection */
+                            Main.consoleOutput("New connection from: " + channel.socket().getInetAddress().toString());
                         } catch(Exception e) {
                             /* Send errors to the terminal */
                             Main.consoleOutput("Error giving greeting: " + e);
@@ -119,22 +122,32 @@ public class ConnectionControl {
                             Main.consoleOutput("Its not connected!!!!");
                         }
                             
+                        // readResult used for socketchannel read.
+                        int readResult = 0;
+                        
                         /* Read any pending data into a buffer */
                         try {
-                            /* See if we have received an end-of-stream */
-                            if(socketchannel.read(read_buffer) == -1) {
-                                /* Send a clientQuit */
-                                clientCommand.clientQuit("Client forcefully disconnected", socketchannel);
-                                
-                                /* Close the channel */
-                                socketchannel.close();
-                                
-                                /* Go the next next pending SelectionKey */
-                                continue;
-                            }
+                            readResult = socketchannel.read(read_buffer);
                         } catch(Exception e) {
                             /* Output any problems to the terminal */
                             Main.consoleOutput("Error receiving data on network: " + e);
+                        }
+                            
+                        /* See if we have received an end-of-stream */
+                        if(readResult == -1) {
+                            if(userData.isRegistered(socketchannel)) {
+                                clientCommand.clientQuit("Client forcefully disconnected", socketchannel);
+                            }
+                        
+                            try {
+                                /* Close the channel */
+                                socketchannel.close();
+                            } catch(Exception e) {
+                                Main.consoleOutput("Error closing EOS socket: " + e);
+                            }
+                                
+                            /* Go the next next pending SelectionKey */
+                            continue;
                         }
 
                         /* Flip the buffer */
@@ -172,6 +185,14 @@ public class ConnectionControl {
                         /* All client commands should be have two parts */
                         if(command.length == 2) {
 
+                            /* Ensure the command is reasonable, make sure it is
+                             * alphabetical and between 3 and 15 characters 
+                             */
+                            if(Pattern.matches("[a-z]{3,15}", command[0]) == false) {
+                                clientCommand.returnError("Command format incorrect", socketchannel);
+                                continue;
+                            }
+                            
                             /* Deal with any command */
                             if(command[0].equals("signup")) { /* The command is a signup */
                                 /* Signup the user */
@@ -295,4 +316,5 @@ public class ConnectionControl {
         /* Return the selector, now with a registered ServerSocketChannel */
         return selector;
     }
+    
 }
