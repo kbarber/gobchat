@@ -209,90 +209,101 @@ public class ConnectionControl {
                                                
                         /* Now convert this buffer to a string */
                         String inputString = inputCharBuffer.toString();
-                            
-                        /* Ensure strings are of reasonable length */
-                        if(inputString.length() < 6) {
-                            /* Return an error to the user */
-                            clientCommand.returnError("Invalid Command", sc);
-                            
-                            /* Go to the next pending SelectionKey */
-                            continue;
-                        }
-
-                        /* Remove line-break at the end of the String */
-                        inputString = inputString.substring(0, inputString.length() -1);
                         
-                        /* Remove carriage-return if there is one from the String */
-                        if(inputString.substring(inputString.length() -1).equals("\r")) {
-                            inputString = inputString.substring(0, inputString.length() -1);
-                        }
+                        /* We may have received a couple of commands, break them up first */
+                        String lineInputString[] = inputString.split("\n");
+
+                        for(int i = 0; i < lineInputString.length; i++) {
+                            Main.consoleOutput("Line index [" + lineInputString[i] + "]");
+                            
+                            String line = lineInputString[i];
                         
-                        /* Break up string into command and value */
-                        String command[] = inputString.split(":", 2);
-
-                        /* All client commands should be have two parts */
-                        if(command.length == 2) {
-
-                            /* Ensure the command is reasonable, make sure it is
-                             * alphabetical and between 3 and 15 characters 
-                             */
-                            if(Pattern.matches("[a-z]{3,15}", command[0]) == false) {
-                                clientCommand.returnError("Command format incorrect", sc);
+                            /* Ensure strings are of reasonable length */
+                            if(line.length() < 6) {
+                                /* Return an error to the user */
+                                clientCommand.returnError("Invalid Command", sc);
+                            
+                                /* Go to the next pending SelectionKey */
                                 continue;
                             }
-                            
-                            /* Deal with any commands */
-                            if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
-                                if(command[0].equals("roomlist")) { /* The command is roomlist */
-                                    /* Return a list of rooms */
-                                    clientCommand.clientRoomlist(command[1], sc);
-                                } else if(command[0].equals("userlist")) { /* The command is list */
-                                    /* Return a list of users */
-                                    clientCommand.clientUserlist(command[1], sc);
-                                } else if(command[0].equals("roomsend")) { /* The command is send */
-                                    /* Send the user message */
-                                    clientCommand.clientRoomsend(command[1], sc);
-                                } else if(command[0].equals("usersend")) { /* The command is usersend */
-                                    /* Send the user message */
-                                    clientCommand.clientUsersend(command[1], sc);
-                                } else if(command[0].equals("join")) { /* The command is join */
-                                    /* Join the desired room */
-                                    clientCommand.clientJoin(command[1], sc);
-                                } else if(command[0].equals("part")) {
-                                    /* Part the desired room */
-                                    clientCommand.clientPart(command[1], sc);
-                                } else if(command[0].equals("quit")) {
-                                    /* Quit the server */
-                                    clientCommand.clientQuit(command[1], sc);
-                                } else if(command[0].equals("rename")) {
-                                    /* Rename the user */
-                                    clientCommand.clientRename(command[1], sc);
-                                } else {
-                                    /* Other commands are not recognised, so return an error */
-                                    clientCommand.returnError("Unknown command in this mode", sc);
-                                }
-                            } else { /* Disconnected mode */
-                                if(command[0].equals("signup")) { /* The command is a signup */
-                                    /* Signup the user */
-                                    clientCommand.clientSignup(command[1], sc);
-                                
-                                } else if(command[0].equals("quit")) { /* The command is quit */
-                                    /* Quit the user */
-                                    clientCommand.clientQuit(command[1], sc);
-                                
-                                } else {
-                                    /* Other commands are not recognised, so return an error */
-                                    clientCommand.returnError("Unknown command in this mode", sc);
-                                
-                                }
+
+                            /* Remove line-break at the end of the String */
+                            if(line.substring(line.length() -1).equals("\n")) {
+                                line = line.substring(0, line.length() -1);
                             }
+                        
+                            /* Remove carriage-return if there is one from the String */
+                            if(line.substring(line.length() -1).equals("\r")) {
+                                line = line.substring(0, line.length() -1);
+                            }
+                        
+                            /* Break up string into command and value */
+                            String command[] = line.split(":", 2);
+
+                            /* All client commands should be have two parts */
+                            if(command.length == 2) {
+
+                                /* Ensure the command is reasonable, make sure it is
+                                 * alphabetical and between 3 and 15 characters 
+                                 */
+                                if(Pattern.matches("[a-z]{3,15}", command[0]) == false) {
+                                    clientCommand.returnError("Command format incorrect", sc);
+                                    continue;
+                                }
+                            
+                                /* Deal with any commands */
+                                if(userData.isSocketRegistered(sc)) { /* Is the user registered yet? */
+                                    if(command[0].equals("roomlist")) { /* The command is roomlist */
+                                        /* Return a list of rooms */
+                                        clientCommand.clientRoomlist(command[1], sc);
+                                    } else if(command[0].equals("userlist")) { /* The command is list */
+                                        /* Return a list of users */
+                                        clientCommand.clientUserlist(command[1], sc);
+                                    } else if(command[0].equals("roomsend")) { /* The command is send */
+                                        /* Send the user message */
+                                        clientCommand.clientRoomsend(command[1], sc);
+                                    } else if(command[0].equals("usersend")) { /* The command is usersend */
+                                        /* Send the user message */
+                                        clientCommand.clientUsersend(command[1], sc);
+                                    } else if(command[0].equals("join")) { /* The command is join */
+                                        /* Join the desired room */
+                                        clientCommand.clientJoin(command[1], sc);
+                                    } else if(command[0].equals("part")) {
+                                        /* Part the desired room */
+                                        clientCommand.clientPart(command[1], sc);
+                                    } else if(command[0].equals("quit")) {
+                                        /* Quit the server */
+                                        clientCommand.clientQuit(command[1], sc);
+                                    } else if(command[0].equals("rename")) {
+                                        /* Rename the user */
+                                        clientCommand.clientRename(command[1], sc);
+                                    } else {
+                                        /* Other commands are not recognised, so return an error */
+                                        clientCommand.returnError("Unknown command in this mode", sc);
+                                    }
+                                } else { /* Disconnected mode */
+                                    if(command[0].equals("signup")) { /* The command is a signup */
+                                        /* Signup the user */
+                                        clientCommand.clientSignup(command[1], sc);
+                                        
+                                    } else if(command[0].equals("quit")) { /* The command is quit */
+                                        /* Quit the user */
+                                        clientCommand.clientQuit(command[1], sc);
                                 
-                        } else { /* The command did not have 2 parts */
-                            /* Return an error */
-                            clientCommand.returnError("Command format incorrect", sc);
+                                    } else {
+                                         /* Other commands are not recognised, so return an error */
+                                        clientCommand.returnError("Unknown command in this mode", sc);
+                                
+                                    }
+                                }
+                                
+                            } else { /* The command did not have 2 parts */
+                                /* Return an error */
+                                clientCommand.returnError("Command format incorrect", sc);
                                                                 
-                        }
-                    }                        
+                            }
+                        } /* Line cycling for loop */                       
+                    } /* If test */
                 } /* While loop */
             } /* If test */
         } /* Networking infinite loop */
