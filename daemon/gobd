@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is responsbile for backgrounding the server java app
+#
+
 JAVACMD=$JAVA_HOME/bin/java
 SERVJAR=/home/ken/dev/gob-working/gobchat/daemon/server.jar
 LOGDIR=/tmp
