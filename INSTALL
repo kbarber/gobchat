@@ -1,1 +1,40 @@
 Instructions for installation
+
+If you can obtain an RPM, install that.
+
+rpm -Uvh gobchat-0.1-1.rpm
+
+If your unfortunate enough to be running windows, sorry - this will work, by
+I haven't built any nice wrapper scripts.
+
+On the server you wish to install this program:
+
+1. Download and install Java JRE 1.4.1 or greater. It is available from:
+
+http://java.sun.com/
+
+2. The server application can be ran like this:
+
+$JAVA_HOME/bin/java -jar server.jar
+
+By default, the server dislays error messages on the console. This should 
+probably be piped to a text for or some such.
+
+3. Place the contents of the 'website' directory somewhere in the servers
+web server content area.
+
+4. Modify the HTML file index.html, and specify your server name.
+
+5. Access the website using the proper hostname. The client should work, and
+you should be able to connect to the server.
+
+
+TROUBLESHOOTING
+
+* Remember that you must install the server and client on the same system. As
+these are not signed Applets, there is no support for connecting to alternate
+servers other than the one which served the Applet.
+
+* The client and server must use Java JRE 1.4.1 or greater. Ensure these versions
+are correct on all systems concerned.
+
