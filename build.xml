@@ -73,9 +73,10 @@
         </delete>
         <delete file="website/client.jar"/>
         <delete file="daemon/server.jar"/>
+        <delete file="config/serverconf.jar"/>
         <delete file="client/app.jar"/>
         <delete dir="apidoc"/>
-        <delete file="dist/Install Gob.exe"/>
+        <delete file="dist/Install Gob v0.4.exe"/>
         <delete file="dist/gobchat-0.4.tar.gz"/>
     </target>
 
