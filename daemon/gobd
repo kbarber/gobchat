@@ -26,4 +26,4 @@ LOGFILE=$LOGDIR/output.log
 
 touch $LOGFILE
 
-( $JAVACMD -jar $SERVJAR > $LOGFILE 2>&1 ) &
+( $JAVACMD -jar $SERVJAR >> $LOGFILE 2>&1 ) &
